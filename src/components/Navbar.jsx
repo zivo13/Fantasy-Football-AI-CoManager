@@ -3,17 +3,17 @@ import { useApp } from '../context/AppContext';
 import { Trophy, Shield, Zap, User, LogOut, Lock, LayoutDashboard, Sparkles, DollarSign } from 'lucide-react';
 
 export const Navbar = () => {
-  const { currentTab, setCurrentTab, user, setShowAuthModal, setAuthMode, handleLogout } = useApp();
+  const { currentTab, setCurrentTab, user, setShowAuthModal, setAuthMode, handleLogout, lang, setLang, t } = useApp();
 
   return (
     <header className="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/80">
       {/* Top Motto Ticker Bar */}
       <div className="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 text-slate-950 font-bold py-1 overflow-hidden shadow-inner">
         <div className="animate-marquee whitespace-nowrap text-xs uppercase tracking-widest flex items-center gap-8 font-bebas">
-          <span className="flex items-center gap-1.5"><DollarSign className="w-4 h-4" /> LET'S MAKE MONEY! - DOMINATE YOUR FANTASY LEAGUE</span>
+          <span className="flex items-center gap-1.5"><DollarSign className="w-4 h-4" /> {t.motto}</span>
           <span className="flex items-center gap-1.5"><Trophy className="w-4 h-4" /> SUPERMACHO AI CO-MANAGER IS ONLINE</span>
           <span className="flex items-center gap-1.5"><Zap className="w-4 h-4" /> REAL-TIME LINEUP OPTIMIZER & WAIVER TARGETS</span>
-          <span className="flex items-center gap-1.5"><DollarSign className="w-4 h-4" /> LET'S MAKE MONEY! - DOMINATE YOUR FANTASY LEAGUE</span>
+          <span className="flex items-center gap-1.5"><DollarSign className="w-4 h-4" /> {t.motto}</span>
           <span className="flex items-center gap-1.5"><Trophy className="w-4 h-4" /> SUPERMACHO AI CO-MANAGER IS ONLINE</span>
         </div>
       </div>
@@ -97,6 +97,16 @@ export const Navbar = () => {
 
           {/* Right Action & Profile */}
           <div className="flex items-center gap-3">
+            {/* Language Selector Dropdown */}
+            <select
+              value={lang}
+              onChange={(e) => setLang(e.target.value)}
+              className="bg-slate-900 border border-slate-800 text-amber-400 font-bold text-xs rounded-xl px-2.5 py-2 focus:outline-none focus:border-amber-500 cursor-pointer"
+            >
+              <option value="en">🇺🇸 EN</option>
+              <option value="es">🇲🇽 ES</option>
+              <option value="pt">🇧🇷 PT</option>
+            </select>
             {user.isLoggedIn ? (
               <div className="flex items-center gap-3">
                 <div className="hidden sm:block text-right">

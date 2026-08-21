@@ -1,9 +1,14 @@
 import React, { createContext, useContext, useState } from 'react';
 import { INITIAL_PLANS, DEMO_ROSTER, DEMO_WAIVERS, DEMO_TRADE_SCENARIO, ADMIN_METRICS } from '../services/mockData';
+import { TRANSLATIONS } from '../services/translations';
 
 const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
+  // Language state: 'en' | 'es' | 'pt'
+  const [lang, setLang] = useState('en');
+  const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
+
   // Navigation tab: 'landing' | 'client' | 'admin' | 'auth'
   const [currentTab, setCurrentTab] = useState('landing');
   
@@ -125,6 +130,9 @@ export const AppProvider = ({ children }) => {
 
   return (
     <AppContext.Provider value={{
+      lang,
+      setLang,
+      t,
       currentTab,
       setCurrentTab,
       user,

@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext';
 import { Trophy, Zap, ShieldCheck, Sparkles, Check, ArrowRight, DollarSign, Activity, Flame, Bot, Calculator, Clock, Users, Award, ShieldAlert } from 'lucide-react';
 
 export const LandingPage = () => {
-  const { plans, setCurrentTab, setShowAuthModal, setAuthMode, handleLogin } = useApp();
+  const { plans, setCurrentTab, setShowAuthModal, setAuthMode, handleLogin, t } = useApp();
   const [billingCycle, setBillingCycle] = useState('monthly'); // 'monthly' | 'seasonal'
   const [selectedPlanMsg, setSelectedPlanMsg] = useState(null);
 
@@ -16,12 +16,12 @@ export const LandingPage = () => {
 
   const handleSelectPlan = (plan) => {
     if (plan.priceMonthly === 0) {
-      handleLogin('demo@supermacho.ai', 'client');
+      handleLogin('demo@supermacho.app', 'client');
       return;
     }
     setSelectedPlanMsg(`🚀 Stripe Checkout triggered for [${plan.name}]!`);
     setTimeout(() => {
-      handleLogin('champ@supermacho.ai', 'client');
+      handleLogin('champ@supermacho.app', 'client');
     }, 1200);
   };
 
@@ -61,15 +61,15 @@ export const LandingPage = () => {
             </div>
           </div>
 
-          {/* Main Sales Funnel Slogan - SMALLER PROPORTIONAL TEXT */}
+          {/* Main Sales Funnel Slogan */}
           <div className="space-y-3 max-w-3xl mx-auto pt-2">
-            <h1 className="font-bebas text-3xl sm:text-4xl lg:text-5xl tracking-tight leading-tight text-white">
-              STOP LOSING YOUR LEAGUE MONEY. <br />
-              <span className="text-hero-gradient">LET'S MAKE MONEY! 🏈💰</span>
+            <h1 className="font-bebas text-3xl sm:text-4xl lg:text-5xl tracking-tight leading-tight text-white uppercase">
+              {t.heroTitlePart1} <br />
+              <span className="text-hero-gradient">{t.heroTitlePart2}</span>
             </h1>
 
             <p className="text-slate-300 text-sm sm:text-base font-normal leading-relaxed max-w-2xl mx-auto">
-              SuperMacho is your high-octane AI Fantasy Co-Manager. Sync your ESPN & Sleeper rosters in 1-click for optimal lineups, secret waiver snipes, and trade robbery.
+              {t.heroDesc}
             </p>
           </div>
 
@@ -77,10 +77,10 @@ export const LandingPage = () => {
           <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4 max-w-md mx-auto">
             <button
               onClick={() => { setAuthMode('signup'); setShowAuthModal(true); }}
-              className="w-full btn-gold py-4 rounded-2xl text-base font-extrabold flex items-center justify-center gap-3 shadow-xl shadow-amber-500/25 group"
+              className="w-full btn-gold py-4 rounded-2xl text-base font-extrabold flex items-center justify-center gap-3 shadow-xl shadow-amber-500/25 group uppercase"
             >
               <Sparkles className="w-5 h-5" />
-              <span>CLAIM FREE HERO ACCESS</span>
+              <span>{t.ctaFree}</span>
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
 
@@ -92,7 +92,7 @@ export const LandingPage = () => {
               className="w-full btn-outline py-4 rounded-2xl text-base font-bold flex items-center justify-center gap-2"
             >
               <Calculator className="w-5 h-5 text-amber-400" />
-              <span>Calculate My Winnings</span>
+              <span>{t.ctaCalc}</span>
             </button>
           </div>
 
@@ -121,10 +121,10 @@ export const LandingPage = () => {
               <span>SUPERMACHO PAYOUT CALCULATOR</span>
             </div>
             <h2 className="font-bebas text-4xl sm:text-5xl text-white tracking-wider">
-              HOW MUCH MONEY WILL YOU WIN THIS SEASON?
+              {t.roiTitle}
             </h2>
             <p className="text-slate-300 text-sm max-w-2xl mx-auto">
-              Drag the sliders below to calculate your projected 1st place championship payout with SuperMacho AI Co-Manager optimizing your roster!
+              {t.roiDesc}
             </p>
           </div>
 
@@ -134,7 +134,7 @@ export const LandingPage = () => {
             {/* Slider 1: Buy-In */}
             <div className="space-y-4">
               <div className="flex justify-between items-center text-xs font-bold">
-                <span className="text-slate-400 uppercase">League Buy-In Amount</span>
+                <span className="text-slate-400 uppercase">{t.roiBuyInLabel}</span>
                 <span className="text-amber-400 font-bebas text-2xl">${buyIn} / League</span>
               </div>
               <input 
@@ -147,17 +147,17 @@ export const LandingPage = () => {
                 className="w-full accent-amber-500 cursor-pointer h-2 bg-slate-800 rounded-lg"
               />
               <div className="flex justify-between text-[10px] text-slate-500 font-bold">
-                <span>$25 Casual</span>
-                <span>$250 High Stakes</span>
-                <span>$1,000 Baller</span>
+                <span>$25</span>
+                <span>$250</span>
+                <span>$1,000</span>
               </div>
             </div>
 
             {/* Slider 2: Number of Leagues */}
             <div className="space-y-4">
               <div className="flex justify-between items-center text-xs font-bold">
-                <span className="text-slate-400 uppercase">Number of Fantasy Leagues</span>
-                <span className="text-amber-400 font-bebas text-2xl">{numLeagues} {numLeagues === 1 ? 'League' : 'Leagues'}</span>
+                <span className="text-slate-400 uppercase">{t.roiLeaguesLabel}</span>
+                <span className="text-amber-400 font-bebas text-2xl">{numLeagues}</span>
               </div>
               <input 
                 type="range" 
@@ -169,9 +169,9 @@ export const LandingPage = () => {
                 className="w-full accent-amber-500 cursor-pointer h-2 bg-slate-800 rounded-lg"
               />
               <div className="flex justify-between text-[10px] text-slate-500 font-bold">
-                <span>1 League</span>
-                <span>5 Leagues</span>
-                <span>10 Leagues</span>
+                <span>1</span>
+                <span>5</span>
+                <span>10</span>
               </div>
             </div>
 
@@ -179,10 +179,10 @@ export const LandingPage = () => {
 
           {/* Result Payout Box */}
           <div className="bg-gradient-to-r from-amber-500/20 via-amber-400/20 to-amber-500/20 p-6 rounded-2xl border border-amber-500/40 text-center space-y-2">
-            <div className="text-xs font-bold uppercase tracking-widest text-amber-300">Projected Season Championship Payout</div>
+            <div className="text-xs font-bold uppercase tracking-widest text-amber-300">{t.roiPayoutLabel}</div>
             <div className="font-bebas text-5xl sm:text-6xl text-hero-gradient">${estimatedRoi.toLocaleString()} ROI</div>
             <p className="text-xs text-slate-300 font-medium">
-              Investing <strong className="text-amber-400">$4.99/mo</strong> in SuperMacho Pro gives you a projected <strong className="text-emerald-400">+42% Championship Win Probability</strong>.
+              {t.roiWinBoost}
             </p>
           </div>
 
@@ -191,7 +191,7 @@ export const LandingPage = () => {
               onClick={() => { setAuthMode('signup'); setShowAuthModal(true); }}
               className="btn-gold px-10 py-4 rounded-2xl text-base font-extrabold uppercase tracking-wider"
             >
-              Start Winning Your ${estimatedRoi.toLocaleString()} Payout Now
+              {t.roiCta}
             </button>
           </div>
 
@@ -203,48 +203,37 @@ export const LandingPage = () => {
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
           <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-amber-500/10 text-amber-400 font-extrabold text-xs uppercase tracking-widest border border-amber-500/30">
             <Zap className="w-4 h-4" />
-            <span>THE UNFAIR ADVANTAGE SYSTEM</span>
+            <span>UNFAIR ADVANTAGE</span>
           </div>
           <h2 className="font-bebas text-5xl text-white tracking-wider">
-            HOW SUPERMACHO CRUSHES YOUR OPPONENTS
+            {t.featuresTitle}
           </h2>
-          <p className="text-slate-400 text-base">
-            Everything you need to outsmart your league mates, grab waiver gems first, and take home the money trophy.
-          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           
           <div className="glass-panel p-6 rounded-3xl space-y-4 relative border-t-4 border-amber-500">
             <div className="font-bebas text-4xl text-amber-500/40">01</div>
-            <h3 className="font-bebas text-2xl text-white tracking-wider">Instant Roster Sync</h3>
-            <p className="text-slate-400 text-xs leading-relaxed">
-              Connect your ESPN & Sleeper leagues securely in seconds. SuperMacho imports your entire lineup and scoring settings automatically.
-            </p>
+            <h3 className="font-bebas text-2xl text-white tracking-wider">{t.f1Title}</h3>
+            <p className="text-slate-400 text-xs leading-relaxed">{t.f1Desc}</p>
           </div>
 
           <div className="glass-panel p-6 rounded-3xl space-y-4 relative border-t-4 border-amber-400">
             <div className="font-bebas text-4xl text-amber-400/40">02</div>
-            <h3 className="font-bebas text-2xl text-white tracking-wider">Start/Sit Heatmaps</h3>
-            <p className="text-slate-400 text-xs leading-relaxed">
-              Calculates defense matchups, target shares, and ceiling variance to squeeze +18.4 extra points out of your roster every Sunday.
-            </p>
+            <h3 className="font-bebas text-2xl text-white tracking-wider">{t.f2Title}</h3>
+            <p className="text-slate-400 text-xs leading-relaxed">{t.f2Desc}</p>
           </div>
 
           <div className="glass-panel p-6 rounded-3xl space-y-4 relative border-t-4 border-cyan-400">
             <div className="font-bebas text-4xl text-cyan-400/40">03</div>
-            <h3 className="font-bebas text-2xl text-white tracking-wider">Secret Waiver Snipes</h3>
-            <p className="text-slate-400 text-xs leading-relaxed">
-              Identifies breakout RB/WR waiver targets before your league mates notice, with exact recommended FAB dollar bids.
-            </p>
+            <h3 className="font-bebas text-2xl text-white tracking-wider">{t.f3Title}</h3>
+            <p className="text-slate-400 text-xs leading-relaxed">{t.f3Desc}</p>
           </div>
 
           <div className="glass-panel p-6 rounded-3xl space-y-4 relative border-t-4 border-emerald-400">
             <div className="font-bebas text-4xl text-emerald-400/40">04</div>
-            <h3 className="font-bebas text-2xl text-white tracking-wider">Trade Robbery AI</h3>
-            <p className="text-slate-400 text-xs leading-relaxed">
-              Simulates trade proposals to evaluate roster impact and win-probability boosts before making offers to rivals.
-            </p>
+            <h3 className="font-bebas text-2xl text-white tracking-wider">{t.f4Title}</h3>
+            <p className="text-slate-400 text-xs leading-relaxed">{t.f4Desc}</p>
           </div>
 
         </div>
@@ -254,10 +243,10 @@ export const LandingPage = () => {
       <section id="pricing" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-12 space-y-4">
           <h2 className="font-bebas text-5xl text-white tracking-wider">
-            CHOOSE YOUR CHAMPION PLAN
+            {t.pricingTitle}
           </h2>
           <p className="text-slate-400 text-base">
-            Select your plan below to unlock full AI Co-Manager features. 100% Risk-Free Money Back Guarantee.
+            {t.pricingSub}
           </p>
 
           {/* Billing Cycle Toggle */}
@@ -268,7 +257,7 @@ export const LandingPage = () => {
                 billingCycle === 'monthly' ? 'bg-amber-500 text-slate-950 font-extrabold shadow-lg' : 'text-slate-400 hover:text-white'
               }`}
             >
-              Monthly Billing
+              {t.monthly}
             </button>
             <button
               onClick={() => setBillingCycle('seasonal')}
@@ -276,8 +265,8 @@ export const LandingPage = () => {
                 billingCycle === 'seasonal' ? 'bg-amber-500 text-slate-950 font-extrabold shadow-lg' : 'text-slate-400 hover:text-white'
               }`}
             >
-              <span>Season Pass</span>
-              <span className="bg-slate-950 text-amber-400 text-[10px] px-1.5 py-0.5 rounded font-extrabold">SAVE 35%</span>
+              <span>{t.seasonal}</span>
+              <span className="bg-slate-950 text-amber-400 text-[10px] px-1.5 py-0.5 rounded font-extrabold">{t.save35}</span>
             </button>
           </div>
         </div>
