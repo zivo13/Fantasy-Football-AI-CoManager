@@ -14,15 +14,38 @@ export const LandingPage = () => {
   const projectedPayout = buyIn * 6 * numLeagues; // 1st place payout estimate
   const estimatedRoi = Math.round(projectedPayout * 0.85);
 
-  const handleSelectPlan = (plan) => {
+  const handleSelectPlan = async (plan) => {
     if (plan.priceMonthly === 0) {
       handleLogin('demo@supermacho.app', 'client');
       return;
     }
-    setSelectedPlanMsg(`🚀 Stripe Checkout triggered for [${plan.name}]!`);
-    setTimeout(() => {
+
+    try {
+      setSelectedPlanMsg(`🚀 Connecting to Stripe Checkout for [${plan.name}]...`);
+      
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          planId: plan.id,
+          userEmail: 'champ@supermacho.app',
+          billingCycle: billingCycle
+        })
+      });
+
+      const data = await response.json();
+      if (data.url) {
+        window.location.href = data.url; // Redirect to Stripe Checkout
+      } else {
+        // Fallback simulation if running in offline mode
+        setTimeout(() => {
+          handleLogin('champ@supermacho.app', 'client');
+        }, 1200);
+      }
+    } catch (err) {
+      console.error('Stripe Redirect Error:', err);
       handleLogin('champ@supermacho.app', 'client');
-    }, 1200);
+    }
   };
 
   return (
