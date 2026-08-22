@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { Trophy, Zap, ShieldCheck, Sparkles, Check, ArrowRight, DollarSign, Activity, Flame, Bot, Calculator, Clock, Users, Award, ShieldAlert } from 'lucide-react';
+import { Trophy, Zap, ShieldCheck, Sparkles, Check, ArrowRight, DollarSign, Activity, Flame, Bot, Calculator, Clock, Users, Award, ShieldAlert, HelpCircle } from 'lucide-react';
 
 export const LandingPage = () => {
   const { plans, setCurrentTab, setShowAuthModal, setAuthMode, handleLogin, t } = useApp();
