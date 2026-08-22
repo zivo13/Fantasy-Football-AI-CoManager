@@ -12,13 +12,13 @@ export const AppProvider = ({ children }) => {
   // Navigation tab: 'landing' | 'client' | 'admin' | 'auth'
   const [currentTab, setCurrentTab] = useState('landing');
   
-  // User state
+  // User state (Default to Guest for new visitors)
   const [user, setUser] = useState({
-    name: 'Champ Miller',
-    email: 'champ@supermacho.app',
-    role: 'client', // 'client' | 'admin'
-    planId: 'pro',
-    isLoggedIn: true
+    name: '',
+    email: '',
+    role: 'guest', // 'guest' | 'client' | 'admin'
+    planId: 'free',
+    isLoggedIn: false
   });
 
   // Auth modal visibility
