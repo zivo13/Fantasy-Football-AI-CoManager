@@ -45,12 +45,10 @@ export const Navbar = () => {
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-bebas text-2xl tracking-wider text-hero-gradient">SUPERMACHO</span>
-                <span className="text-[10px] uppercase font-bold tracking-widest bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 px-2 py-0.5 rounded-full">GRIDIRON HERO</span>
+                <span className="text-[10px] uppercase font-extrabold tracking-widest bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 px-2 py-0.5 rounded-full">LEADER OF THE PACK</span>
               </div>
               <p className="text-[11px] text-amber-400 font-semibold tracking-wider uppercase flex items-center gap-1">
-                <span>Gridiron Hero</span>
-                <span className="text-slate-500">•</span>
-                <span className="text-slate-400">Let's Make Money!</span>
+                <span>{t.motto}</span>
               </p>
             </div>
           </div>
