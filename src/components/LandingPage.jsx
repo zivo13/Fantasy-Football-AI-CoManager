@@ -134,6 +134,47 @@ export const LandingPage = () => {
         </div>
       </section>
 
+      {/* HOW IT WORKS IN 3 EASY STEPS BANNER */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="glass-panel-gold p-8 sm:p-10 rounded-3xl space-y-8 border-2 border-amber-500/40">
+          <div className="text-center space-y-2">
+            <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-amber-500/20 text-amber-300 font-extrabold text-xs uppercase tracking-widest">
+              <Sparkles className="w-4 h-4" />
+              <span>ZERO PUZZLE • ZERO CONFUSION</span>
+            </div>
+            <h2 className="font-bebas text-4xl sm:text-5xl text-white tracking-wider">
+              {t.howTitle}
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+            <div className="bg-slate-950/80 p-6 rounded-2xl border border-slate-800 space-y-3">
+              <div className="w-12 h-12 rounded-xl bg-amber-500 text-slate-950 font-bebas text-2xl font-bold flex items-center justify-center">
+                01
+              </div>
+              <h3 className="font-bebas text-2xl text-white tracking-wider">{t.step1Title}</h3>
+              <p className="text-xs text-slate-300 leading-relaxed">{t.step1Desc}</p>
+            </div>
+
+            <div className="bg-slate-950/80 p-6 rounded-2xl border border-slate-800 space-y-3">
+              <div className="w-12 h-12 rounded-xl bg-amber-400 text-slate-950 font-bebas text-2xl font-bold flex items-center justify-center">
+                02
+              </div>
+              <h3 className="font-bebas text-2xl text-white tracking-wider">{t.step2Title}</h3>
+              <p className="text-xs text-slate-300 leading-relaxed">{t.step2Desc}</p>
+            </div>
+
+            <div className="bg-slate-950/80 p-6 rounded-2xl border border-slate-800 space-y-3">
+              <div className="w-12 h-12 rounded-xl bg-emerald-400 text-slate-950 font-bebas text-2xl font-bold flex items-center justify-center">
+                03
+              </div>
+              <h3 className="font-bebas text-2xl text-white tracking-wider">{t.step3Title}</h3>
+              <p className="text-xs text-slate-300 leading-relaxed">{t.step3Desc}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* FUNNEL STAGE 2: INTERACTIVE "MAKE MONEY" ROI CALCULATOR */}
       <section id="roi-calculator" className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="glass-panel-gold p-8 sm:p-12 rounded-3xl relative overflow-hidden space-y-8 border-2 border-amber-500/40 shadow-2xl shadow-amber-500/10">
@@ -351,6 +392,61 @@ export const LandingPage = () => {
               </div>
             );
           })}
+        </div>
+      </section>
+
+      {/* FREQUENTLY ASKED QUESTIONS (FAQ) MODULE */}
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
+          <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-amber-500/10 text-amber-400 font-extrabold text-xs uppercase tracking-widest border border-amber-500/30">
+            <HelpCircle className="w-4 h-4" />
+            <span>KNOWLEDGE BASE</span>
+          </div>
+          <h2 className="font-bebas text-4xl sm:text-5xl text-white tracking-wider">
+            {t.faqTitle}
+          </h2>
+        </div>
+
+        <div className="space-y-4">
+          <div className="glass-panel p-6 rounded-2xl space-y-2 border-l-4 border-amber-500">
+            <h3 className="font-extrabold text-white text-sm sm:text-base flex items-center gap-2">
+              <HelpCircle className="w-4 h-4 text-amber-400 flex-shrink-0" />
+              <span>{t.q1}</span>
+            </h3>
+            <p className="text-xs text-slate-300 leading-relaxed pl-6">
+              {t.a1}
+            </p>
+          </div>
+
+          <div className="glass-panel p-6 rounded-2xl space-y-2 border-l-4 border-cyan-500">
+            <h3 className="font-extrabold text-white text-sm sm:text-base flex items-center gap-2">
+              <HelpCircle className="w-4 h-4 text-cyan-400 flex-shrink-0" />
+              <span>{t.q2}</span>
+            </h3>
+            <p className="text-xs text-slate-300 leading-relaxed pl-6">
+              {t.a2}
+            </p>
+          </div>
+
+          <div className="glass-panel p-6 rounded-2xl space-y-2 border-l-4 border-emerald-500">
+            <h3 className="font-extrabold text-white text-sm sm:text-base flex items-center gap-2">
+              <HelpCircle className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+              <span>{t.q3}</span>
+            </h3>
+            <p className="text-xs text-slate-300 leading-relaxed pl-6">
+              {t.a3}
+            </p>
+          </div>
+
+          <div className="glass-panel p-6 rounded-2xl space-y-2 border-l-4 border-purple-500">
+            <h3 className="font-extrabold text-white text-sm sm:text-base flex items-center gap-2">
+              <HelpCircle className="w-4 h-4 text-purple-400 flex-shrink-0" />
+              <span>{t.q4}</span>
+            </h3>
+            <p className="text-xs text-slate-300 leading-relaxed pl-6">
+              {t.a4}
+            </p>
+          </div>
         </div>
       </section>
 
