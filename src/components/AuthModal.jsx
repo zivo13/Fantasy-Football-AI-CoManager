@@ -145,28 +145,15 @@ export const AuthModal = () => {
           </button>
         </form>
 
-        {/* Quick Demo Login Preset Buttons */}
+        {/* Quick Demo Preview Button */}
         <div className="mt-6 pt-6 border-t border-slate-800">
-          <div className="text-center text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
-            ⚡ Quick Demo Login Presets
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={() => handleLogin('champ@supermacho.app', 'client')}
-              className="px-3 py-2.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
-            >
-              <User className="w-3.5 h-3.5 text-amber-400" />
-              <span>Login as Client</span>
-            </button>
-
-            <button
-              onClick={() => handleLogin('admin@supermacho.app', 'admin')}
-              className="px-3 py-2.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
-            >
-              <Shield className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Login as Admin</span>
-            </button>
-          </div>
+          <button
+            onClick={() => handleLogin('champ@supermacho.app', 'client')}
+            className="w-full py-2.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-bold flex items-center justify-center gap-2 transition-colors"
+          >
+            <User className="w-4 h-4 text-amber-400" />
+            <span>Try Quick Interactive Demo Dashboard</span>
+          </button>
         </div>
 
         {/* Toggle Mode */}

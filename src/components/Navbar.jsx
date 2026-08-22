@@ -81,18 +81,20 @@ export const Navbar = () => {
               <span className="bg-amber-500 text-slate-950 text-[10px] font-extrabold px-1.5 py-0.5 rounded">PRO</span>
             </button>
 
-            <button
-              onClick={() => setCurrentTab('admin')}
-              className={`px-4 py-2 rounded-xl font-semibold text-sm transition-all flex items-center gap-2 ${
-                currentTab === 'admin' 
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-lg shadow-cyan-500/10' 
-                  : 'text-slate-400 hover:text-cyan-300 hover:bg-slate-900'
-              }`}
-            >
-              <Shield className="w-4 h-4 text-cyan-400" />
-              <span>Admin Module</span>
-              <span className="bg-cyan-500/20 text-cyan-300 text-[10px] font-bold px-1.5 py-0.5 rounded border border-cyan-500/30">ADMIN</span>
-            </button>
+            {user.role === 'admin' && (
+              <button
+                onClick={() => setCurrentTab('admin')}
+                className={`px-4 py-2 rounded-xl font-semibold text-sm transition-all flex items-center gap-2 ${
+                  currentTab === 'admin' 
+                    ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-lg shadow-cyan-500/10' 
+                    : 'text-slate-400 hover:text-cyan-300 hover:bg-slate-900'
+                }`}
+              >
+                <Shield className="w-4 h-4 text-cyan-400" />
+                <span>Admin Module</span>
+                <span className="bg-cyan-500/20 text-cyan-300 text-[10px] font-bold px-1.5 py-0.5 rounded border border-cyan-500/30">ADMIN</span>
+              </button>
+            )}
           </nav>
 
           {/* Right Action & Profile */}
