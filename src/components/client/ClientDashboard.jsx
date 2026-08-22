@@ -58,7 +58,26 @@ export const ClientDashboard = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       
-      {/* Top Header Banner */}
+      {/* STEP 1 ONBOARDING BANNER FOR NEW USERS */}
+      <div className="bg-gradient-to-r from-amber-500/20 via-amber-400/20 to-amber-500/20 border-2 border-amber-500/50 p-5 rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl shadow-amber-500/10">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center font-bebas text-xl font-bold flex-shrink-0">
+            01
+          </div>
+          <div>
+            <div className="font-bebas text-xl text-white tracking-wider">STEP 1: CONNECT YOUR FANTASY LEAGUE</div>
+            <p className="text-xs text-slate-300">Click the button to enter your ESPN or Sleeper League ID so SuperMacho AI can optimize your roster!</p>
+          </div>
+        </div>
+
+        <button
+          onClick={() => setShowConfigModal(true)}
+          className="btn-gold px-6 py-3 rounded-2xl text-xs font-extrabold flex items-center gap-2 whitespace-nowrap shadow-lg uppercase"
+        >
+          <Plus className="w-4 h-4" />
+          <span>Connect My League Now</span>
+        </button>
+      </div>
       <div className="glass-panel-gold p-6 sm:p-8 rounded-3xl relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border-2 border-amber-500/40">
         <div className="space-y-2 z-10">
           <div className="flex items-center gap-2">
