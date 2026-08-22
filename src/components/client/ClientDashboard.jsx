@@ -174,8 +174,9 @@ export const ClientDashboard = () => {
                   <span className="bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-bebas text-sm px-3 py-0.5 rounded-lg font-bold">
                     {player.pos} • MUST START
                   </span>
-                  <span className="text-[10px] font-extrabold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded-md">
-                    CONFIDENCE: {player.matchScore}
+                  <span className="text-[10px] font-extrabold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded-md flex items-center gap-1">
+                    <Flame className="w-3 h-3 text-amber-400" />
+                    <span>GUT CHECK VALIDATED ({player.matchScore})</span>
                   </span>
                 </div>
 
