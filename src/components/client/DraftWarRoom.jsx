@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Award, Zap, Target, Users, Flame, ShieldAlert, Sparkles, TrendingUp, ChevronRight, Scale, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Award, Zap, Target, Users, Flame, ShieldAlert, Sparkles, TrendingUp, ChevronRight, Scale, CheckCircle2, ArrowRight, HelpCircle } from 'lucide-react';
 
 export const DraftWarRoom = () => {
   const { currentLeague } = useApp();
@@ -9,6 +9,7 @@ export const DraftWarRoom = () => {
   const [activeQuestion, setActiveQuestion] = useState('target_pos');
   const [filterPos, setFilterPos] = useState('ALL');
   const [liveDraftPool, setLiveDraftPool] = useState(null);
+  const [showGlossary, setShowGlossary] = useState(false);
 
   // Available Players Board with Real Rankings & Tier Drops
   const defaultAvailablePlayers = [
@@ -219,6 +220,49 @@ export const DraftWarRoom = () => {
         <p className="text-xs text-slate-200 leading-relaxed font-medium whitespace-pre-line">
           {currentAdvice.analysis}
         </p>
+      </div>
+
+      {/* METRICS & GLOSSARY GUIDE EXPANDABLE ACCORDION */}
+      <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
+        <div 
+          onClick={() => setShowGlossary(!showGlossary)}
+          className="flex items-center justify-between cursor-pointer text-xs font-extrabold text-amber-400 uppercase tracking-widest"
+        >
+          <div className="flex items-center gap-2">
+            <HelpCircle className="w-4 h-4 text-amber-400" />
+            <span>📖 METRICS GUIDE: WHAT DO ADP, PROJ PTS, FLOOR/CEILING & VALUE STEALS MEAN?</span>
+          </div>
+          <span className="text-slate-400 text-xs">{showGlossary ? 'Hide Guide ▲' : 'Show Guide ▼'}</span>
+        </div>
+
+        {showGlossary && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pt-2 text-xs text-slate-300 border-t border-slate-800 animate-fade-in">
+            <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
+              <strong className="text-amber-400 block font-bold">1. ADP (Average Draft Position)</strong>
+              <p className="text-[11px] text-slate-400 leading-snug">The average pick where a player is drafted nationwide (e.g. <span className="text-white font-mono">1.08</span> = Round 1, Pick 8). Use ADP to spot falling players!</p>
+            </div>
+
+            <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
+              <strong className="text-amber-400 block font-bold">2. PROJ PTS (Projected Points)</strong>
+              <p className="text-[11px] text-slate-400 leading-snug">SuperMacho AI’s estimated total season fantasy points based on 10,000+ game simulations.</p>
+            </div>
+
+            <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
+              <strong className="text-amber-400 block font-bold">3. FLOOR / CEILING RANGE</strong>
+              <p className="text-[11px] text-slate-400 leading-snug"><strong className="text-emerald-400">Floor</strong> = Guaranteed minimum points on a bad week. <strong className="text-cyan-400">Ceiling</strong> = Explosive single-game upside for tournament wins.</p>
+            </div>
+
+            <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
+              <strong className="text-amber-400 block font-bold">4. +PICKS VALUE (Value Steal)</strong>
+              <p className="text-[11px] text-slate-400 leading-snug">How many picks <em>later</em> a player is available compared to their true talent level (e.g. drafting Pick #4 talent at Pick #8 = <span className="text-emerald-400 font-bold">+4 Picks Value</span>).</p>
+            </div>
+
+            <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1 col-span-1 md:col-span-2 lg:col-span-2">
+              <strong className="text-amber-400 block font-bold">5. DRAFT TARGET (Lock Button)</strong>
+              <p className="text-[11px] text-slate-400 leading-snug">Clicking <strong className="text-amber-400">Draft Target</strong> locks the player into your priority queue so you execute your pick with zero hesitation when on the clock.</p>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* BEST AVAILABLE PLAYERS BOARD */}
