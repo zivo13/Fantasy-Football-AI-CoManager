@@ -3,7 +3,7 @@ import { useApp } from '../../context/AppContext';
 import { Shield, DollarSign, Users, TrendingUp, Plus, Edit2, Trash2, Check, X, Sparkles, Sliders, Cpu, Save } from 'lucide-react';
 
 export const AdminDashboard = () => {
-  const { plans, handleSavePlan, handleDeletePlan, adminMetrics } = useApp();
+  const { plans, handleSavePlan, handleDeletePlan, adminMetrics, user } = useApp();
   const [activeAdminTab, setActiveAdminTab] = useState('plans'); // 'plans' | 'users' | 'revenue' | 'system'
   
   // Plan Editor Form state

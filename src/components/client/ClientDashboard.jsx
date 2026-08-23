@@ -558,30 +558,48 @@ export const ClientDashboard = () => {
               </div>
 
               {platform === 'ESPN' && (
-                <div className="space-y-3 bg-amber-500/10 p-4 rounded-2xl border border-amber-500/20">
-                  <div className="text-xs font-bold text-amber-400 uppercase flex items-center gap-1.5">
-                    <Shield className="w-4 h-4" />
-                    <span>ESPN Private Cookie Credentials (Encrypted)</span>
+                <div className="space-y-3 bg-slate-950 p-4 rounded-2xl border border-slate-800">
+                  <div className="text-xs font-bold text-amber-400 uppercase flex items-center gap-1.5 border-b border-slate-800 pb-2">
+                    <HelpCircle className="w-4 h-4 text-amber-400" />
+                    <span>HOW TO FIND YOUR ESPN DATA IN 30 SECONDS</span>
                   </div>
-                  <div>
-                    <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">espn_s2 cookie</label>
-                    <input
-                      type="password"
-                      placeholder="AE...[Paste espn_s2 string]"
-                      value={espnS2Input}
-                      onChange={(e) => setEspnS2Input(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"
-                    />
+                  
+                  <div className="space-y-2 text-[11px] text-slate-300">
+                    <div className="bg-slate-900 p-2.5 rounded-xl space-y-1">
+                      <div className="font-bold text-amber-300">1. League ID & Team ID:</div>
+                      <p className="text-slate-400 text-[10px]">Open your ESPN League home page in your browser. Look at the URL bar at the top:</p>
+                      <code className="block bg-slate-950 p-1.5 rounded text-[10px] text-emerald-400 font-mono">
+                        ...leagueId=<strong className="text-amber-400">8492019</strong>&teamId=<strong className="text-amber-400">3</strong>
+                      </code>
+                    </div>
+
+                    <div className="bg-slate-900 p-2.5 rounded-xl space-y-1">
+                      <div className="font-bold text-amber-300">2. Private League Cookies (espn_s2 & SWID):</div>
+                      <p className="text-slate-400 text-[10px]">On your ESPN league page, press <strong className="text-white">F12</strong> ➔ Click <strong className="text-white">Application</strong> tab (or Storage) ➔ Click <strong className="text-white">Cookies</strong> ➔ Select <strong className="text-white">espn.com</strong> ➔ Copy <strong className="text-emerald-400">espn_s2</strong> and <strong className="text-emerald-400">SWID</strong>.</p>
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">SWID cookie</label>
-                    <input
-                      type="password"
-                      placeholder="{SWID-...}"
-                      value={swidInput}
-                      onChange={(e) => setSwidInput(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"
-                    />
+
+                  <div className="pt-2 border-t border-slate-800 space-y-2">
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">espn_s2 cookie</label>
+                      <input
+                        type="password"
+                        placeholder="AE...[Paste espn_s2 string]"
+                        value={espnS2Input}
+                        onChange={(e) => setEspnS2Input(e.target.value)}
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:border-amber-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">SWID cookie</label>
+                      <input
+                        type="password"
+                        placeholder="{SWID-...}"
+                        value={swidInput}
+                        onChange={(e) => setSwidInput(e.target.value)}
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:border-amber-500"
+                      />
+                    </div>
                   </div>
                 </div>
               )}
