@@ -54,15 +54,51 @@ export const AppProvider = ({ children }) => {
     }
   ]);
 
+  // Registered users store for Admin Dashboard
+  const [registeredUsersList, setRegisteredUsersList] = useState(() => {
+    try {
+      const saved = localStorage.getItem('sm_registered_users_list');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+
   // Actions
   const handleLogin = (email, role = 'client') => {
+    const cleanEmail = email.trim().toLowerCase();
+    
     setUser({
-      name: role === 'admin' ? 'SuperMacho Admin' : email.split('@')[0],
-      email: email,
+      name: role === 'admin' ? 'SuperMacho Admin' : cleanEmail.split('@')[0],
+      email: cleanEmail,
       role: role,
       planId: role === 'admin' ? 'commissioner' : 'pro',
       isLoggedIn: true
     });
+
+    if (role !== 'admin') {
+      setRegisteredUsersList(prev => {
+        const exists = prev.some(u => u.user.toLowerCase() === cleanEmail);
+        if (!exists) {
+          const updated = [
+            {
+              id: 'u_' + Date.now(),
+              user: cleanEmail,
+              plan: 'Pro Champion ($4.99/mo)',
+              date: 'Just now',
+              status: 'Registered User'
+            },
+            ...prev
+          ];
+          try {
+            localStorage.setItem('sm_registered_users_list', JSON.stringify(updated));
+          } catch (e) {}
+          return updated;
+        }
+        return prev;
+      });
+    }
+
     setShowAuthModal(false);
     setCurrentTab(role === 'admin' ? 'admin' : 'client');
   };
@@ -156,7 +192,8 @@ export const AppProvider = ({ children }) => {
       demoRoster: DEMO_ROSTER,
       demoWaivers: DEMO_WAIVERS,
       demoTrade: DEMO_TRADE_SCENARIO,
-      adminMetrics: ADMIN_METRICS
+      adminMetrics: ADMIN_METRICS,
+      registeredUsersList
     }}>
       {children}
     </AppContext.Provider>

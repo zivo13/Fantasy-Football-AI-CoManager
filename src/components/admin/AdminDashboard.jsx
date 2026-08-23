@@ -3,7 +3,7 @@ import { useApp } from '../../context/AppContext';
 import { Shield, DollarSign, Users, TrendingUp, Plus, Edit2, Trash2, Check, X, Sparkles, Sliders, Cpu, Save } from 'lucide-react';
 
 export const AdminDashboard = () => {
-  const { plans, handleSavePlan, handleDeletePlan, adminMetrics, user } = useApp();
+  const { plans, handleSavePlan, handleDeletePlan, adminMetrics, user, registeredUsersList = [] } = useApp();
   const [activeAdminTab, setActiveAdminTab] = useState('plans'); // 'plans' | 'users' | 'revenue' | 'system'
   
   // Plan Editor Form state
@@ -239,7 +239,25 @@ export const AdminDashboard = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60 text-slate-300">
-                {user?.isLoggedIn && (
+                {registeredUsersList.map((regUser) => (
+                  <tr key={regUser.id} className="bg-amber-500/10 hover:bg-amber-500/20 transition-colors border-l-4 border-amber-500">
+                    <td className="p-4 font-bold text-white flex items-center gap-2">
+                      <span>{regUser.user}</span>
+                      <span className="bg-amber-500 text-slate-950 text-[10px] font-extrabold px-1.5 py-0.2 rounded">REGISTERED USER</span>
+                    </td>
+                    <td className="p-4 text-amber-400 font-bold">{regUser.plan}</td>
+                    <td className="p-4 text-slate-400">{regUser.date}</td>
+                    <td className="p-4">
+                      <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 rounded-full text-[10px] font-bold">
+                        {regUser.status}
+                      </span>
+                    </td>
+                    <td className="p-4 text-right">
+                      <button className="text-cyan-400 font-bold hover:underline">Manage Tier</button>
+                    </td>
+                  </tr>
+                ))}
+                {user?.isLoggedIn && !registeredUsersList.some(u => u.user.toLowerCase() === user.email.toLowerCase()) && (
                   <tr className="bg-amber-500/10 hover:bg-amber-500/20 transition-colors border-l-4 border-amber-500">
                     <td className="p-4 font-bold text-white flex items-center gap-2">
                       <span>{user.name || user.email}</span>
