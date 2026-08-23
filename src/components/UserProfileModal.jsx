@@ -50,18 +50,42 @@ export const UserProfileModal = ({ isOpen, onClose }) => {
   useEffect(() => {
     if (user?.email) {
       const clean = user.email.toLowerCase();
+
+      const populate = (p) => {
+        if (!p) return;
+        if (p.birthday) setBirthday(p.birthday);
+        if (p.favoriteNumber) setFavoriteNumber(p.favoriteNumber);
+        if (p.favoriteTeam) setFavoriteTeam(p.favoriteTeam);
+        if (p.prefLang) {
+          setPrefLang(p.prefLang);
+          setLang(p.prefLang);
+        }
+      };
+
+      if (user.profile) {
+        populate(user.profile);
+      }
+
       try {
         const savedProfile = localStorage.getItem(`sm_profile_${clean}`);
         if (savedProfile) {
-          const parsed = JSON.parse(savedProfile);
-          if (parsed.birthday) setBirthday(parsed.birthday);
-          if (parsed.favoriteNumber) setFavoriteNumber(parsed.favoriteNumber);
-          if (parsed.favoriteTeam) setFavoriteTeam(parsed.favoriteTeam);
-          if (parsed.prefLang) {
-            setPrefLang(parsed.prefLang);
-            setLang(parsed.prefLang);
-          }
+          populate(JSON.parse(savedProfile));
         }
+      } catch (e) {}
+
+      // Always fetch latest server profile (survives browser cache clears)
+      try {
+        fetch(`/api/register-user?get_profile=${encodeURIComponent(clean)}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data && data.profile) {
+              populate(data.profile);
+              try {
+                localStorage.setItem(`sm_profile_${clean}`, JSON.stringify(data.profile));
+              } catch (e) {}
+            }
+          })
+          .catch(() => {});
       } catch (e) {}
     }
   }, [user, isOpen]);

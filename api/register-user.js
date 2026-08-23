@@ -11,10 +11,15 @@ function readState() {
   try {
     if (fs.existsSync(TMP_FILE)) {
       const raw = fs.readFileSync(TMP_FILE, 'utf8');
-      return JSON.parse(raw);
+      const parsed = JSON.parse(raw);
+      return {
+        users: parsed.users || [],
+        suspended: parsed.suspended || {},
+        profiles: parsed.profiles || {}
+      };
     }
   } catch (e) {}
-  return { users: [], suspended: {} };
+  return { users: [], suspended: {}, profiles: {} };
 }
 
 // Helper to write persistent disk state
@@ -38,7 +43,7 @@ export default async function handler(req, res) {
 
   if (req.method === 'POST') {
     try {
-      const { email, role, plan, status } = req.body || {};
+      const { email, role, plan, status, profile } = req.body || {};
       if (!email) return res.status(400).json({ error: 'Email required' });
 
       const cleanEmail = email.trim().toLowerCase();
@@ -50,40 +55,54 @@ export default async function handler(req, res) {
           currentState.suspended[cleanEmail] = false;
         }
       }
+
+      if (profile) {
+        currentState.profiles[cleanEmail] = {
+          ...currentState.profiles[cleanEmail],
+          ...profile
+        };
+      }
       
       const existingIndex = currentState.users.findIndex(u => u.user.toLowerCase() === cleanEmail);
 
       if (existingIndex !== -1) {
         if (plan) currentState.users[existingIndex].plan = plan;
         if (status) currentState.users[existingIndex].status = status;
+        if (profile) currentState.users[existingIndex].profile = currentState.profiles[cleanEmail];
       } else {
         const newUser = {
           id: 'u_' + Date.now(),
           user: cleanEmail,
           plan: plan || (role === 'admin' ? 'SuperMacho Commissioner' : 'Free Rookie ($0/mo)'),
           date: 'Just now',
-          status: status || 'Active Subscriber'
+          status: status || 'Active Subscriber',
+          profile: currentState.profiles[cleanEmail] || null
         };
         currentState.users.unshift(newUser);
       }
       
       saveState(currentState);
 
-      // If Supabase is configured, save to Supabase profiles
+      // Save to Supabase profile if configured
       if (supabaseUrl && !supabaseUrl.includes('placeholder')) {
         const supabase = createClient(supabaseUrl, supabaseServiceKey);
         await supabase.from('profiles').upsert({
           email: cleanEmail,
           role: role || 'client',
           plan_id: plan ? plan.split(' ')[0].toLowerCase() : 'free',
-          status: status || 'active'
+          status: status || 'active',
+          birthday: profile?.birthday || null,
+          favorite_number: profile?.favoriteNumber || null,
+          favorite_team: profile?.favoriteTeam || null,
+          preferred_language: profile?.prefLang || 'en'
         }, { onConflict: 'email' });
       }
 
       return res.status(200).json({ 
         success: true, 
         users: currentState.users, 
-        suspended: currentState.suspended 
+        suspended: currentState.suspended,
+        profile: currentState.profiles[cleanEmail] || null
       });
     } catch (err) {
       return res.status(500).json({ error: err.message });
@@ -97,6 +116,7 @@ export default async function handler(req, res) {
         const cleanEmail = email.trim().toLowerCase();
         currentState.users = currentState.users.filter(u => u.user.toLowerCase() !== cleanEmail);
         delete currentState.suspended[cleanEmail];
+        delete currentState.profiles[cleanEmail];
         saveState(currentState);
       }
       return res.status(200).json({ success: true, users: currentState.users });
@@ -106,14 +126,21 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'GET') {
-    // Parse query params properly using URL object
     let checkEmail = null;
+    let getProfileEmail = null;
+
     try {
       const reqUrl = req.url || '';
       if (reqUrl.includes('check_suspended=')) {
         const paramStr = reqUrl.split('check_suspended=')[1];
         if (paramStr) {
           checkEmail = decodeURIComponent(paramStr.split('&')[0]).trim().toLowerCase();
+        }
+      }
+      if (reqUrl.includes('get_profile=')) {
+        const paramStr = reqUrl.split('get_profile=')[1];
+        if (paramStr) {
+          getProfileEmail = decodeURIComponent(paramStr.split('&')[0]).trim().toLowerCase();
         }
       }
     } catch (e) {}
@@ -123,9 +150,15 @@ export default async function handler(req, res) {
       return res.status(200).json({ email: checkEmail, isSuspended });
     }
 
+    if (getProfileEmail) {
+      const profile = currentState.profiles[getProfileEmail] || null;
+      return res.status(200).json({ email: getProfileEmail, profile });
+    }
+
     return res.status(200).json({ 
       users: currentState.users, 
-      suspended: currentState.suspended 
+      suspended: currentState.suspended,
+      profiles: currentState.profiles
     });
   }
 

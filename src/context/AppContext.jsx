@@ -148,6 +148,24 @@ export const AppProvider = ({ children }) => {
       isLoggedIn: true
     });
 
+    // Fetch persistent profile from server (survives browser data clearing)
+    try {
+      fetch(`/api/register-user?get_profile=${encodeURIComponent(cleanEmail)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.profile) {
+            setUser(prev => ({ ...prev, profile: data.profile }));
+            if (data.profile.prefLang) {
+              setLang(data.profile.prefLang);
+            }
+            try {
+              localStorage.setItem(`sm_profile_${cleanEmail}`, JSON.stringify(data.profile));
+            } catch (e) {}
+          }
+        })
+        .catch(() => {});
+    } catch (e) {}
+
     // Send global signup event to Vercel API endpoint
     try {
       fetch('/api/register-user', {
