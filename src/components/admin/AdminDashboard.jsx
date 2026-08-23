@@ -435,14 +435,34 @@ export const AdminDashboard = () => {
 
                       <button 
                         onClick={async () => {
+                          const confirmDelete = window.confirm(`Are you sure you want to permanently delete user [${regUser.user}]?`);
+                          if (!confirmDelete) return;
+
+                          const clean = regUser.user.toLowerCase();
+
+                          // 1. Update React state immediately
                           if (typeof setRegisteredUsersList === 'function') {
-                            setRegisteredUsersList(prev => prev.filter(u => u.user !== regUser.user));
+                            setRegisteredUsersList(prev => {
+                              const updated = prev.filter(u => u.user.toLowerCase() !== clean);
+                              try {
+                                localStorage.setItem('sm_registered_users_list', JSON.stringify(updated));
+                              } catch (e) {}
+                              return updated;
+                            });
                           }
+
+                          // 2. Remove local credentials
+                          try {
+                            localStorage.removeItem(`sm_user_${clean}`);
+                            localStorage.removeItem(`sm_profile_${clean}`);
+                          } catch (e) {}
+
+                          // 3. Send DELETE request to Vercel API endpoint
                           try {
                             await fetch('/api/register-user', {
                               method: 'DELETE',
                               headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({ email: regUser.user })
+                              body: JSON.stringify({ email: clean })
                             });
                           } catch (e) {}
                         }}

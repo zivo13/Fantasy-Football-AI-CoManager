@@ -19,15 +19,25 @@ function readState() {
     if (fs.existsSync(TMP_FILE)) {
       const raw = fs.readFileSync(TMP_FILE, 'utf8');
       const parsed = JSON.parse(raw);
-      const userList = (parsed.users && parsed.users.length > 0) ? parsed.users : DEFAULT_SEED_USERS;
+      const deletedMap = parsed.deleted || {};
+      
+      let userList = parsed.users;
+      if (!userList || userList.length === 0) {
+        userList = DEFAULT_SEED_USERS.filter(u => !deletedMap[u.user.toLowerCase()]);
+      } else {
+        userList = userList.filter(u => !deletedMap[u.user.toLowerCase()]);
+      }
+
       return {
         users: userList,
         suspended: parsed.suspended || {},
-        profiles: parsed.profiles || {}
+        profiles: parsed.profiles || {},
+        deleted: deletedMap
       };
     }
   } catch (e) {}
-  return { users: DEFAULT_SEED_USERS, suspended: {}, profiles: {} };
+
+  return { users: DEFAULT_SEED_USERS, suspended: {}, profiles: {}, deleted: {} };
 }
 
 // Helper to write persistent disk state
@@ -55,6 +65,9 @@ export default async function handler(req, res) {
       if (!email) return res.status(400).json({ error: 'Email required' });
 
       const cleanEmail = email.trim().toLowerCase();
+
+      // Remove from deleted list if re-registering
+      delete currentState.deleted[cleanEmail];
 
       if (status) {
         if (status.includes('Suspended') || status.includes('Inactive')) {
@@ -122,6 +135,7 @@ export default async function handler(req, res) {
       const { email } = req.body || {};
       if (email) {
         const cleanEmail = email.trim().toLowerCase();
+        currentState.deleted[cleanEmail] = true;
         currentState.users = currentState.users.filter(u => u.user.toLowerCase() !== cleanEmail);
         delete currentState.suspended[cleanEmail];
         delete currentState.profiles[cleanEmail];
