@@ -83,8 +83,14 @@ export default async function handler(req, res) {
         return res.status(200).json({ source: 'live_cache', ...cached.data });
       }
 
+      // Determine topic endpoint based on host domain
+      let targetPath = '/games?league=1&season=2026';
+      if (RAPID_API_HOST.includes('nfl-api-data')) {
+        targetPath = '/nfl-schedules';
+      }
+
       // Fetch live scores from RapidAPI
-      const response = await fetch(`https://${RAPID_API_HOST}/games?league=1&season=2026`, {
+      const response = await fetch(`https://${RAPID_API_HOST}${targetPath}`, {
         headers: {
           'x-rapidapi-key': RAPID_API_KEY,
           'x-rapidapi-host': RAPID_API_HOST
@@ -96,9 +102,10 @@ export default async function handler(req, res) {
       const responsePayload = {
         status: 'RAPID_API_LIVE_CONNECTED',
         lastUpdated: new Date().toISOString(),
-        rawCount: apiData.results || 0,
-        games: apiData.response || DEMO_LIVE_DATA.games,
-        injuries: DEMO_LIVE_DATA.injuries,
+        host: RAPID_API_HOST,
+        rawCount: apiData.results || (Array.isArray(apiData) ? apiData.length : 0),
+        games: apiData.response || apiData.events || DEMO_LIVE_DATA.games,
+        injuries: apiData.injuries || DEMO_LIVE_DATA.injuries,
         vegasShootouts: DEMO_LIVE_DATA.vegasShootouts
       };
 
