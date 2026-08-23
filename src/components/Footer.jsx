@@ -1,7 +1,10 @@
-import React from 'react';
-import { Trophy, Shield, DollarSign, Heart } from 'lucide-react';
+import React, { useState } from 'react';
+import { Trophy, Shield, DollarSign, Heart, ShieldCheck } from 'lucide-react';
+import { PrivacyPolicyModal } from './PrivacyPolicyModal';
 
 export const Footer = () => {
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+
   return (
     <footer className="bg-slate-950 border-t border-slate-900 mt-20 pt-12 pb-8 text-slate-400 text-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -37,12 +40,12 @@ export const Footer = () => {
 
           {/* Legal & Security */}
           <div>
-            <h4 className="font-bebas text-lg text-white tracking-wider mb-3">Trust & Security</h4>
+            <h4 className="font-bebas text-lg text-white tracking-wider mb-3">Trust & Compliance</h4>
             <ul className="space-y-2 text-sm text-slate-400">
-              <li><span className="text-emerald-400 font-medium flex items-center gap-1.5"><Shield className="w-4 h-4" /> Encrypted Cookie Auth</span></li>
-              <li><span>AES-256 Roster Protection</span></li>
-              <li><span>Stripe Secure Billing</span></li>
-              <li><span>24/7 AI Server Uptime</span></li>
+              <li><button onClick={() => setShowPrivacyModal(true)} className="text-emerald-400 font-medium flex items-center gap-1.5 hover:underline"><Shield className="w-4 h-4" /> Privacy & Data Compliance</button></li>
+              <li><span>AES-256 Roster Encryption</span></li>
+              <li><span>Stripe 256-Bit SSL Billing</span></li>
+              <li><span>GDPR & CCPA Rights</span></li>
             </ul>
           </div>
 
@@ -54,7 +57,7 @@ export const Footer = () => {
             <strong className="text-slate-400">DISCLAIMER:</strong> SuperMacho is an independent fantasy football AI decision-support platform. SuperMacho is not affiliated with, endorsed by, or sponsored by the National Football League (NFL), ESPN, Yahoo, or Sleeper. All NFL team names, player names, logos, and trademarks mentioned on this website belong strictly to their respective trademark holders.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-600">
-            <div>© {new Date().getFullYear()} SuperMacho Hero Inc. All rights reserved.</div>
+            <div>© {new Date().getFullYear()} SuperMacho Hero Inc. All rights reserved. <button onClick={() => setShowPrivacyModal(true)} className="text-amber-400 underline ml-2 font-semibold">Privacy Policy</button></div>
             <div className="flex items-center gap-1 text-slate-500">
               <span>Crafted for Fantasy Football Champions</span>
               <Trophy className="w-3.5 h-3.5 text-amber-500 ml-1" />
@@ -63,6 +66,8 @@ export const Footer = () => {
         </div>
 
       </div>
+
+      <PrivacyPolicyModal isOpen={showPrivacyModal} onClose={() => setShowPrivacyModal(false)} />
     </footer>
   );
 };
