@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Trophy, Zap, Flame, Bot, Plus, Check, RefreshCw, AlertCircle, ArrowUpRight, Send, HelpCircle, Shield, Settings, Activity, Sparkles, TrendingUp, Award } from 'lucide-react';
 import { CheckoutModal } from '../CheckoutModal';
+import { DraftWarRoom } from './DraftWarRoom';
 
 export const ClientDashboard = () => {
   const { 
@@ -353,94 +354,7 @@ export const ClientDashboard = () => {
       )}
 
       {/* TAB: DRAFT DAY STRATEGY WAR ROOM */}
-      {activeTab === 'draft' && (
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h3 className="font-bebas text-3xl text-white tracking-wider">
-              DRAFT DAY STRATEGY WAR ROOM ({currentLeague?.scoring || 'PPR'})
-            </h3>
-            <div className="text-xs font-bold text-amber-400 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800">
-              Target Priority: <strong className="text-white">Hero RB + Value WR Stack</strong>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            
-            {/* Round 1-3 Targets */}
-            <div className="glass-panel p-6 rounded-3xl space-y-4 border-2 border-amber-500/40">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                <span className="font-bebas text-2xl text-amber-400">ROUNDS 1 - 3</span>
-                <span className="text-[10px] font-extrabold text-slate-950 bg-amber-400 px-2 py-0.5 rounded">ANCHOR STARTS</span>
-              </div>
-              <p className="text-xs text-slate-300">Target elite volume anchors with over 80% snap shares.</p>
-              
-              <div className="space-y-2">
-                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 flex justify-between items-center">
-                  <span className="font-bold text-xs text-white">Christian McCaffrey (RB - SF)</span>
-                  <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">ROUND 1 PICK</span>
-                </div>
-                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 flex justify-between items-center">
-                  <span className="font-bold text-xs text-white">Justin Jefferson (WR - MIN)</span>
-                  <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">ROUND 1 PICK</span>
-                </div>
-                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 flex justify-between items-center">
-                  <span className="font-bold text-xs text-white">Patrick Mahomes (QB - KC)</span>
-                  <span className="text-[10px] font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">ROUND 3 PICK</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Middle Round Value Steals */}
-            <div className="glass-panel p-6 rounded-3xl space-y-4 border-2 border-cyan-500/40">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                <span className="font-bebas text-2xl text-cyan-400">ROUNDS 4 - 8</span>
-                <span className="text-[10px] font-extrabold text-slate-950 bg-cyan-400 px-2 py-0.5 rounded">VALUE STEALS</span>
-              </div>
-              <p className="text-xs text-slate-300">Target high target-share WRs & pass-catching RBs.</p>
-              
-              <div className="space-y-2">
-                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 flex justify-between items-center">
-                  <span className="font-bold text-xs text-white">Jaylen Waddle (WR - MIA)</span>
-                  <span className="text-[10px] font-bold text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded">ROUND 4 PICK</span>
-                </div>
-                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 flex justify-between items-center">
-                  <span className="font-bold text-xs text-white">Isiah Pacheco (RB - KC)</span>
-                  <span className="text-[10px] font-bold text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded">ROUND 5 PICK</span>
-                </div>
-                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 flex justify-between items-center">
-                  <span className="font-bold text-xs text-white">Tee Higgins (WR - CIN)</span>
-                  <span className="text-[10px] font-bold text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded">ROUND 6 PICK</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Late Round Sleeper Gems */}
-            <div className="glass-panel p-6 rounded-3xl space-y-4 border-2 border-emerald-500/40">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                <span className="font-bebas text-2xl text-emerald-400">ROUNDS 9 - 15</span>
-                <span className="text-[10px] font-extrabold text-slate-950 bg-emerald-400 px-2 py-0.5 rounded">SECRET SLEEPERS</span>
-              </div>
-              <p className="text-xs text-slate-300">Breakout RB hand-offs & high-upside rookies.</p>
-              
-              <div className="space-y-2">
-                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 flex justify-between items-center">
-                  <span className="font-bold text-xs text-white">Kimani Vidal (RB - LAC)</span>
-                  <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">HIGH UPSIDE</span>
-                </div>
-                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 flex justify-between items-center">
-                  <span className="font-bold text-xs text-white">Jaylen Warren (RB - PIT)</span>
-                  <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">BREAKOUT</span>
-                </div>
-                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 flex justify-between items-center">
-                  <span className="font-bold text-xs text-white">Rome Odunze (WR - CHI)</span>
-                  <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">ROOKIE GEM</span>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      )}
+      {activeTab === 'draft' && <DraftWarRoom />}
       {activeTab === 'waivers' && (
         <div className="space-y-6">
           <div className="flex items-center justify-between">
