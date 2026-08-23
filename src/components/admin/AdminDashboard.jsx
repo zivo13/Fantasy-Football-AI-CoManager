@@ -36,6 +36,7 @@ export const AdminDashboard = () => {
   const [testingRapidApi, setTestingRapidApi] = useState(false);
 
   useEffect(() => {
+    // 1. Try loading from local storage
     try {
       const saved = localStorage.getItem('sm_rapidapi_credentials');
       if (saved) {
@@ -44,6 +45,22 @@ export const AdminDashboard = () => {
         if (parsed.host) setRapidApiHost(parsed.host);
       }
     } catch (e) {}
+
+    // 2. Fetch server-persisted RapidAPI credentials (survives browser data clears)
+    try {
+      fetch('/api/nfl-sync')
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.credentials) {
+            if (data.credentials.key) setRapidApiKey(data.credentials.key);
+            if (data.credentials.host) setRapidApiHost(data.credentials.host);
+            if (data.source) {
+              setRapidApiStatus(`CONNECTED (${data.source.toUpperCase()})`);
+            }
+          }
+        })
+        .catch(() => {});
+    } catch (e) {}
   }, []);
 
   const handleSaveRapidApi = async () => {
@@ -51,11 +68,16 @@ export const AdminDashboard = () => {
     try {
       localStorage.setItem('sm_rapidapi_credentials', JSON.stringify({ key: rapidApiKey, host: rapidApiHost }));
       
-      const res = await fetch('/api/nfl-sync');
+      // Save credentials persistently on server
+      const res = await fetch('/api/nfl-sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: rapidApiKey, host: rapidApiHost })
+      });
       const data = await res.json();
       
-      if (data && data.source) {
-        setRapidApiStatus(`CONNECTED (${data.source.toUpperCase()})`);
+      if (data && data.credentials) {
+        setRapidApiStatus('CONNECTED & SAVED TO SERVER (LIVE FEED ACTIVE)');
       } else {
         setRapidApiStatus('CONNECTED & SAVED (LIVE FEED ACTIVE)');
       }
@@ -63,7 +85,7 @@ export const AdminDashboard = () => {
       setRapidApiStatus('SAVED & CONNECTED (DEMO FALLBACK)');
     }
     setTestingRapidApi(false);
-    alert("✅ RapidAPI Credentials Saved & Connected Successfully!");
+    alert("✅ RapidAPI Credentials Saved Persistently to Server!");
   };
 
   // Manage Tier Modal State

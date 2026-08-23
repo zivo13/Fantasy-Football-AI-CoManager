@@ -1,9 +1,28 @@
 import fs from 'fs';
 
-const RAPID_API_KEY = process.env.RAPIDAPI_KEY || process.env.VITE_RAPIDAPI_KEY || '';
-const RAPID_API_HOST = process.env.RAPIDAPI_HOST || 'api-american-football.p.rapidapi.com';
-
+const CRED_FILE = '/tmp/supermacho_rapidapi.json';
 const CACHE_FILE = '/tmp/nfl_live_cache.json';
+
+// Helper to read server-persisted RapidAPI credentials
+function readCredentials() {
+  try {
+    if (fs.existsSync(CRED_FILE)) {
+      const raw = fs.readFileSync(CRED_FILE, 'utf8');
+      return JSON.parse(raw);
+    }
+  } catch (e) {}
+  return {
+    key: process.env.RAPIDAPI_KEY || process.env.VITE_RAPIDAPI_KEY || '',
+    host: process.env.RAPIDAPI_HOST || 'nfl-api-data.p.rapidapi.com'
+  };
+}
+
+// Helper to write server-persisted RapidAPI credentials
+function saveCredentials(creds) {
+  try {
+    fs.writeFileSync(CRED_FILE, JSON.stringify(creds));
+  } catch (e) {}
+}
 
 // Helper to read cached NFL live data
 function readCache() {
@@ -72,28 +91,53 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  // If RapidAPI key is provided, attempt live fetch
-  if (RAPID_API_KEY && !RAPID_API_KEY.includes('placeholder')) {
+  // Handle POST: Persist RapidAPI credentials on server
+  if (req.method === 'POST') {
+    try {
+      const { key, host } = req.body || {};
+      const currentCreds = readCredentials();
+      const newCreds = {
+        key: key !== undefined ? key.trim() : currentCreds.key,
+        host: host !== undefined ? host.trim() : currentCreds.host
+      };
+      saveCredentials(newCreds);
+      return res.status(200).json({ success: true, credentials: newCreds });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  }
+
+  // Handle GET: Retrieve credentials + live/demo feed
+  const activeCreds = readCredentials();
+  const apiKey = activeCreds.key;
+  const apiHost = activeCreds.host || 'nfl-api-data.p.rapidapi.com';
+
+  // If RapidAPI key is configured, attempt live fetch
+  if (apiKey && !apiKey.includes('placeholder')) {
     try {
       const cached = readCache();
       const now = Date.now();
 
       // Refresh cache if older than 5 minutes (300,000 ms)
       if (cached && cached.timestamp && (now - cached.timestamp < 300000)) {
-        return res.status(200).json({ source: 'live_cache', ...cached.data });
+        return res.status(200).json({ 
+          source: 'live_cache', 
+          credentials: activeCreds,
+          ...cached.data 
+        });
       }
 
       // Determine topic endpoint based on host domain
       let targetPath = '/games?league=1&season=2026';
-      if (RAPID_API_HOST.includes('nfl-api-data')) {
+      if (apiHost.includes('nfl-api-data')) {
         targetPath = '/nfl-schedules';
       }
 
       // Fetch live scores from RapidAPI
-      const response = await fetch(`https://${RAPID_API_HOST}${targetPath}`, {
+      const response = await fetch(`https://${apiHost}${targetPath}`, {
         headers: {
-          'x-rapidapi-key': RAPID_API_KEY,
-          'x-rapidapi-host': RAPID_API_HOST
+          'x-rapidapi-key': apiKey,
+          'x-rapidapi-host': apiHost
         }
       });
 
@@ -102,7 +146,7 @@ export default async function handler(req, res) {
       const responsePayload = {
         status: 'RAPID_API_LIVE_CONNECTED',
         lastUpdated: new Date().toISOString(),
-        host: RAPID_API_HOST,
+        host: apiHost,
         rawCount: apiData.results || (Array.isArray(apiData) ? apiData.length : 0),
         games: apiData.response || apiData.events || DEMO_LIVE_DATA.games,
         injuries: apiData.injuries || DEMO_LIVE_DATA.injuries,
@@ -110,11 +154,20 @@ export default async function handler(req, res) {
       };
 
       writeCache({ timestamp: now, data: responsePayload });
-      return res.status(200).json({ source: 'rapidapi_live', ...responsePayload });
+      return res.status(200).json({ 
+        source: 'rapidapi_live', 
+        credentials: activeCreds,
+        ...responsePayload 
+      });
 
     } catch (err) {
       // Fallback gracefully on API network issues
-      return res.status(200).json({ source: 'rapidapi_fallback', ...DEMO_LIVE_DATA, error: err.message });
+      return res.status(200).json({ 
+        source: 'rapidapi_fallback', 
+        credentials: activeCreds,
+        ...DEMO_LIVE_DATA, 
+        error: err.message 
+      });
     }
   }
 
@@ -122,6 +175,7 @@ export default async function handler(req, res) {
   return res.status(200).json({ 
     source: 'supermacho_ai_engine',
     apiKeyConfigured: false,
+    credentials: activeCreds,
     ...DEMO_LIVE_DATA 
   });
 }
