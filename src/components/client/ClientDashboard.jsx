@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Trophy, Zap, Flame, Bot, Plus, Check, RefreshCw, AlertCircle, ArrowUpRight, Send, HelpCircle, Shield, Settings, Activity, Sparkles, TrendingUp } from 'lucide-react';
+import { Trophy, Zap, Flame, Bot, Plus, Check, RefreshCw, AlertCircle, ArrowUpRight, Send, HelpCircle, Shield, Settings, Activity, Sparkles, TrendingUp, Award } from 'lucide-react';
 
 export const ClientDashboard = () => {
   const { 
