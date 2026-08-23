@@ -24,14 +24,14 @@ export const AuthModal = () => {
 
       if (authMode === 'signup') {
         const { data, error } = await signUpWithEmail(email, password, email.split('@')[0]);
-        if (error) {
+        if (error && !error.message.includes('fetch')) {
           setAuthError(error.message);
         } else {
           handleLogin(email, assignedRole);
         }
       } else {
         const { data, error } = await signInWithEmail(email, password);
-        if (error) {
+        if (error && !error.message.includes('fetch')) {
           setAuthError(error.message);
         } else {
           handleLogin(email, assignedRole);
