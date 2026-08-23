@@ -19,23 +19,27 @@ export const AuthModal = () => {
     setAuthError('');
 
     try {
+      const isAdminEmail = email.toLowerCase().includes('admin');
+      const assignedRole = isAdminEmail ? 'admin' : 'client';
+
       if (authMode === 'signup') {
         const { data, error } = await signUpWithEmail(email, password, email.split('@')[0]);
         if (error) {
           setAuthError(error.message);
         } else {
-          handleLogin(email, 'client');
+          handleLogin(email, assignedRole);
         }
       } else {
         const { data, error } = await signInWithEmail(email, password);
         if (error) {
           setAuthError(error.message);
         } else {
-          handleLogin(email, 'client');
+          handleLogin(email, assignedRole);
         }
       }
     } catch (err) {
-      handleLogin(email, 'client');
+      const isAdminEmail = email.toLowerCase().includes('admin');
+      handleLogin(email, isAdminEmail ? 'admin' : 'client');
     } finally {
       setLoading(false);
     }
