@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Shield, DollarSign, Users, TrendingUp, Plus, Edit2, Trash2, Check, X, Sparkles, Sliders, Cpu, Save } from 'lucide-react';
+import { Shield, DollarSign, Users, TrendingUp, Plus, Edit2, Trash2, Check, X, Sparkles, Sliders, Cpu, Save, Lock, Unlock } from 'lucide-react';
 
 export const AdminDashboard = () => {
   const { plans, handleSavePlan, handleDeletePlan, adminMetrics, user, registeredUsersList = [] } = useApp();
@@ -279,8 +279,12 @@ export const AdminDashboard = () => {
                     <td className="p-4 text-amber-400 font-bold">{regUser.plan}</td>
                     <td className="p-4 text-slate-400">{regUser.date}</td>
                     <td className="p-4">
-                      <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 rounded-full text-[10px] font-bold">
-                        {regUser.status}
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
+                        regUser.status && regUser.status.includes('Suspended')
+                          ? 'bg-red-500/20 text-red-300 border-red-500/30'
+                          : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                      }`}>
+                        {regUser.status || 'Active Registered'}
                       </span>
                     </td>
                     <td className="p-4 text-right flex items-center justify-end gap-2">
@@ -290,6 +294,36 @@ export const AdminDashboard = () => {
                       >
                         Manage Tier
                       </button>
+
+                      {/* Active / Inactive Status Toggle Button */}
+                      <button 
+                        onClick={async () => {
+                          const newStatus = regUser.status && regUser.status.includes('Suspended') 
+                            ? 'Active Subscriber' 
+                            : 'Suspended / Inactive';
+                          try {
+                            await fetch('/api/register-user', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ email: regUser.user, status: newStatus })
+                            });
+                            window.location.reload();
+                          } catch (e) {}
+                        }}
+                        className={`p-1.5 rounded-lg border transition-colors ${
+                          regUser.status && regUser.status.includes('Suspended')
+                            ? 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
+                            : 'bg-slate-900 hover:bg-amber-500/20 text-slate-400 hover:text-amber-400 border-slate-800'
+                        }`}
+                        title={regUser.status && regUser.status.includes('Suspended') ? 'Activate User' : 'Suspend User'}
+                      >
+                        {regUser.status && regUser.status.includes('Suspended') ? (
+                          <Unlock className="w-3.5 h-3.5" />
+                        ) : (
+                          <Lock className="w-3.5 h-3.5" />
+                        )}
+                      </button>
+
                       <button 
                         onClick={async () => {
                           try {

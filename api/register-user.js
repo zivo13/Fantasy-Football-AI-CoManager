@@ -19,25 +19,30 @@ export default async function handler(req, res) {
 
   if (req.method === 'POST') {
     try {
-      const { email, role, plan } = req.body || {};
+      const { email, role, plan, status } = req.body || {};
       if (!email) return res.status(400).json({ error: 'Email required' });
 
       const cleanEmail = email.trim().toLowerCase();
       
-      const newUser = {
-        id: 'u_' + Date.now(),
-        user: cleanEmail,
-        plan: plan || (role === 'admin' ? 'SuperMacho Commissioner' : 'Pro Champion ($4.99/mo)'),
-        date: 'Just now',
-        status: 'Active Registered'
-      };
+      const existingIndex = globalUserStore.findIndex(u => u.user.toLowerCase() === cleanEmail);
 
-      // Check duplicate
-      const exists = globalUserStore.some(u => u.user.toLowerCase() === cleanEmail);
-      if (!exists) {
+      if (existingIndex !== -1) {
+        // Update existing user properties
+        if (plan) globalUserStore[existingIndex].plan = plan;
+        if (status) globalUserStore[existingIndex].status = status;
+      } else {
+        // Create new user
+        const newUser = {
+          id: 'u_' + Date.now(),
+          user: cleanEmail,
+          plan: plan || (role === 'admin' ? 'SuperMacho Commissioner' : 'Pro Champion ($4.99/mo)'),
+          date: 'Just now',
+          status: status || 'Active Subscriber'
+        };
         globalUserStore.unshift(newUser);
-        global._supermacho_global_users = globalUserStore;
       }
+      
+      global._supermacho_global_users = globalUserStore;
 
       // If Supabase is configured, save to Supabase profiles
       if (supabaseUrl && !supabaseUrl.includes('placeholder')) {
@@ -45,11 +50,11 @@ export default async function handler(req, res) {
         await supabase.from('profiles').upsert({
           email: cleanEmail,
           role: role || 'client',
-          plan_id: 'pro'
+          plan_id: plan ? plan.split(' ')[0].toLowerCase() : 'pro'
         }, { onConflict: 'email' });
       }
 
-      return res.status(200).json({ success: true, user: newUser, users: globalUserStore });
+      return res.status(200).json({ success: true, users: globalUserStore });
     } catch (err) {
       return res.status(500).json({ error: err.message });
     }
