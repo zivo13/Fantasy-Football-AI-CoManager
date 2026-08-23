@@ -3,7 +3,9 @@ import { useApp } from '../../context/AppContext';
 import { Award, Zap, Target, Users, Flame, ShieldAlert, Sparkles, TrendingUp, ChevronRight, Scale, CheckCircle2, ArrowRight, HelpCircle } from 'lucide-react';
 
 export const DraftWarRoom = () => {
-  const { currentLeague, t } = useApp();
+  const appState = useApp() || {};
+  const currentLeague = appState.currentLeague || (appState.leagues && appState.leagues[0]) || { scoring: 'PPR' };
+  const t = appState.t || ((key) => key);
   
   // State for active AI Coach Question
   const [activeQuestion, setActiveQuestion] = useState('target_pos');

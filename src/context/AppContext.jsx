@@ -260,6 +260,8 @@ export const AppProvider = ({ children }) => {
     setAiChatMessages(prev => [...prev, userMsg, aiMsg]);
   };
 
+  const currentLeague = leagues.find(l => l.id === activeLeagueId) || leagues[0] || { scoring: 'PPR' };
+
   return (
     <AppContext.Provider value={{
       lang,
@@ -280,6 +282,7 @@ export const AppProvider = ({ children }) => {
       leagues,
       activeLeagueId,
       setActiveLeagueId,
+      currentLeague,
       handleAddLeague,
       aiChatMessages,
       handleSendAiMessage,
