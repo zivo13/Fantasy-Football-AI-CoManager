@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { INITIAL_PLANS, DEMO_ROSTER, DEMO_WAIVERS, DEMO_TRADE_SCENARIO, ADMIN_METRICS } from '../services/mockData';
 import { TRANSLATIONS } from '../services/translations';
 
@@ -64,6 +64,31 @@ export const AppProvider = ({ children }) => {
     }
   });
 
+  // Fetch global registered users from Vercel API
+  useEffect(() => {
+    const fetchGlobalUsers = async () => {
+      try {
+        const res = await fetch('/api/register-user');
+        const data = await res.json();
+        if (data && data.users && Array.isArray(data.users)) {
+          setRegisteredUsersList(prev => {
+            const combined = [...data.users];
+            prev.forEach(p => {
+              if (!combined.some(c => c.user.toLowerCase() === p.user.toLowerCase())) {
+                combined.push(p);
+              }
+            });
+            return combined;
+          });
+        }
+      } catch (e) {}
+    };
+
+    fetchGlobalUsers();
+    const interval = setInterval(fetchGlobalUsers, 10000); // Polling every 10s for Admin
+    return () => clearInterval(interval);
+  }, []);
+
   // Actions
   const handleLogin = (email, role = 'client') => {
     const cleanEmail = email.trim().toLowerCase();
@@ -75,6 +100,15 @@ export const AppProvider = ({ children }) => {
       planId: role === 'admin' ? 'commissioner' : 'pro',
       isLoggedIn: true
     });
+
+    // Send global signup event to Vercel API endpoint
+    try {
+      fetch('/api/register-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: cleanEmail, role })
+      });
+    } catch (e) {}
 
     if (role !== 'admin') {
       setRegisteredUsersList(prev => {

@@ -71,26 +71,26 @@ export const AuthModal = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
-      <div className="relative w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl shadow-amber-500/10">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/85 backdrop-blur-md animate-fade-in">
+      <div className="relative w-full max-w-sm sm:max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-7 shadow-2xl shadow-amber-500/10 max-h-[92vh] overflow-y-auto">
         
         {/* Close button */}
         <button
           onClick={() => setShowAuthModal(false)}
-          className="absolute top-5 right-5 p-2 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 transition-colors"
+          className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Modal Header */}
-        <div className="text-center mb-6">
-          <div className="inline-flex p-3 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 mb-3">
-            <Sparkles className="w-6 h-6" />
+        <div className="text-center mb-4 sm:mb-6">
+          <div className="inline-flex p-2.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 mb-2">
+            <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
-          <h3 className="font-bebas text-3xl text-white tracking-wider">
+          <h3 className="font-bebas text-2xl sm:text-3xl text-white tracking-wider">
             {authMode === 'login' ? 'WELCOME BACK, CHAMP!' : 'JOIN SUPERMACHO TODAY'}
           </h3>
-          <p className="text-xs text-slate-400 mt-1 font-medium">
+          <p className="text-[11px] sm:text-xs text-slate-400 mt-1 font-medium">
             {authMode === 'login' ? 'Log in to access your AI Fantasy Co-Manager' : "Start winning your fantasy league & let's make money!"}
           </p>
         </div>
@@ -98,7 +98,7 @@ export const AuthModal = () => {
         {/* Google 1-Click Signup Button */}
         <button
           onClick={handleGoogleAuth}
-          className="w-full bg-slate-950 hover:bg-slate-800 border border-slate-700 text-slate-200 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 mb-4 transition-colors"
+          className="w-full bg-slate-950 hover:bg-slate-800 border border-slate-700 text-slate-200 py-2.5 sm:py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 mb-3 transition-colors"
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -109,22 +109,22 @@ export const AuthModal = () => {
           <span>Continue with Google</span>
         </button>
 
-        <div className="flex items-center gap-3 my-3">
+        <div className="flex items-center gap-3 my-2.5">
           <div className="flex-1 h-px bg-slate-800"></div>
           <span className="text-[10px] text-slate-500 font-bold uppercase">or email</span>
           <div className="flex-1 h-px bg-slate-800"></div>
         </div>
 
         {authError && (
-          <div className="mb-3 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-bold text-center">
+          <div className="mb-3 p-2.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-bold text-center">
             {authError}
           </div>
         )}
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3">
           <div>
-            <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+            <label className="block text-[11px] sm:text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">
               Email Address
             </label>
             <div className="relative">
@@ -135,7 +135,7 @@ export const AuthModal = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="champ@supermacho.ai"
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-4 py-3 text-sm text-white focus:outline-none focus:border-amber-500 transition-colors"
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-amber-500 transition-colors"
               />
             </div>
           </div>
