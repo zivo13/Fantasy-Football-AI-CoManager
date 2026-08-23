@@ -6,20 +6,27 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.
 
 const TMP_FILE = '/tmp/supermacho_users_v2.json';
 
+const DEFAULT_SEED_USERS = [
+  { id: 'u_101', user: 'testuser@supermacho.app', plan: 'Free Rookie ($0/mo)', date: '2026-08-20', status: 'Active Subscriber' },
+  { id: 'u_102', user: 'league_champ@gmail.com', plan: 'Pro Champion ($4.99/mo)', date: '2026-08-21', status: 'Active Subscriber' },
+  { id: 'u_103', user: 'dynasty_boss@yahoo.com', plan: 'SuperMacho Commissioner ($9.99/mo)', date: '2026-08-22', status: 'Active Subscriber' }
+];
+
 // Helper to read persistent disk state across lambda invocations
 function readState() {
   try {
     if (fs.existsSync(TMP_FILE)) {
       const raw = fs.readFileSync(TMP_FILE, 'utf8');
       const parsed = JSON.parse(raw);
+      const userList = (parsed.users && parsed.users.length > 0) ? parsed.users : DEFAULT_SEED_USERS;
       return {
-        users: parsed.users || [],
+        users: userList,
         suspended: parsed.suspended || {},
         profiles: parsed.profiles || {}
       };
     }
   } catch (e) {}
-  return { users: [], suspended: {}, profiles: {} };
+  return { users: DEFAULT_SEED_USERS, suspended: {}, profiles: {} };
 }
 
 // Helper to write persistent disk state

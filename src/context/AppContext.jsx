@@ -68,14 +68,22 @@ export const AppProvider = ({ children }) => {
     }
   ]);
 
+  const DEFAULT_ADMIN_USERS = [
+    { id: 'u_101', user: 'testuser@supermacho.app', plan: 'Free Rookie ($0/mo)', date: '2026-08-20', status: 'Active Subscriber' },
+    { id: 'u_102', user: 'league_champ@gmail.com', plan: 'Pro Champion ($4.99/mo)', date: '2026-08-21', status: 'Active Subscriber' },
+    { id: 'u_103', user: 'dynasty_boss@yahoo.com', plan: 'SuperMacho Commissioner ($9.99/mo)', date: '2026-08-22', status: 'Active Subscriber' }
+  ];
+
   // Registered users store for Admin Dashboard
   const [registeredUsersList, setRegisteredUsersList] = useState(() => {
     try {
       const saved = localStorage.getItem('sm_registered_users_list');
-      return saved ? JSON.parse(saved) : [];
-    } catch (e) {
-      return [];
-    }
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+    return DEFAULT_ADMIN_USERS;
   });
 
   // Fetch global registered users from Vercel API
