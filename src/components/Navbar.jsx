@@ -27,7 +27,7 @@ export const Navbar = () => {
             onClick={() => setCurrentTab('landing')}
             className="flex items-center gap-3 cursor-pointer group"
           >
-            <div className="relative w-16 h-16 rounded-2xl overflow-hidden border-2 border-amber-500/80 shadow-lg shadow-amber-500/30 group-hover:scale-105 transition-transform bg-slate-900 flex items-center justify-center p-0.5">
+            <div className="relative w-12 h-12 sm:w-16 sm:h-16 rounded-2xl overflow-hidden border-2 border-amber-500/80 shadow-lg shadow-amber-500/30 group-hover:scale-105 transition-transform bg-slate-900 flex items-center justify-center p-0.5 flex-shrink-0">
               <img 
                 src="/supermacho_mascot.png" 
                 alt="SuperMacho Mascot" 
@@ -43,12 +43,12 @@ export const Navbar = () => {
             </div>
 
             <div>
-              <div className="flex items-center gap-2">
-                <span className="font-bebas text-2xl tracking-wider text-hero-gradient">SUPERMACHO</span>
-                <span className="text-[10px] uppercase font-extrabold tracking-widest bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 px-2 py-0.5 rounded-full">LEADER OF THE PACK</span>
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <span className="font-bebas text-xl sm:text-2xl tracking-wider text-hero-gradient">SUPERMACHO</span>
+                <span className="hidden sm:inline-block text-[10px] uppercase font-extrabold tracking-widest bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 px-2 py-0.5 rounded-full">LEADER OF THE PACK</span>
               </div>
-              <p className="text-[11px] text-amber-400 font-semibold tracking-wider uppercase flex items-center gap-1">
-                <span>{t.motto}</span>
+              <p className="hidden sm:block text-[11px] text-amber-400 font-semibold tracking-wider uppercase">
+                <span>{t.mottoShort}</span>
               </p>
             </div>
           </div>
