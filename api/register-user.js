@@ -1,15 +1,28 @@
 import { createClient } from '@supabase/supabase-js';
+import fs from 'fs';
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://placeholder.supabase.co';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY || 'placeholder_key';
 
-// Global server store initialized clean (empty)
-let globalUserStore = global._supermacho_global_users || [];
-global._supermacho_global_users = globalUserStore;
+const TMP_FILE = '/tmp/supermacho_users_v2.json';
 
-// Persistent suspended emails store across cold starts
-let suspendedEmailsStore = global._supermacho_suspended_emails || {};
-global._supermacho_suspended_emails = suspendedEmailsStore;
+// Helper to read persistent disk state across lambda invocations
+function readState() {
+  try {
+    if (fs.existsSync(TMP_FILE)) {
+      const raw = fs.readFileSync(TMP_FILE, 'utf8');
+      return JSON.parse(raw);
+    }
+  } catch (e) {}
+  return { users: [], suspended: {} };
+}
+
+// Helper to write persistent disk state
+function saveState(state) {
+  try {
+    fs.writeFileSync(TMP_FILE, JSON.stringify(state));
+  } catch (e) {}
+}
 
 export default async function handler(req, res) {
   // CORS Headers
@@ -21,6 +34,8 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
+  const currentState = readState();
+
   if (req.method === 'POST') {
     try {
       const { email, role, plan, status } = req.body || {};
@@ -30,21 +45,18 @@ export default async function handler(req, res) {
 
       if (status) {
         if (status.includes('Suspended') || status.includes('Inactive')) {
-          suspendedEmailsStore[cleanEmail] = true;
+          currentState.suspended[cleanEmail] = true;
         } else {
-          suspendedEmailsStore[cleanEmail] = false;
+          currentState.suspended[cleanEmail] = false;
         }
-        global._supermacho_suspended_emails = suspendedEmailsStore;
       }
       
-      const existingIndex = globalUserStore.findIndex(u => u.user.toLowerCase() === cleanEmail);
+      const existingIndex = currentState.users.findIndex(u => u.user.toLowerCase() === cleanEmail);
 
       if (existingIndex !== -1) {
-        // Update existing user properties
-        if (plan) globalUserStore[existingIndex].plan = plan;
-        if (status) globalUserStore[existingIndex].status = status;
+        if (plan) currentState.users[existingIndex].plan = plan;
+        if (status) currentState.users[existingIndex].status = status;
       } else {
-        // Create new user with default Free Rookie tier
         const newUser = {
           id: 'u_' + Date.now(),
           user: cleanEmail,
@@ -52,10 +64,10 @@ export default async function handler(req, res) {
           date: 'Just now',
           status: status || 'Active Subscriber'
         };
-        globalUserStore.unshift(newUser);
+        currentState.users.unshift(newUser);
       }
       
-      global._supermacho_global_users = globalUserStore;
+      saveState(currentState);
 
       // If Supabase is configured, save to Supabase profiles
       if (supabaseUrl && !supabaseUrl.includes('placeholder')) {
@@ -63,14 +75,15 @@ export default async function handler(req, res) {
         await supabase.from('profiles').upsert({
           email: cleanEmail,
           role: role || 'client',
-          plan_id: plan ? plan.split(' ')[0].toLowerCase() : 'free'
+          plan_id: plan ? plan.split(' ')[0].toLowerCase() : 'free',
+          status: status || 'active'
         }, { onConflict: 'email' });
       }
 
       return res.status(200).json({ 
         success: true, 
-        users: globalUserStore, 
-        suspended: suspendedEmailsStore 
+        users: currentState.users, 
+        suspended: currentState.suspended 
       });
     } catch (err) {
       return res.status(500).json({ error: err.message });
@@ -82,27 +95,37 @@ export default async function handler(req, res) {
       const { email } = req.body || {};
       if (email) {
         const cleanEmail = email.trim().toLowerCase();
-        globalUserStore = globalUserStore.filter(u => u.user.toLowerCase() !== cleanEmail);
-        global._supermacho_global_users = globalUserStore;
-        delete suspendedEmailsStore[cleanEmail];
+        currentState.users = currentState.users.filter(u => u.user.toLowerCase() !== cleanEmail);
+        delete currentState.suspended[cleanEmail];
+        saveState(currentState);
       }
-      return res.status(200).json({ success: true, users: globalUserStore });
+      return res.status(200).json({ success: true, users: currentState.users });
     } catch (err) {
       return res.status(500).json({ error: err.message });
     }
   }
 
   if (req.method === 'GET') {
-    const { check_suspended } = req.query || {};
-    if (check_suspended) {
-      const checkEmail = check_suspended.trim().toLowerCase();
-      const isSuspended = !!suspendedEmailsStore[checkEmail];
+    // Parse query params properly using URL object
+    let checkEmail = null;
+    try {
+      const reqUrl = req.url || '';
+      if (reqUrl.includes('check_suspended=')) {
+        const paramStr = reqUrl.split('check_suspended=')[1];
+        if (paramStr) {
+          checkEmail = decodeURIComponent(paramStr.split('&')[0]).trim().toLowerCase();
+        }
+      }
+    } catch (e) {}
+
+    if (checkEmail) {
+      const isSuspended = !!currentState.suspended[checkEmail];
       return res.status(200).json({ email: checkEmail, isSuspended });
     }
 
     return res.status(200).json({ 
-      users: globalUserStore, 
-      suspended: suspendedEmailsStore 
+      users: currentState.users, 
+      suspended: currentState.suspended 
     });
   }
 

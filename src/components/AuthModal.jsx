@@ -34,7 +34,28 @@ export const AuthModal = () => {
       }
     } catch (e) {}
 
-    // Stage 1B: Local storage suspension check
+    // Stage 1B: Check full server user list & suspended map
+    try {
+      const fullRes = await fetch('/api/register-user');
+      const fullData = await fullRes.json();
+      if (fullData) {
+        if (fullData.suspended && fullData.suspended[cleanEmail]) {
+          setAuthError('ACCOUNT SUSPENDED: Your account has been suspended by the League Commissioner. Access is restricted.');
+          setLoading(false);
+          return;
+        }
+        if (fullData.users) {
+          const matched = fullData.users.find(u => u.user && u.user.toLowerCase() === cleanEmail);
+          if (matched && matched.status && matched.status.includes('Suspended')) {
+            setAuthError('ACCOUNT SUSPENDED: Your account has been suspended by the League Commissioner. Access is restricted.');
+            setLoading(false);
+            return;
+          }
+        }
+      }
+    } catch (e) {}
+
+    // Stage 1C: Local storage suspension check
     try {
       const isLocalSuspended = localStorage.getItem(`sm_suspended_${cleanEmail}`);
       if (isLocalSuspended === 'true') {
