@@ -238,6 +238,31 @@ export const ClientDashboard = () => {
             </div>
           </div>
 
+          {/* DATA STATUS & TRADING CARDS EXPLANATION LEGEND */}
+          <div className="bg-slate-950 p-4 rounded-2xl border border-amber-500/30 space-y-2.5 shadow-lg">
+            <div className="flex items-center justify-between flex-wrap gap-2 border-b border-slate-800 pb-2">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
+                <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">
+                  DEMO DATA MODE • REAL-TIME AI PROJECTIONS ACTIVE
+                </span>
+              </div>
+              <button
+                onClick={() => setShowConfigModal(true)}
+                className="text-[11px] font-extrabold text-cyan-400 hover:text-cyan-300 underline flex items-center gap-1"
+              >
+                <span>+ Connect Your Real ESPN / Sleeper Roster</span>
+                <ArrowUpRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-300 leading-relaxed">
+              💡 <strong className="text-white">Understanding Your Screen:</strong> Below is SuperMacho's AI-generated <strong>Start/Sit Matchup Matrix</strong>. 
+              The <strong className="text-amber-400 font-bold">"GUT CHECK VALIDATED"</strong> rating (e.g. 98/100) measures defensive matchup vulnerability, target share, and weather factors. 
+              <span className="text-slate-400 ml-1">If your ESPN/Sleeper parameters are pending, sample Week 1 projections are shown. Click the button above to sync your actual fantasy league!</span>
+            </p>
+          </div>
+
           {/* Starters Grid Display */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {demoRoster.filter(p => p.status === 'START').map((player) => (
