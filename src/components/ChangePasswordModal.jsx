@@ -18,6 +18,18 @@ export const ChangePasswordModal = ({ isOpen, onClose }) => {
     setErrorMsg('');
     setSuccessMsg('');
 
+    const cleanEmail = (user?.email || '').trim().toLowerCase();
+    const userStorageKey = `sm_user_${cleanEmail}`;
+    const savedUserJson = localStorage.getItem(userStorageKey);
+    let savedUser = savedUserJson ? JSON.parse(savedUserJson) : null;
+
+    // Verify Current Password
+    const expectedPassword = savedUser?.password || (user?.role === 'admin' ? 'admin123' : null);
+    if (expectedPassword && currentPassword !== expectedPassword) {
+      setErrorMsg('Incorrect current password. Please enter your existing password.');
+      return;
+    }
+
     if (!newPassword || newPassword.length < 4) {
       setErrorMsg('New password must be at least 4 characters long.');
       return;
@@ -31,11 +43,9 @@ export const ChangePasswordModal = ({ isOpen, onClose }) => {
     setLoading(true);
 
     try {
-      const cleanEmail = (user?.email || 'user').toLowerCase();
-      const userStorageKey = `sm_user_${cleanEmail}`;
-      const savedUserJson = localStorage.getItem(userStorageKey);
-
-      let savedUser = savedUserJson ? JSON.parse(savedUserJson) : { email: cleanEmail, role: user?.role || 'client' };
+      if (!savedUser) {
+        savedUser = { email: cleanEmail, role: user?.role || 'client' };
+      }
 
       // Update stored password
       savedUser.password = newPassword;
