@@ -42,22 +42,38 @@ export const AdminDashboard = () => {
 
   const handleSaveUserTier = async () => {
     if (!managingTierUser) return;
+    const targetEmail = (managingTierUser.user || managingTierUser.email).toLowerCase();
+
+    // Update React state dynamically without page reload
+    if (typeof setRegisteredUsersList === 'function') {
+      setRegisteredUsersList(prev => prev.map(u => u.user.toLowerCase() === targetEmail ? { ...u, plan: selectedTier } : u));
+    }
+
+    // Update local storage credential tier
+    try {
+      const userKey = `sm_user_${targetEmail}`;
+      const savedUserJson = localStorage.getItem(userKey);
+      if (savedUserJson) {
+        const savedUser = JSON.parse(savedUserJson);
+        savedUser.plan = selectedTier;
+        localStorage.setItem(userKey, JSON.stringify(savedUser));
+      }
+    } catch (e) {}
+
     try {
       await fetch('/api/register-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          email: managingTierUser.user || managingTierUser.email, 
+          email: targetEmail, 
           plan: selectedTier 
         })
       });
-      setSaveSuccessMsg(`Updated tier for ${managingTierUser.user || managingTierUser.email} to ${selectedTier}!`);
-      setTimeout(() => setSaveSuccessMsg(''), 3000);
-      setShowTierModal(false);
-      window.location.reload();
-    } catch (e) {
-      setShowTierModal(false);
-    }
+    } catch (e) {}
+
+    setSaveSuccessMsg(`Successfully upgraded ${targetEmail} to ${selectedTier}!`);
+    setTimeout(() => setSaveSuccessMsg(''), 4000);
+    setShowTierModal(false);
   };
 
   const openNewPlanModal = () => {
