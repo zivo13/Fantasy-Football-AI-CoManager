@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Shield, DollarSign, Users, TrendingUp, Plus, Edit2, Trash2, Check, X, Sparkles, Sliders, Cpu, Save, Lock, Unlock } from 'lucide-react';
+import { Shield, DollarSign, Users, TrendingUp, Plus, Edit2, Trash2, Check, X, Sparkles, Sliders, Cpu, Save, Lock, Unlock, Activity, Zap } from 'lucide-react';
 
 export const AdminDashboard = () => {
   const { plans, handleSavePlan, handleDeletePlan, adminMetrics, user, registeredUsersList = [] } = useApp();
