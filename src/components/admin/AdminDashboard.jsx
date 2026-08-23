@@ -302,13 +302,29 @@ export const AdminDashboard = () => {
                           const newStatus = regUser.status && regUser.status.includes('Suspended') 
                             ? 'Active Subscriber' 
                             : 'Suspended / Inactive';
+                          
+                          // Update local React state instantly without page reload
+                          if (typeof setRegisteredUsersList === 'function') {
+                            setRegisteredUsersList(prev => prev.map(u => u.user === regUser.user ? { ...u, status: newStatus } : u));
+                          }
+                          
+                          // Persist local user status flag for login enforcement
+                          try {
+                            const key = `sm_user_${regUser.user.toLowerCase()}`;
+                            const saved = localStorage.getItem(key);
+                            if (saved) {
+                              const parsed = JSON.parse(saved);
+                              parsed.status = newStatus;
+                              localStorage.setItem(key, JSON.stringify(parsed));
+                            }
+                          } catch (e) {}
+
                           try {
                             await fetch('/api/register-user', {
                               method: 'POST',
                               headers: { 'Content-Type': 'application/json' },
                               body: JSON.stringify({ email: regUser.user, status: newStatus })
                             });
-                            window.location.reload();
                           } catch (e) {}
                         }}
                         className={`p-1.5 rounded-lg border transition-colors ${
@@ -327,13 +343,15 @@ export const AdminDashboard = () => {
 
                       <button 
                         onClick={async () => {
+                          if (typeof setRegisteredUsersList === 'function') {
+                            setRegisteredUsersList(prev => prev.filter(u => u.user !== regUser.user));
+                          }
                           try {
                             await fetch('/api/register-user', {
                               method: 'DELETE',
                               headers: { 'Content-Type': 'application/json' },
                               body: JSON.stringify({ email: regUser.user })
                             });
-                            window.location.reload();
                           } catch (e) {}
                         }}
                         className="p-1.5 bg-slate-900 hover:bg-red-500/20 text-slate-400 hover:text-red-400 rounded-lg border border-slate-800 transition-colors"

@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { Trophy, Shield, Zap, User, LogOut, Lock, LayoutDashboard, Sparkles, DollarSign } from 'lucide-react';
+import { Trophy, Shield, Zap, User, LogOut, Lock, LayoutDashboard, Sparkles, DollarSign, KeyRound } from 'lucide-react';
+import { ChangePasswordModal } from './ChangePasswordModal';
 
 export const Navbar = () => {
   const { currentTab, setCurrentTab, user, setShowAuthModal, setAuthMode, handleLogout, lang, setLang, t } = useApp();
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/80">
@@ -123,6 +125,15 @@ export const Navbar = () => {
                 </div>
 
                 <button
+                  onClick={() => setShowPasswordModal(true)}
+                  title="Change Password"
+                  className="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-400 hover:text-amber-300 transition-colors border border-slate-800 flex items-center gap-1.5"
+                >
+                  <KeyRound className="w-4 h-4" />
+                  <span className="hidden md:inline text-xs font-bold">Password</span>
+                </button>
+
+                <button
                   onClick={handleLogout}
                   title="Log out"
                   className="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-red-400 transition-colors border border-slate-800"
@@ -151,6 +162,12 @@ export const Navbar = () => {
 
         </div>
       </div>
+
+      {/* CHANGE PASSWORD MODAL */}
+      <ChangePasswordModal 
+        isOpen={showPasswordModal} 
+        onClose={() => setShowPasswordModal(false)} 
+      />
     </header>
   );
 };

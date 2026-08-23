@@ -36,20 +36,39 @@ export const AuthModal = () => {
         localStorage.setItem(userStorageKey, JSON.stringify({ email: cleanEmail, password, role: assignedRole }));
         handleLogin(cleanEmail, assignedRole);
       } else {
-        // Sign In Mode: Check stored password credential
+        // Sign In Mode: Check stored password credential & Suspension status
         const storedUserJson = localStorage.getItem(userStorageKey);
         
         if (storedUserJson) {
           const storedUser = JSON.parse(storedUserJson);
+
+          // Check if user is suspended locally
+          if (storedUser.status && storedUser.status.includes('Suspended')) {
+            setAuthError('ACCOUNT SUSPENDED: Your account has been suspended by the League Commissioner. Contact support@supermacho.app.');
+            setLoading(false);
+            return;
+          }
+
           if (storedUser.password && storedUser.password !== password) {
             setAuthError('Incorrect password. Please enter the correct password.');
             setLoading(false);
             return;
           }
-        } else {
-          // First time logging in with this email: Save credentials
-          localStorage.setItem(userStorageKey, JSON.stringify({ email: cleanEmail, password, role: assignedRole }));
         }
+
+        // Check global server API for suspension status across devices
+        try {
+          const res = await fetch('/api/register-user');
+          const data = await res.json();
+          if (data && data.users) {
+            const serverUser = data.users.find(u => u.user.toLowerCase() === cleanEmail);
+            if (serverUser && serverUser.status && serverUser.status.includes('Suspended')) {
+              setAuthError('ACCOUNT SUSPENDED: Your account has been suspended by the League Commissioner. Contact support@supermacho.app.');
+              setLoading(false);
+              return;
+            }
+          }
+        } catch (e) {}
 
         await signInWithEmail(cleanEmail, password);
         handleLogin(cleanEmail, assignedRole);
