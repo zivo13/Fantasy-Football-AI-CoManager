@@ -114,10 +114,5 @@ export const ADMIN_METRICS = {
   activeSubscribers: 1840,
   totalUsers: 4920,
   conversionRate: '37.4%',
-  recentSubscriptions: [
-    { id: 's1', user: 'Chad "Gridiron" Williams', plan: 'Pro Champion ($4.99)', date: '2 mins ago', status: 'Active' },
-    { id: 's2', user: 'Marcus Vance', plan: 'SuperMacho Commissioner ($9.99)', date: '14 mins ago', status: 'Active' },
-    { id: 's3', user: 'Sarah Jenkins', plan: 'Pro Champion ($4.99)', date: '1 hour ago', status: 'Active' },
-    { id: 's4', user: 'Dave "DraftKing" Miller', plan: 'SuperMacho Commissioner ($59.99/yr)', date: '3 hours ago', status: 'Active' }
-  ]
+  recentSubscriptions: []
 };

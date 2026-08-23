@@ -368,21 +368,6 @@ export const AdminDashboard = () => {
                     </td>
                   </tr>
                 )}
-                {adminMetrics.recentSubscriptions.map((sub) => (
-                  <tr key={sub.id} className="hover:bg-slate-900/50 transition-colors">
-                    <td className="p-4 font-bold text-white">{sub.user}</td>
-                    <td className="p-4 text-amber-400 font-bold">{sub.plan}</td>
-                    <td className="p-4 text-slate-400">{sub.date}</td>
-                    <td className="p-4">
-                      <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 rounded-full text-[10px] font-bold">
-                        {sub.status}
-                      </span>
-                    </td>
-                    <td className="p-4 text-right">
-                      <button className="text-cyan-400 font-bold hover:underline">Manage Tier</button>
-                    </td>
-                  </tr>
-                ))}
               </tbody>
             </table>
           </div>
