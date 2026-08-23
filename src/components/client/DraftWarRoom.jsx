@@ -5,7 +5,8 @@ import { Award, Zap, Target, Users, Flame, ShieldAlert, Sparkles, TrendingUp, Ch
 export const DraftWarRoom = () => {
   const appState = useApp() || {};
   const currentLeague = appState.currentLeague || (appState.leagues && appState.leagues[0]) || { scoring: 'PPR' };
-  const t = appState.t || ((key) => key);
+  const tRaw = appState.t;
+  const t = typeof tRaw === 'function' ? tRaw : (key => (tRaw && tRaw[key]) || key);
   
   // State for active AI Coach Question
   const [activeQuestion, setActiveQuestion] = useState('target_pos');

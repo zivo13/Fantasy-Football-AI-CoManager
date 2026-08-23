@@ -21,7 +21,9 @@ export const AppProvider = ({ children }) => {
     } catch (e) {}
   };
 
-  const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
+  const dict = TRANSLATIONS[lang] || TRANSLATIONS.en;
+  const t = (key) => dict[key] || TRANSLATIONS.en[key] || key;
+  Object.assign(t, dict);
 
   // Navigation tab: 'landing' | 'client' | 'admin' | 'auth'
   const [currentTab, setCurrentTab] = useState('landing');
