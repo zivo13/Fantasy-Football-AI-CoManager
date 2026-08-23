@@ -6,7 +6,21 @@ const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
   // Language state: 'en' | 'es' | 'pt'
-  const [lang, setLang] = useState('en');
+  const [lang, setLangState] = useState(() => {
+    try {
+      return localStorage.getItem('sm_lang') || 'en';
+    } catch (e) {
+      return 'en';
+    }
+  });
+
+  const setLang = (newLang) => {
+    setLangState(newLang);
+    try {
+      localStorage.setItem('sm_lang', newLang);
+    } catch (e) {}
+  };
+
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
 
   // Navigation tab: 'landing' | 'client' | 'admin' | 'auth'

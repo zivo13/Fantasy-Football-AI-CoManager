@@ -15,7 +15,8 @@ export const ClientDashboard = () => {
     aiChatMessages,
     handleSendAiMessage,
     user,
-    setUser
+    setUser,
+    t
   } = useApp();
 
   const [activeTab, setActiveTab] = useState('lineup'); // 'lineup' | 'waivers' | 'trade' | 'chat'
