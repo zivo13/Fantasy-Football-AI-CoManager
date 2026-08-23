@@ -29,6 +29,37 @@ export const AdminDashboard = () => {
   const [announcementTicker, setAnnouncementTicker] = useState("LET'S MAKE MONEY! - DOMINATE YOUR FANTASY LEAGUE");
   const [saveSuccessMsg, setSaveSuccessMsg] = useState('');
 
+  // Manage Tier Modal State
+  const [managingTierUser, setManagingTierUser] = useState(null);
+  const [showTierModal, setShowTierModal] = useState(false);
+  const [selectedTier, setSelectedTier] = useState('Pro Champion ($4.99/mo)');
+
+  const openManageTierModal = (userObj) => {
+    setManagingTierUser(userObj);
+    setSelectedTier(userObj.plan || 'Pro Champion ($4.99/mo)');
+    setShowTierModal(true);
+  };
+
+  const handleSaveUserTier = async () => {
+    if (!managingTierUser) return;
+    try {
+      await fetch('/api/register-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          email: managingTierUser.user || managingTierUser.email, 
+          plan: selectedTier 
+        })
+      });
+      setSaveSuccessMsg(`Updated tier for ${managingTierUser.user || managingTierUser.email} to ${selectedTier}!`);
+      setTimeout(() => setSaveSuccessMsg(''), 3000);
+      setShowTierModal(false);
+      window.location.reload();
+    } catch (e) {
+      setShowTierModal(false);
+    }
+  };
+
   const openNewPlanModal = () => {
     setPlanForm({
       id: 'plan_' + Date.now(),
@@ -254,6 +285,12 @@ export const AdminDashboard = () => {
                     </td>
                     <td className="p-4 text-right flex items-center justify-end gap-2">
                       <button 
+                        onClick={() => openManageTierModal(regUser)}
+                        className="text-cyan-400 font-bold hover:underline"
+                      >
+                        Manage Tier
+                      </button>
+                      <button 
                         onClick={async () => {
                           try {
                             await fetch('/api/register-user', {
@@ -286,7 +323,12 @@ export const AdminDashboard = () => {
                       </span>
                     </td>
                     <td className="p-4 text-right">
-                      <button className="text-cyan-400 font-bold hover:underline">Manage Tier</button>
+                      <button 
+                        onClick={() => openManageTierModal({ user: user.email, plan: 'Pro Champion ($4.99/mo)' })}
+                        className="text-cyan-400 font-bold hover:underline"
+                      >
+                        Manage Tier
+                      </button>
                     </td>
                   </tr>
                 )}
@@ -459,6 +501,92 @@ export const AdminDashboard = () => {
                 Save Subscription Tier
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* MANAGE TIER MODAL */}
+      {showTierModal && managingTierUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+          <div className="relative w-full max-w-md bg-slate-900 border border-cyan-500/40 rounded-3xl p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div>
+                <h3 className="font-bebas text-2xl text-white tracking-wider">MANAGE USER SUBSCRIPTION TIER</h3>
+                <p className="text-xs text-amber-400 font-bold">{managingTierUser.user || managingTierUser.email}</p>
+              </div>
+              <button onClick={() => setShowTierModal(false)} className="text-slate-400 hover:text-white">✕</button>
+            </div>
+
+            <div className="space-y-3">
+              <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">Select Tier Level</label>
+              
+              <div className="space-y-2">
+                <button
+                  type="button"
+                  onClick={() => setSelectedTier('SuperMacho Commissioner ($9.99/mo)')}
+                  className={`w-full p-3.5 rounded-xl border text-left flex items-center justify-between transition-all ${
+                    selectedTier.includes('9.99') 
+                      ? 'bg-cyan-500/20 border-cyan-500 text-cyan-300 font-bold' 
+                      : 'bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-700'
+                  }`}
+                >
+                  <div>
+                    <div className="font-bold text-xs">SuperMacho Commissioner</div>
+                    <div className="text-[10px] text-slate-400">Unlimited Leagues + Live War Room</div>
+                  </div>
+                  <span className="font-bebas text-xl text-cyan-400">$9.99/mo</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedTier('Pro Champion ($4.99/mo)')}
+                  className={`w-full p-3.5 rounded-xl border text-left flex items-center justify-between transition-all ${
+                    selectedTier.includes('4.99') 
+                      ? 'bg-amber-500/20 border-amber-500 text-amber-300 font-bold' 
+                      : 'bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-700'
+                  }`}
+                >
+                  <div>
+                    <div className="font-bold text-xs">Pro Champion</div>
+                    <div className="text-[10px] text-slate-400">3 Leagues + AI Trade Analyzer</div>
+                  </div>
+                  <span className="font-bebas text-xl text-amber-400">$4.99/mo</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedTier('Free Rookie ($0/mo)')}
+                  className={`w-full p-3.5 rounded-xl border text-left flex items-center justify-between transition-all ${
+                    selectedTier.includes('Free') 
+                      ? 'bg-slate-800 border-slate-600 text-white font-bold' 
+                      : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
+                  }`}
+                >
+                  <div>
+                    <div className="font-bold text-xs">Free Rookie</div>
+                    <div className="text-[10px] text-slate-400">1 League + Basic Starters</div>
+                  </div>
+                  <span className="font-bebas text-xl text-slate-400">$0/mo</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="pt-2 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setShowTierModal(false)}
+                className="flex-1 btn-outline py-3 rounded-xl text-xs font-bold"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveUserTier}
+                className="flex-1 btn-cyan py-3 rounded-xl text-xs font-extrabold uppercase shadow-lg shadow-cyan-500/20"
+              >
+                Save Tier Upgrade
+              </button>
+            </div>
           </div>
         </div>
       )}
