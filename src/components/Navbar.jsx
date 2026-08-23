@@ -8,7 +8,8 @@ export const Navbar = () => {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/80">
+    <>
+      <header className="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/80">
       {/* Top Motto Ticker Bar */}
       <div className="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 text-slate-950 font-bold py-1 overflow-hidden shadow-inner">
         <div className="animate-marquee whitespace-nowrap text-xs uppercase tracking-widest flex items-center gap-8 font-bebas">
@@ -169,12 +170,13 @@ export const Navbar = () => {
 
         </div>
       </div>
-
-      {/* CHANGE PASSWORD MODAL */}
-      <ChangePasswordModal 
-        isOpen={showPasswordModal} 
-        onClose={() => setShowPasswordModal(false)} 
-      />
     </header>
-  );
+
+    {/* CHANGE PASSWORD MODAL */}
+    <ChangePasswordModal 
+      isOpen={showPasswordModal} 
+      onClose={() => setShowPasswordModal(false)} 
+    />
+  </>
+);
 };
