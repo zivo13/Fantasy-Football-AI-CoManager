@@ -3,17 +3,14 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://placeholder.supabase.co';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY || 'placeholder_key';
 
-// Global In-Memory Fallback for cross-device registrations
-let globalUserStore = global._supermacho_global_users || [
-  { id: 'u_1', user: 'chad.gridiron@gmail.com', plan: 'Pro Champion ($4.99)', date: '5 mins ago', status: 'Active (Mobile)' },
-  { id: 'u_2', user: 'marcus.vance@yahoo.com', plan: 'SuperMacho Commissioner ($9.99)', date: '12 mins ago', status: 'Active (Web)' }
-];
+// Global server store initialized clean (empty)
+let globalUserStore = global._supermacho_global_users || [];
 global._supermacho_global_users = globalUserStore;
 
 export default async function handler(req, res) {
   // CORS Headers
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') {
@@ -32,7 +29,7 @@ export default async function handler(req, res) {
         user: cleanEmail,
         plan: plan || (role === 'admin' ? 'SuperMacho Commissioner' : 'Pro Champion ($4.99/mo)'),
         date: 'Just now',
-        status: 'Active (Global Mobile)'
+        status: 'Active Registered'
       };
 
       // Check duplicate
@@ -53,6 +50,19 @@ export default async function handler(req, res) {
       }
 
       return res.status(200).json({ success: true, user: newUser, users: globalUserStore });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  }
+
+  if (req.method === 'DELETE') {
+    try {
+      const { email } = req.body || {};
+      if (email) {
+        globalUserStore = globalUserStore.filter(u => u.user.toLowerCase() !== email.trim().toLowerCase());
+        global._supermacho_global_users = globalUserStore;
+      }
+      return res.status(200).json({ success: true, users: globalUserStore });
     } catch (err) {
       return res.status(500).json({ error: err.message });
     }

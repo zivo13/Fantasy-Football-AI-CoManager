@@ -252,8 +252,23 @@ export const AdminDashboard = () => {
                         {regUser.status}
                       </span>
                     </td>
-                    <td className="p-4 text-right">
-                      <button className="text-cyan-400 font-bold hover:underline">Manage Tier</button>
+                    <td className="p-4 text-right flex items-center justify-end gap-2">
+                      <button 
+                        onClick={async () => {
+                          try {
+                            await fetch('/api/register-user', {
+                              method: 'DELETE',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ email: regUser.user })
+                            });
+                            window.location.reload();
+                          } catch (e) {}
+                        }}
+                        className="p-1.5 bg-slate-900 hover:bg-red-500/20 text-slate-400 hover:text-red-400 rounded-lg border border-slate-800 transition-colors"
+                        title="Delete User"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
                     </td>
                   </tr>
                 ))}
