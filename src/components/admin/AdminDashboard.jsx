@@ -266,7 +266,7 @@ export const AdminDashboard = () => {
                   <th className="p-4">Current Plan</th>
                   <th className="p-4">Joined Date</th>
                   <th className="p-4">Status</th>
-                  <th className="p-4 text-right">Action</th>
+                  <th className="p-4 text-right min-w-[220px]">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60 text-slate-300">
@@ -287,13 +287,14 @@ export const AdminDashboard = () => {
                         {regUser.status || 'Active Registered'}
                       </span>
                     </td>
-                    <td className="p-4 text-right flex items-center justify-end gap-2">
-                      <button 
-                        onClick={() => openManageTierModal(regUser)}
-                        className="text-cyan-400 font-bold hover:underline"
-                      >
-                        Manage Tier
-                      </button>
+                    <td className="p-4 text-right whitespace-nowrap">
+                      <div className="inline-flex items-center justify-end gap-2">
+                        <button 
+                          onClick={() => openManageTierModal(regUser)}
+                          className="px-2.5 py-1 text-[11px] bg-slate-900 border border-cyan-500/30 text-cyan-400 font-bold rounded-lg hover:bg-cyan-500/10 transition-colors whitespace-nowrap"
+                        >
+                          Manage Tier
+                        </button>
 
                       {/* Active / Inactive Status Toggle Button */}
                       <button 
@@ -340,8 +341,9 @@ export const AdminDashboard = () => {
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
-                    </td>
-                  </tr>
+                    </div>
+                  </td>
+                </tr>
                 ))}
                 {user?.isLoggedIn && !registeredUsersList.some(u => u.user.toLowerCase() === user.email.toLowerCase()) && (
                   <tr className="bg-amber-500/10 hover:bg-amber-500/20 transition-colors border-l-4 border-amber-500">

@@ -97,7 +97,7 @@ export const AppProvider = ({ children }) => {
       name: role === 'admin' ? 'SuperMacho Admin' : cleanEmail.split('@')[0],
       email: cleanEmail,
       role: role,
-      planId: role === 'admin' ? 'commissioner' : 'pro',
+      planId: role === 'admin' ? 'commissioner' : 'free',
       isLoggedIn: true
     });
 
@@ -106,7 +106,7 @@ export const AppProvider = ({ children }) => {
       fetch('/api/register-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: cleanEmail, role })
+        body: JSON.stringify({ email: cleanEmail, role, plan: role === 'admin' ? 'SuperMacho Commissioner' : 'Free Rookie ($0/mo)' })
       });
     } catch (e) {}
 
@@ -118,7 +118,7 @@ export const AppProvider = ({ children }) => {
             {
               id: 'u_' + Date.now(),
               user: cleanEmail,
-              plan: 'Pro Champion ($4.99/mo)',
+              plan: 'Free Rookie ($0/mo)',
               date: 'Just now',
               status: 'Registered User'
             },

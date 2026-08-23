@@ -31,11 +31,11 @@ export default async function handler(req, res) {
         if (plan) globalUserStore[existingIndex].plan = plan;
         if (status) globalUserStore[existingIndex].status = status;
       } else {
-        // Create new user
+        // Create new user with default Free Rookie tier
         const newUser = {
           id: 'u_' + Date.now(),
           user: cleanEmail,
-          plan: plan || (role === 'admin' ? 'SuperMacho Commissioner' : 'Pro Champion ($4.99/mo)'),
+          plan: plan || (role === 'admin' ? 'SuperMacho Commissioner' : 'Free Rookie ($0/mo)'),
           date: 'Just now',
           status: status || 'Active Subscriber'
         };
@@ -50,7 +50,7 @@ export default async function handler(req, res) {
         await supabase.from('profiles').upsert({
           email: cleanEmail,
           role: role || 'client',
-          plan_id: plan ? plan.split(' ')[0].toLowerCase() : 'pro'
+          plan_id: plan ? plan.split(' ')[0].toLowerCase() : 'free'
         }, { onConflict: 'email' });
       }
 
