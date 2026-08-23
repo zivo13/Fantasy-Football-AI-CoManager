@@ -122,7 +122,10 @@ export const Navbar = () => {
                 <div className="hidden sm:block text-right">
                   <div className="text-sm font-bold text-slate-200">{user.name}</div>
                   <div className="text-[11px] font-semibold text-amber-400 uppercase tracking-wider">
-                    {user.role === 'admin' ? 'SYSTEM ADMIN' : 'PRO CHAMPION PLAN'}
+                    {user.role === 'admin' 
+                      ? 'SYSTEM ADMIN' 
+                      : (user.plan || (user.planId === 'free' ? 'FREE ROOKIE PLAN' : user.planId === 'commissioner' ? 'COMMISSIONER PLAN' : 'PRO CHAMPION PLAN')).toUpperCase()
+                    }
                   </div>
                 </div>
 
