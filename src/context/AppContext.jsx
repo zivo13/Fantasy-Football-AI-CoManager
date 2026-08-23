@@ -100,8 +100,8 @@ export const AppProvider = ({ children }) => {
               const matched = combined.find(c => c.user.toLowerCase() === p.user.toLowerCase());
               if (!matched) {
                 combined.push(p);
-              } else if (p.plan && p.plan !== matched.plan && p.plan !== 'Free Rookie ($0/mo)') {
-                // Preserve upgraded plan from local user state
+              } else if (p.plan && p.plan !== matched.plan) {
+                // Keep Admin user list perfectly synchronized with actual client plan
                 matched.plan = p.plan;
               }
             });
