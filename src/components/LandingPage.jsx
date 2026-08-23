@@ -134,6 +134,75 @@ export const LandingPage = () => {
         </div>
       </section>
 
+      {/* LIVE RAPIDAPI NFL SCOREBOARD & BREAKING NEWS TICKER */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4 mb-8">
+        <div className="bg-slate-950 p-4 rounded-3xl border-2 border-amber-500/40 shadow-2xl space-y-3">
+          <div className="flex items-center justify-between flex-wrap gap-2 border-b border-slate-800 pb-2.5">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-1.5">
+                <Activity className="w-4 h-4 text-emerald-400" />
+                <span>LIVE RAPIDAPI NFL STREAM ACTIVE • SUNDAY GAMEDAY</span>
+              </span>
+            </div>
+            <div className="text-[11px] font-semibold text-slate-400 flex items-center gap-1.5">
+              <Clock className="w-3.5 h-3.5 text-amber-400" />
+              <span>Real-Time Play-by-Play & Vegas Odds</span>
+            </div>
+          </div>
+
+          {/* Live Games Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            
+            {/* Game 1 */}
+            <div className="bg-slate-900/90 p-3.5 rounded-2xl border border-slate-800 space-y-1.5 hover:border-amber-500/40 transition-colors">
+              <div className="flex items-center justify-between text-[11px] font-bold text-slate-400">
+                <span>WEEK 1 • GAME 1</span>
+                <span className="text-amber-400 font-mono">3rd Qtr (Redzone)</span>
+              </div>
+              <div className="flex items-center justify-between text-sm font-extrabold text-white">
+                <span>KC Chiefs</span>
+                <span className="font-bebas text-lg text-amber-400">24 - 20</span>
+                <span>BAL Ravens</span>
+              </div>
+              <div className="text-[10px] text-slate-400 font-semibold flex items-center justify-between pt-1 border-t border-slate-800/60">
+                <span>Mahomes: 22.4 Pts</span>
+                <span className="text-emerald-400 font-bold">Vegas O/U: 54.5</span>
+              </div>
+            </div>
+
+            {/* Game 2 */}
+            <div className="bg-slate-900/90 p-3.5 rounded-2xl border border-slate-800 space-y-1.5 hover:border-amber-500/40 transition-colors">
+              <div className="flex items-center justify-between text-[11px] font-bold text-slate-400">
+                <span>WEEK 1 • GAME 2</span>
+                <span className="text-amber-400 font-mono">2nd Qtr (1:45)</span>
+              </div>
+              <div className="flex items-center justify-between text-sm font-extrabold text-white">
+                <span>SF 49ers</span>
+                <span className="font-bebas text-lg text-amber-400">17 - 14</span>
+                <span>DAL Cowboys</span>
+              </div>
+              <div className="text-[10px] text-slate-400 font-semibold flex items-center justify-between pt-1 border-t border-slate-800/60">
+                <span>McCaffrey: 18.2 Pts</span>
+                <span className="text-cyan-400 font-bold">Line: SF -4.0</span>
+              </div>
+            </div>
+
+            {/* Breaking News Alert Box */}
+            <div className="bg-gradient-to-r from-amber-500/10 to-red-500/10 p-3.5 rounded-2xl border border-amber-500/30 space-y-1 flex flex-col justify-center">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-red-400 uppercase">
+                <Flame className="w-4 h-4 text-red-400" />
+                <span>BREAKING INJURY & WAIVER ALERT</span>
+              </div>
+              <p className="text-[11px] text-slate-200 leading-snug font-medium">
+                🚨 <strong className="text-white">Keaton Mitchell (BAL)</strong> Questionable ➔ Backup RB promoted to RB1. Recommended Secret FAB Bid: <strong className="text-amber-400">$24</strong>.
+              </p>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
       {/* HOW IT WORKS IN 3 EASY STEPS BANNER */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="glass-panel-gold p-8 sm:p-10 rounded-3xl space-y-8 border-2 border-amber-500/40">
