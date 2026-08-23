@@ -42,13 +42,20 @@ export const ClientDashboard = () => {
       }));
     }
 
-    // Save to localStorage credential store
+    // Save to localStorage credential store & registered users list
     try {
       const userKey = `sm_user_${cleanEmail}`;
       const savedUserJson = localStorage.getItem(userKey);
       let savedUser = savedUserJson ? JSON.parse(savedUserJson) : { email: cleanEmail };
       savedUser.plan = newPlan;
       localStorage.setItem(userKey, JSON.stringify(savedUser));
+
+      const regListJson = localStorage.getItem('sm_registered_users_list');
+      if (regListJson) {
+        let regList = JSON.parse(regListJson);
+        regList = regList.map(u => u.user.toLowerCase() === cleanEmail ? { ...u, plan: newPlan } : u);
+        localStorage.setItem('sm_registered_users_list', JSON.stringify(regList));
+      }
     } catch (e) {}
 
     // Send global upgrade notification to Vercel API endpoint

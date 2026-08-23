@@ -74,10 +74,17 @@ export const AppProvider = ({ children }) => {
           setRegisteredUsersList(prev => {
             const combined = [...data.users];
             prev.forEach(p => {
-              if (!combined.some(c => c.user.toLowerCase() === p.user.toLowerCase())) {
+              const matched = combined.find(c => c.user.toLowerCase() === p.user.toLowerCase());
+              if (!matched) {
                 combined.push(p);
+              } else if (p.plan && p.plan !== matched.plan && p.plan !== 'Free Rookie ($0/mo)') {
+                // Preserve upgraded plan from local user state
+                matched.plan = p.plan;
               }
             });
+            try {
+              localStorage.setItem('sm_registered_users_list', JSON.stringify(combined));
+            } catch (e) {}
             return combined;
           });
         }
