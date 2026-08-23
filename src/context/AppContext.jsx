@@ -115,6 +115,7 @@ export const AppProvider = ({ children }) => {
     const cleanEmail = email.trim().toLowerCase();
     let userPlan = role === 'admin' ? 'SuperMacho Commissioner' : 'Free Rookie ($0/mo)';
     let userPlanId = role === 'admin' ? 'commissioner' : 'free';
+    let userProfile = null;
 
     try {
       const savedUserJson = localStorage.getItem(`sm_user_${cleanEmail}`);
@@ -127,12 +128,23 @@ export const AppProvider = ({ children }) => {
       }
     } catch (e) {}
 
+    try {
+      const savedProfJson = localStorage.getItem(`sm_profile_${cleanEmail}`);
+      if (savedProfJson) {
+        userProfile = JSON.parse(savedProfJson);
+        if (userProfile.prefLang) {
+          setLang(userProfile.prefLang);
+        }
+      }
+    } catch (e) {}
+
     setUser({
       name: role === 'admin' ? 'SuperMacho Admin' : cleanEmail.split('@')[0],
       email: cleanEmail,
       role: role,
       plan: userPlan,
       planId: userPlanId,
+      profile: userProfile,
       isLoggedIn: true
     });
 

@@ -83,7 +83,23 @@ export const UserProfileModal = ({ isOpen, onClose }) => {
     // Save profile locally
     try {
       localStorage.setItem(`sm_profile_${cleanEmail}`, JSON.stringify(profileData));
+      
+      const userKey = `sm_user_${cleanEmail}`;
+      const savedUserJson = localStorage.getItem(userKey);
+      if (savedUserJson) {
+        const savedUser = JSON.parse(savedUserJson);
+        savedUser.profile = profileData;
+        localStorage.setItem(userKey, JSON.stringify(savedUser));
+      }
     } catch (e) {}
+
+    // Update global user context state
+    if (typeof setUser === 'function') {
+      setUser(prev => ({
+        ...prev,
+        profile: profileData
+      }));
+    }
 
     // Update global app language state
     setLang(prefLang);
