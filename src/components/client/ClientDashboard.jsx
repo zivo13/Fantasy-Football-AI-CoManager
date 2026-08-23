@@ -115,8 +115,8 @@ export const ClientDashboard = () => {
             01
           </div>
           <div>
-            <div className="font-bebas text-xl text-white tracking-wider">STEP 1: CONNECT YOUR FANTASY LEAGUE</div>
-            <p className="text-xs text-slate-300">Click the button to enter your ESPN or Sleeper League ID so SuperMacho AI can optimize your roster!</p>
+            <div className="font-bebas text-xl text-white tracking-wider">{t.clientStep1Title || 'STEP 1: CONNECT YOUR FANTASY LEAGUE'}</div>
+            <p className="text-xs text-slate-300">{t.clientStep1Desc || 'Click the button to enter your ESPN or Sleeper League ID so SuperMacho AI can optimize your roster!'}</p>
           </div>
         </div>
 
@@ -125,7 +125,7 @@ export const ClientDashboard = () => {
           className="btn-gold px-6 py-3 rounded-2xl text-xs font-extrabold flex items-center gap-2 whitespace-nowrap shadow-lg uppercase"
         >
           <Plus className="w-4 h-4" />
-          <span>Connect My League Now</span>
+          <span>{t.connectLeagueBtn || 'Connect My League Now'}</span>
         </button>
       </div>
       <div className="glass-panel-gold p-6 sm:p-8 rounded-3xl relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border-2 border-amber-500/40">
@@ -137,16 +137,16 @@ export const ClientDashboard = () => {
             <span className="text-xs text-slate-400 font-bold">• WEEK 1 ACTIVATED</span>
           </div>
           <h1 className="font-bebas text-4xl sm:text-5xl text-white tracking-wider">
-            SUPERMACHO FANTASY CO-MANAGER
+            {t.commandCenterTitle || 'SUPERMACHO FANTASY CO-MANAGER'}
           </h1>
           <p className="text-slate-300 text-xs sm:text-sm font-medium">
-            Active League: <span className="text-amber-400 font-bold">{currentLeague?.name}</span> ({currentLeague?.platform} - {currentLeague?.scoring})
+            {t.activeLeagueLabel || 'Active League:'} <span className="text-amber-400 font-bold">{currentLeague?.name}</span> ({currentLeague?.platform} - {currentLeague?.scoring})
           </p>
         </div>
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 z-10 w-full md:w-auto justify-end bg-slate-950/80 p-4 rounded-2xl border border-amber-500/30">
           <div>
-            <div className="text-[10px] uppercase font-bold text-slate-400">Your Subscription Tier</div>
+            <div className="text-[10px] uppercase font-bold text-slate-400">{t.subTierTitle || 'Your Subscription Tier'}</div>
             <div className="font-bebas text-xl text-amber-400">
               {user?.plan || (user?.planId === 'free' ? 'Free Rookie ($0/mo)' : 'Pro Champion ($4.99/mo)')}
             </div>
@@ -159,20 +159,20 @@ export const ClientDashboard = () => {
                 className="btn-gold px-3.5 py-2 rounded-xl text-xs font-extrabold flex items-center gap-1.5 shadow-lg whitespace-nowrap"
               >
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>Upgrade Pro ($4.99/mo)</span>
+                <span>{t.upgradeProBtn || 'Upgrade Pro ($4.99/mo)'}</span>
               </button>
               <button
                 onClick={() => startCheckout('SuperMacho Commissioner', '$9.99/mo', 'commissioner')}
                 className="px-3.5 py-2 rounded-xl text-xs font-extrabold bg-cyan-500 hover:bg-cyan-400 text-slate-950 flex items-center gap-1.5 shadow-lg whitespace-nowrap"
               >
                 <Shield className="w-3.5 h-3.5" />
-                <span>Upgrade Commissioner ($9.99/mo)</span>
+                <span>{t.upgradeCommBtn || 'Upgrade Commissioner ($9.99/mo)'}</span>
               </button>
             </div>
           ) : (
             <div className="bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-extrabold px-3 py-2 rounded-xl flex items-center gap-1.5">
               <Check className="w-4 h-4 text-emerald-400" />
-              <span>PRO UNLOCKED</span>
+              <span>{t.proUnlocked || 'PRO UNLOCKED'}</span>
             </div>
           )}
         </div>
@@ -187,7 +187,7 @@ export const ClientDashboard = () => {
           }`}
         >
           <Zap className="w-4 h-4" />
-          <span>Optimal Lineup Trading Cards</span>
+          <span>{t.tabLineup || 'Optimal Lineup Trading Cards'}</span>
         </button>
 
         <button
@@ -197,7 +197,7 @@ export const ClientDashboard = () => {
           }`}
         >
           <Award className="w-4 h-4" />
-          <span>Draft Day Strategy War Room</span>
+          <span>{t.tabWarRoom || 'Draft Day Strategy War Room'}</span>
           <span className="bg-slate-950 text-amber-400 text-[10px] px-1.5 py-0.5 rounded font-extrabold">NEW</span>
         </button>
 
@@ -208,7 +208,7 @@ export const ClientDashboard = () => {
           }`}
         >
           <Flame className="w-4 h-4" />
-          <span>Waiver Dominator</span>
+          <span>{t.tabWaivers || 'Waiver Dominator'}</span>
         </button>
 
         <button
@@ -218,7 +218,7 @@ export const ClientDashboard = () => {
           }`}
         >
           <RefreshCw className="w-4 h-4" />
-          <span>Trade Robbery Evaluator</span>
+          <span>{t.tabTrade || 'Trade Robbery Evaluator'}</span>
         </button>
 
         <button
@@ -228,7 +228,7 @@ export const ClientDashboard = () => {
           }`}
         >
           <Bot className="w-4 h-4" />
-          <span>SuperMacho AI Assistant</span>
+          <span>{t.tabAi || 'SuperMacho AI Assistant'}</span>
           <span className="bg-slate-950 text-cyan-400 text-[10px] px-1.5 py-0.2 rounded font-extrabold">LIVE</span>
         </button>
       </div>
@@ -238,11 +238,11 @@ export const ClientDashboard = () => {
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <h3 className="font-bebas text-3xl text-white tracking-wider">
-              WEEK 1 START / SIT OPTIMAL TRADING CARDS
+              {t.startSitTitle || 'WEEK 1 START / SIT OPTIMAL TRADING CARDS'}
             </h3>
             <div className="text-xs font-bold text-amber-400 flex items-center gap-2 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800">
               <Sparkles className="w-4 h-4 text-amber-400" />
-              <span>Projected Lineup Total: <strong className="text-white text-sm">144.7 Pts</strong></span>
+              <span>{t.projectedTotal || 'Projected Lineup Total:'} <strong className="text-white text-sm">144.7 Pts</strong></span>
             </div>
           </div>
 
@@ -252,22 +252,20 @@ export const ClientDashboard = () => {
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
                 <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">
-                  DEMO DATA MODE • REAL-TIME AI PROJECTIONS ACTIVE
+                  {t.demoDataMode || 'DEMO DATA MODE • REAL-TIME AI PROJECTIONS ACTIVE'}
                 </span>
               </div>
               <button
                 onClick={() => setShowConfigModal(true)}
                 className="text-[11px] font-extrabold text-cyan-400 hover:text-cyan-300 underline flex items-center gap-1"
               >
-                <span>+ Connect Your Real ESPN / Sleeper Roster</span>
+                <span>{t.connectRosterLink || '+ Connect Your Real ESPN / Sleeper Roster'}</span>
                 <ArrowUpRight className="w-3.5 h-3.5" />
               </button>
             </div>
 
             <p className="text-xs text-slate-300 leading-relaxed">
-              💡 <strong className="text-white">Understanding Your Screen:</strong> Below is SuperMacho's AI-generated <strong>Start/Sit Matchup Matrix</strong>. 
-              The <strong className="text-amber-400 font-bold">"GUT CHECK VALIDATED"</strong> rating (e.g. 98/100) measures defensive matchup vulnerability, target share, and weather factors. 
-              <span className="text-slate-400 ml-1">If your ESPN/Sleeper parameters are pending, sample Week 1 projections are shown. Click the button above to sync your actual fantasy league!</span>
+              💡 {t.legendExplanationText || "Below is SuperMacho's AI-generated Start/Sit Matchup Matrix. The 'GUT CHECK VALIDATED' rating measures defensive matchup vulnerability, target share, and weather factors. Click the button above to sync your actual fantasy league!"}
             </p>
           </div>
 
