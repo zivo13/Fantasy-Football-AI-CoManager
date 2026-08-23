@@ -3,7 +3,7 @@ import { useApp } from '../../context/AppContext';
 import { Award, Zap, Target, Users, Flame, ShieldAlert, Sparkles, TrendingUp, ChevronRight, Scale, CheckCircle2, ArrowRight, HelpCircle } from 'lucide-react';
 
 export const DraftWarRoom = () => {
-  const { currentLeague } = useApp();
+  const { currentLeague, t } = useApp();
   
   // State for active AI Coach Question
   const [activeQuestion, setActiveQuestion] = useState('target_pos');
@@ -94,7 +94,7 @@ export const DraftWarRoom = () => {
             <span className="text-xs text-amber-400 font-bold">• SCORING: {currentLeague?.scoring || 'PPR'}</span>
           </div>
           <h1 className="font-bebas text-4xl sm:text-5xl text-white tracking-wider">
-            DRAFT DAY STRATEGY WAR ROOM
+            {t('draftWarRoomTitle')}
           </h1>
           <p className="text-slate-300 text-xs sm:text-sm font-medium">
             Real-time roster access, tier-drop alerts, best available players, and league comparison engine.
@@ -116,7 +116,7 @@ export const DraftWarRoom = () => {
       <div className="space-y-3">
         <div className="text-xs font-extrabold text-amber-400 uppercase tracking-widest flex items-center gap-2">
           <Sparkles className="w-4 h-4" />
-          <span>ASK SUPERMACHO AI DRAFT COACH (SELECT A QUESTION BELOW):</span>
+          <span>ASK SUPERMACHO AI DRAFT COACH:</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
@@ -131,9 +131,9 @@ export const DraftWarRoom = () => {
           >
             <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase">
               <Target className="w-4 h-4 flex-shrink-0" />
-              <span>Target Next?</span>
+              <span>{t('targetPosBtn')}</span>
             </div>
-            <p className="text-[10px] opacity-80 font-medium">What position should I target next?</p>
+            <p className="text-[10px] opacity-80 font-medium">{t('targetPosDesc')}</p>
           </button>
 
           <button
@@ -146,9 +146,9 @@ export const DraftWarRoom = () => {
           >
             <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase">
               <Flame className="w-4 h-4 flex-shrink-0" />
-              <span>Best Available RBs</span>
+              <span>{t('bestRbBtn')}</span>
             </div>
-            <p className="text-[10px] opacity-80 font-medium">Who are the top available RBs & WRs?</p>
+            <p className="text-[10px] opacity-80 font-medium">{t('bestRbDesc')}</p>
           </button>
 
           <button
@@ -161,9 +161,9 @@ export const DraftWarRoom = () => {
           >
             <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase">
               <TrendingUp className="w-4 h-4 flex-shrink-0" />
-              <span>Compare Team</span>
+              <span>{t('teamCompareBtn')}</span>
             </div>
-            <p className="text-[10px] opacity-80 font-medium">How does my team compare to others?</p>
+            <p className="text-[10px] opacity-80 font-medium">{t('teamCompareDesc')}</p>
           </button>
 
           <button
@@ -176,9 +176,9 @@ export const DraftWarRoom = () => {
           >
             <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase">
               <Scale className="w-4 h-4 flex-shrink-0" />
-              <span>Player Upside</span>
+              <span>{t('upsideBtn')}</span>
             </div>
-            <p className="text-[10px] opacity-80 font-medium">Which player has better ceiling upside?</p>
+            <p className="text-[10px] opacity-80 font-medium">{t('upsideDesc')}</p>
           </button>
 
           <button
@@ -191,9 +191,9 @@ export const DraftWarRoom = () => {
           >
             <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase">
               <ShieldAlert className="w-4 h-4 flex-shrink-0" />
-              <span>Biggest Needs</span>
+              <span>{t('rosterNeedsBtn')}</span>
             </div>
-            <p className="text-[10px] opacity-80 font-medium">What are my biggest roster gaps?</p>
+            <p className="text-[10px] opacity-80 font-medium">{t('rosterNeedsDesc')}</p>
           </button>
 
         </div>
@@ -230,36 +230,46 @@ export const DraftWarRoom = () => {
         >
           <div className="flex items-center gap-2">
             <HelpCircle className="w-4 h-4 text-amber-400" />
-            <span>📖 METRICS GUIDE: WHAT DO ADP, PROJ PTS, FLOOR/CEILING & VALUE STEALS MEAN?</span>
+            <span>{t('glossaryTitle')}</span>
           </div>
-          <span className="text-slate-400 text-xs">{showGlossary ? 'Hide Guide ▲' : 'Show Guide ▼'}</span>
+          <span className="text-slate-400 text-xs">{showGlossary ? '▲' : '▼'}</span>
         </div>
 
         {showGlossary && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pt-2 text-xs text-slate-300 border-t border-slate-800 animate-fade-in">
             <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
-              <strong className="text-amber-400 block font-bold">1. ADP (Average Draft Position)</strong>
-              <p className="text-[11px] text-slate-400 leading-snug">The average pick where a player is drafted nationwide (e.g. <span className="text-white font-mono">1.08</span> = Round 1, Pick 8). Use ADP to spot falling players!</p>
+              <strong className="text-amber-400 block font-bold">{t('adpTitle')}</strong>
+              <p className="text-[11px] text-slate-400 leading-snug">{t('adpDesc')}</p>
             </div>
 
             <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
-              <strong className="text-amber-400 block font-bold">2. PROJ PTS (Projected Points)</strong>
-              <p className="text-[11px] text-slate-400 leading-snug">SuperMacho AI’s estimated total season fantasy points based on 10,000+ game simulations.</p>
+              <strong className="text-amber-400 block font-bold">{t('projPtsTitle')}</strong>
+              <p className="text-[11px] text-slate-400 leading-snug">{t('projPtsDesc')}</p>
             </div>
 
             <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
-              <strong className="text-amber-400 block font-bold">3. FLOOR / CEILING RANGE</strong>
-              <p className="text-[11px] text-slate-400 leading-snug"><strong className="text-emerald-400">Floor</strong> = Guaranteed minimum points on a bad week. <strong className="text-cyan-400">Ceiling</strong> = Explosive single-game upside for tournament wins.</p>
+              <strong className="text-amber-400 block font-bold">{t('floorCeilingTitle')}</strong>
+              <p className="text-[11px] text-slate-400 leading-snug">{t('floorCeilingDesc')}</p>
             </div>
 
             <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
-              <strong className="text-amber-400 block font-bold">4. +PICKS VALUE (Value Steal)</strong>
-              <p className="text-[11px] text-slate-400 leading-snug">How many picks <em>later</em> a player is available compared to their true talent level (e.g. drafting Pick #4 talent at Pick #8 = <span className="text-emerald-400 font-bold">+4 Picks Value</span>).</p>
+              <strong className="text-amber-400 block font-bold">{t('valueStealTitle')}</strong>
+              <p className="text-[11px] text-slate-400 leading-snug">{t('valueStealDesc')}</p>
             </div>
 
-            <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1 col-span-1 md:col-span-2 lg:col-span-2">
-              <strong className="text-amber-400 block font-bold">5. DRAFT TARGET (Lock Button)</strong>
-              <p className="text-[11px] text-slate-400 leading-snug">Clicking <strong className="text-amber-400">Draft Target</strong> locks the player into your priority queue so you execute your pick with zero hesitation when on the clock.</p>
+            <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
+              <strong className="text-amber-400 block font-bold">{t('draftTargetTitle')}</strong>
+              <p className="text-[11px] text-slate-400 leading-snug">{t('draftTargetDesc')}</p>
+            </div>
+
+            <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
+              <strong className="text-amber-400 block font-bold">{t('heroRbTitle')}</strong>
+              <p className="text-[11px] text-slate-400 leading-snug">{t('heroRbDesc')}</p>
+            </div>
+
+            <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1 col-span-1 md:col-span-2 lg:col-span-3">
+              <strong className="text-amber-400 block font-bold">{t('konamiCodeTitle')}</strong>
+              <p className="text-[11px] text-slate-400 leading-snug">{t('konamiCodeDesc')}</p>
             </div>
           </div>
         )}
