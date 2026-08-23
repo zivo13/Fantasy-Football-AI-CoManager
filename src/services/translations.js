@@ -22,6 +22,8 @@ export const TRANSLATIONS = {
     faqTitle: "FREQUENTLY ASKED QUESTIONS",
     q1: "Do I still make my roster moves in my ESPN or Sleeper app?",
     a1: "Yes! ESPN or Sleeper is your official league platform. SuperMacho is your AI Head Coach in your ear — giving you the exact start/sit lineups, waiver FAB bids, and trade moves to make in ESPN so you rule your group chat and win your league money!",
+    qProfile: "How do I change my preferred language, lucky jersey number, or favorite team?",
+    aProfile: "Click your user avatar (👤 Profile) in the top navigation bar! Inside your Champion Profile, you can switch your preferred language (English 🇺🇸, Spanish 🇲🇽, Portuguese 🇧🇷), set your birthday for automated rewards, and customize your lucky jersey number and favorite NFL team.",
     qDraft: "Will SuperMacho help me during my live Fantasy Football Draft?",
     aDraft: "Yes! SuperMacho features a dedicated Draft Day Strategy War Room tailored to your league scoring rules (PPR, Half-PPR, Standard) — giving you round-by-round target picks, value steals, and secret late-round sleepers so you crush your draft!",
     q2: "What if I haven't drafted my team yet?",
@@ -58,6 +60,18 @@ export const TRANSLATIONS = {
     signIn: "Sign In",
     joinBtn: "Join",
     
+    // User Profile Modal Translations
+    profTitle: "MY CHAMPION CULTURE PROFILE",
+    profSub: "Customize your SuperMacho credentials, rewards & birthday alerts",
+    profSavedTitle: "PROFILE SAVED!",
+    profSavedSub: "Your Champion preferences have been updated!",
+    profEmailLabel: "Account Email",
+    profLangLabel: "Preferred Language",
+    profBdayLabel: "Birthday (For Rewards & Congrats)",
+    profLuckyLabel: "Lucky #",
+    profTeamLabel: "Favorite NFL Team",
+    profSaveBtn: "Save Champion Profile",
+
     // Client Dashboard Translations
     clientStep1Title: "STEP 1: CONNECT YOUR FANTASY LEAGUE",
     clientStep1Desc: "Click the button to enter your ESPN or Sleeper League ID so SuperMacho AI can optimize your roster!",
@@ -105,6 +119,8 @@ export const TRANSLATIONS = {
     faqTitle: "PREGUNTAS FRECUENTES",
     q1: "¿Aún hago mis movimientos de alineación en mi app de ESPN o Sleeper?",
     a1: "¡Sí! ESPN o Sleeper es la plataforma oficial de tu liga. SuperMacho es tu Entrenador en Jefe con IA al oído: te da las alineaciones exactas para mandar en tu grupo y ganar el dinero.",
+    qProfile: "¿Cómo cambio mi idioma preferido, número de la suerte o equipo favorito?",
+    aProfile: "¡Haz clic en tu avatar de usuario (👤 Perfil) en la barra de navegación superior! Dentro de tu Perfil de Campeón, puedes cambiar tu idioma preferido (Inglés 🇺🇸, Español 🇲🇽, Portugués 🇧🇷), registrar tu cumpleaños para recibir recompensas y personalizar tu número de la suerte y equipo favorito de la NFL.",
     qDraft: "¿SuperMacho me ayudará durante mi Draft de Fantasy Football en vivo?",
     aDraft: "¡Sí! SuperMacho incluye el 'Draft Day Strategy War Room' adaptado a las reglas de tu liga (PPR, Half-PPR, Estándar): te da selecciones objetivo ronda por ronda, robos de valor y joyas secretas.",
     q2: "¿Qué pasa si aún no he hecho mi Draft?",
@@ -141,6 +157,18 @@ export const TRANSLATIONS = {
     signIn: "Iniciar Sesión",
     joinBtn: "Unirme",
     
+    // User Profile Modal Translations
+    profTitle: "MI PERFIL DE CULTURA DE CAMPEÓN",
+    profSub: "Personaliza tus credenciales, recompensas y alertas de cumpleaños de SuperMacho",
+    profSavedTitle: "¡PERFIL GUARDADO!",
+    profSavedSub: "¡Tus preferencias de Campeón han sido actualizadas!",
+    profEmailLabel: "Correo Electrónico de la Cuenta",
+    profLangLabel: "Idioma Preferido",
+    profBdayLabel: "Cumpleaños (Para Recompensas y Felicitaciones)",
+    profLuckyLabel: "# de la Suerte",
+    profTeamLabel: "Equipo Favorito de la NFL",
+    profSaveBtn: "Guardar Perfil de Campeón",
+
     // Client Dashboard Translations
     clientStep1Title: "PASO 1: CONECTA TU LIGA FANTASY",
     clientStep1Desc: "¡Haz clic en el botón para ingresar tu ID de liga de ESPN o Sleeper y optimizar tu equipo con la IA de SuperMacho!",
@@ -188,6 +216,8 @@ export const TRANSLATIONS = {
     faqTitle: "PERGUNTAS FREQUENTES",
     q1: "Eu ainda faço minhas jogadas no app do ESPN ou Sleeper?",
     a1: "Sim! O ESPN ou Sleeper é a plataforma oficial da sua liga. O SuperMacho é seu Treinador IA no ouvido — dando as escalações exatas para dominar o grupo e ganhar o dinheiro!",
+    qProfile: "Como altero meu idioma preferido, número da sorte ou time favorito?",
+    aProfile: "Clique no seu avatar de usuário (👤 Perfil) na barra de navegação superior! No seu Perfil de Campeão, você pode alterar o idioma preferido (Inglês 🇺🇸, Espanhol 🇲🇽, Português 🇧🇷), registrar seu aniversário para recompensas e personalizar seu número da sorte e time favorito da NFL.",
     qDraft: "O SuperMacho vai me ajudar durante meu Draft ao vivo?",
     aDraft: "Sim! O SuperMacho possui o 'Draft Day Strategy War Room' personalizado para as regras da sua liga (PPR, Half-PPR, Padrão): traz escolhas alvo rodada a rodada e segredos do Draft!",
     q2: "E se eu ainda não fiz meu Draft?",
@@ -224,6 +254,18 @@ export const TRANSLATIONS = {
     signIn: "Entrar",
     joinBtn: "Criar Conta",
     
+    // User Profile Modal Translations
+    profTitle: "MEU PERFIL DE CULTURA CAMPEÃ",
+    profSub: "Personalize suas credenciais, recompensas e alertas de aniversário do SuperMacho",
+    profSavedTitle: "PERFIL SALVO!",
+    profSavedSub: "Suas preferências de Campeão foram atualizadas!",
+    profEmailLabel: "E-mail da Conta",
+    profLangLabel: "Idioma Preferido",
+    profBdayLabel: "Aniversário (Para Recompensas e Parabéns)",
+    profLuckyLabel: "# da Sorte",
+    profTeamLabel: "Time Favorito da NFL",
+    profSaveBtn: "Salvar Perfil de Campeão",
+
     // Client Dashboard Translations
     clientStep1Title: "PASSO 1: CONECTE SUA LIGA DE FANTASY",
     clientStep1Desc: "Clique no botão para inserir o ID da sua liga no ESPN ou Sleeper e otimizar sua equipe com a IA do SuperMacho!",

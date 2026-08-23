@@ -421,6 +421,16 @@ export const LandingPage = () => {
           <div className="glass-panel p-6 rounded-2xl space-y-2 border-l-4 border-amber-400">
             <h3 className="font-extrabold text-white text-sm sm:text-base flex items-center gap-2">
               <HelpCircle className="w-4 h-4 text-amber-400 flex-shrink-0" />
+              <span>{t.qProfile || 'How do I change my preferred language, lucky jersey number, or favorite team?'}</span>
+            </h3>
+            <p className="text-xs text-slate-300 leading-relaxed pl-6">
+              {t.aProfile || 'Click your user avatar (👤 Profile) in the top navigation bar! Inside your Champion Profile, you can switch your preferred language (English 🇺🇸, Spanish 🇲🇽, Portuguese 🇧🇷), set your birthday for automated rewards, and customize your lucky jersey number and favorite NFL team.'}
+            </p>
+          </div>
+
+          <div className="glass-panel p-6 rounded-2xl space-y-2 border-l-4 border-cyan-500">
+            <h3 className="font-extrabold text-white text-sm sm:text-base flex items-center gap-2">
+              <HelpCircle className="w-4 h-4 text-cyan-400 flex-shrink-0" />
               <span>{t.qDraft}</span>
             </h3>
             <p className="text-xs text-slate-300 leading-relaxed pl-6">

@@ -38,7 +38,7 @@ const NFL_TEAMS = [
 ];
 
 export const UserProfileModal = ({ isOpen, onClose }) => {
-  const { user, setUser, lang, setLang } = useApp();
+  const { user, setUser, lang, setLang, t } = useApp();
 
   const [birthday, setBirthday] = useState('');
   const [favoriteNumber, setFavoriteNumber] = useState('77');
@@ -165,10 +165,10 @@ export const UserProfileModal = ({ isOpen, onClose }) => {
             <User className="w-6 h-6" />
           </div>
           <h3 className="font-bebas text-2xl sm:text-3xl text-white tracking-wider">
-            MY CHAMPION CULTURE PROFILE
+            {t.profTitle || 'MY CHAMPION CULTURE PROFILE'}
           </h3>
           <p className="text-xs text-slate-400 font-medium">
-            Customize your SuperMacho credentials, rewards & birthday alerts
+            {t.profSub || 'Customize your SuperMacho credentials, rewards & birthday alerts'}
           </p>
         </div>
 
@@ -177,9 +177,9 @@ export const UserProfileModal = ({ isOpen, onClose }) => {
             <div className="w-14 h-14 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 mx-auto flex items-center justify-center">
               <Check className="w-7 h-7" />
             </div>
-            <h4 className="font-bebas text-2xl text-white tracking-wider">PROFILE SAVED!</h4>
+            <h4 className="font-bebas text-2xl text-white tracking-wider">{t.profSavedTitle || 'PROFILE SAVED!'}</h4>
             <p className="text-xs text-slate-300">
-              Your Champion preferences have been updated!
+              {t.profSavedSub || 'Your Champion preferences have been updated!'}
             </p>
           </div>
         ) : (
@@ -188,7 +188,7 @@ export const UserProfileModal = ({ isOpen, onClose }) => {
             {/* Registered Email */}
             <div>
               <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1">
-                Account Email
+                {t.profEmailLabel || 'Account Email'}
               </label>
               <input
                 type="email"
@@ -201,7 +201,7 @@ export const UserProfileModal = ({ isOpen, onClose }) => {
             {/* Preferred Language */}
             <div>
               <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1">
-                Preferred Language
+                {t.profLangLabel || 'Preferred Language'}
               </label>
               <select
                 value={prefLang}
@@ -218,7 +218,7 @@ export const UserProfileModal = ({ isOpen, onClose }) => {
             <div>
               <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1 flex items-center gap-1.5">
                 <Calendar className="w-3.5 h-3.5 text-amber-400" />
-                <span>Birthday (For Rewards & Congrats)</span>
+                <span>{t.profBdayLabel || 'Birthday (For Rewards & Congrats)'}</span>
               </label>
               <input
                 type="date"
@@ -234,7 +234,7 @@ export const UserProfileModal = ({ isOpen, onClose }) => {
               <div className="col-span-1">
                 <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1 flex items-center gap-1">
                   <Hash className="w-3 h-3 text-amber-400" />
-                  <span>Lucky #</span>
+                  <span>{t.profLuckyLabel || 'Lucky #'}</span>
                 </label>
                 <input
                   type="text"
@@ -249,7 +249,7 @@ export const UserProfileModal = ({ isOpen, onClose }) => {
               <div className="col-span-2">
                 <label className="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1 flex items-center gap-1">
                   <Trophy className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Favorite NFL Team</span>
+                  <span>{t.profTeamLabel || 'Favorite NFL Team'}</span>
                 </label>
                 <select
                   value={favoriteTeam}
@@ -269,7 +269,7 @@ export const UserProfileModal = ({ isOpen, onClose }) => {
               className="w-full btn-gold py-3 rounded-xl font-extrabold text-xs uppercase tracking-wider shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 mt-2"
             >
               <Sparkles className="w-4 h-4" />
-              <span>Save Champion Profile</span>
+              <span>{t.profSaveBtn || 'Save Champion Profile'}</span>
             </button>
           </form>
         )}
