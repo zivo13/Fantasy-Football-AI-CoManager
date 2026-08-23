@@ -69,7 +69,14 @@ export const Navbar = () => {
             </button>
 
             <button
-              onClick={() => setCurrentTab('client')}
+              onClick={() => {
+                if (user.isLoggedIn) {
+                  setCurrentTab('client');
+                } else {
+                  setAuthMode('signup');
+                  setShowAuthModal(true);
+                }
+              }}
               className={`px-4 py-2 rounded-xl font-semibold text-sm transition-all flex items-center gap-2 ${
                 currentTab === 'client' 
                   ? 'bg-gradient-to-r from-amber-500/20 to-amber-600/20 text-amber-300 border border-amber-500/40 shadow-lg shadow-amber-500/10' 
