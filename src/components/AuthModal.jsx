@@ -23,6 +23,27 @@ export const AuthModal = () => {
     const assignedRole = isAdminEmail ? 'admin' : 'client';
     const userStorageKey = `sm_user_${cleanEmail}`;
 
+    // 1. STAGE 1: GLOBAL SUSPENSION CHECK (Enforced first across all devices)
+    try {
+      const checkRes = await fetch(`/api/register-user?check_suspended=${encodeURIComponent(cleanEmail)}`);
+      const checkData = await checkRes.json();
+      if (checkData && checkData.isSuspended) {
+        setAuthError('ACCOUNT SUSPENDED: Your account has been suspended by the League Commissioner. Access is restricted.');
+        setLoading(false);
+        return;
+      }
+    } catch (e) {}
+
+    // Stage 1B: Local storage suspension check
+    try {
+      const isLocalSuspended = localStorage.getItem(`sm_suspended_${cleanEmail}`);
+      if (isLocalSuspended === 'true') {
+        setAuthError('ACCOUNT SUSPENDED: Your account has been suspended by the League Commissioner. Access is restricted.');
+        setLoading(false);
+        return;
+      }
+    } catch (e) {}
+
     try {
       if (authMode === 'signup') {
         if (password.length < 4) {
@@ -36,13 +57,12 @@ export const AuthModal = () => {
         localStorage.setItem(userStorageKey, JSON.stringify({ email: cleanEmail, password, role: assignedRole }));
         handleLogin(cleanEmail, assignedRole);
       } else {
-        // Sign In Mode: Check stored password credential & Suspension status
+        // Sign In Mode: Check stored password credential
         const storedUserJson = localStorage.getItem(userStorageKey);
         
         if (storedUserJson) {
           const storedUser = JSON.parse(storedUserJson);
 
-          // Check if user is suspended locally
           if (storedUser.status && storedUser.status.includes('Suspended')) {
             setAuthError('ACCOUNT SUSPENDED: Your account has been suspended by the League Commissioner. Contact support@supermacho.app.');
             setLoading(false);
@@ -55,20 +75,6 @@ export const AuthModal = () => {
             return;
           }
         }
-
-        // Check global server API for suspension status across devices
-        try {
-          const res = await fetch('/api/register-user');
-          const data = await res.json();
-          if (data && data.users) {
-            const serverUser = data.users.find(u => u.user.toLowerCase() === cleanEmail);
-            if (serverUser && serverUser.status && serverUser.status.includes('Suspended')) {
-              setAuthError('ACCOUNT SUSPENDED: Your account has been suspended by the League Commissioner. Contact support@supermacho.app.');
-              setLoading(false);
-              return;
-            }
-          }
-        } catch (e) {}
 
         await signInWithEmail(cleanEmail, password);
         handleLogin(cleanEmail, assignedRole);

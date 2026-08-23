@@ -310,7 +310,11 @@ export const AdminDashboard = () => {
                           
                           // Persist local user status flag for login enforcement
                           try {
-                            const key = `sm_user_${regUser.user.toLowerCase()}`;
+                            const clean = regUser.user.toLowerCase();
+                            const isSusp = newStatus.includes('Suspended');
+                            localStorage.setItem(`sm_suspended_${clean}`, isSusp ? 'true' : 'false');
+                            
+                            const key = `sm_user_${clean}`;
                             const saved = localStorage.getItem(key);
                             if (saved) {
                               const parsed = JSON.parse(saved);

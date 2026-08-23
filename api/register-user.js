@@ -7,6 +7,10 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.
 let globalUserStore = global._supermacho_global_users || [];
 global._supermacho_global_users = globalUserStore;
 
+// Persistent suspended emails store across cold starts
+let suspendedEmailsStore = global._supermacho_suspended_emails || {};
+global._supermacho_suspended_emails = suspendedEmailsStore;
+
 export default async function handler(req, res) {
   // CORS Headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -23,6 +27,15 @@ export default async function handler(req, res) {
       if (!email) return res.status(400).json({ error: 'Email required' });
 
       const cleanEmail = email.trim().toLowerCase();
+
+      if (status) {
+        if (status.includes('Suspended') || status.includes('Inactive')) {
+          suspendedEmailsStore[cleanEmail] = true;
+        } else {
+          suspendedEmailsStore[cleanEmail] = false;
+        }
+        global._supermacho_suspended_emails = suspendedEmailsStore;
+      }
       
       const existingIndex = globalUserStore.findIndex(u => u.user.toLowerCase() === cleanEmail);
 
@@ -54,7 +67,11 @@ export default async function handler(req, res) {
         }, { onConflict: 'email' });
       }
 
-      return res.status(200).json({ success: true, users: globalUserStore });
+      return res.status(200).json({ 
+        success: true, 
+        users: globalUserStore, 
+        suspended: suspendedEmailsStore 
+      });
     } catch (err) {
       return res.status(500).json({ error: err.message });
     }
@@ -64,8 +81,10 @@ export default async function handler(req, res) {
     try {
       const { email } = req.body || {};
       if (email) {
-        globalUserStore = globalUserStore.filter(u => u.user.toLowerCase() !== email.trim().toLowerCase());
+        const cleanEmail = email.trim().toLowerCase();
+        globalUserStore = globalUserStore.filter(u => u.user.toLowerCase() !== cleanEmail);
         global._supermacho_global_users = globalUserStore;
+        delete suspendedEmailsStore[cleanEmail];
       }
       return res.status(200).json({ success: true, users: globalUserStore });
     } catch (err) {
@@ -74,7 +93,17 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'GET') {
-    return res.status(200).json({ users: globalUserStore });
+    const { check_suspended } = req.query || {};
+    if (check_suspended) {
+      const checkEmail = check_suspended.trim().toLowerCase();
+      const isSuspended = !!suspendedEmailsStore[checkEmail];
+      return res.status(200).json({ email: checkEmail, isSuspended });
+    }
+
+    return res.status(200).json({ 
+      users: globalUserStore, 
+      suspended: suspendedEmailsStore 
+    });
   }
 
   return res.status(405).json({ error: 'Method not allowed' });
