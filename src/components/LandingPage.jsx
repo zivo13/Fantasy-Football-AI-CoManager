@@ -142,12 +142,12 @@ export const LandingPage = () => {
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
               <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-1.5">
                 <Activity className="w-4 h-4 text-emerald-400" />
-                <span>LIVE RAPIDAPI NFL STREAM ACTIVE • SUNDAY GAMEDAY</span>
+                <span>LIVE NFL STREAM ACTIVE • SUNDAY GAMEDAY</span>
               </span>
             </div>
             <div className="text-[11px] font-semibold text-slate-400 flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5 text-amber-400" />
-              <span>Real-Time Play-by-Play & Vegas Odds</span>
+              <span>Preseason / Week 1 Projections & Live Feed</span>
             </div>
           </div>
 
