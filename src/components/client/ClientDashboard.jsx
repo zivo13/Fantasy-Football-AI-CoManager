@@ -12,12 +12,46 @@ export const ClientDashboard = () => {
     demoWaivers, 
     demoTrade,
     aiChatMessages,
-    handleSendAiMessage
+    handleSendAiMessage,
+    user,
+    setUser
   } = useApp();
 
   const [activeTab, setActiveTab] = useState('lineup'); // 'lineup' | 'waivers' | 'trade' | 'chat'
   const [chatInput, setChatInput] = useState('');
   const [showConfigModal, setShowConfigModal] = useState(false);
+
+  // Upgrade Plan handler
+  const handleUpgradePlan = (newPlan, newPlanId) => {
+    const cleanEmail = (user?.email || '').toLowerCase();
+    
+    // Update local React user state
+    if (typeof setUser === 'function') {
+      setUser(prev => ({
+        ...prev,
+        plan: newPlan,
+        planId: newPlanId
+      }));
+    }
+
+    // Save to localStorage credential store
+    try {
+      const userKey = `sm_user_${cleanEmail}`;
+      const savedUserJson = localStorage.getItem(userKey);
+      let savedUser = savedUserJson ? JSON.parse(savedUserJson) : { email: cleanEmail };
+      savedUser.plan = newPlan;
+      localStorage.setItem(userKey, JSON.stringify(savedUser));
+    } catch (e) {}
+
+    // Send global upgrade notification to Vercel API endpoint
+    try {
+      fetch('/api/register-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: cleanEmail, plan: newPlan })
+      });
+    } catch (e) {}
+  };
 
   // Form state for adding league parameters
   const [platform, setPlatform] = useState('ESPN');
@@ -94,14 +128,37 @@ export const ClientDashboard = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-3 z-10 w-full md:w-auto justify-end">
-          <button
-            onClick={() => setShowConfigModal(true)}
-            className="btn-gold px-5 py-3 rounded-2xl text-xs font-extrabold flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Configure League Parameters</span>
-          </button>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 z-10 w-full md:w-auto justify-end bg-slate-950/80 p-4 rounded-2xl border border-amber-500/30">
+          <div>
+            <div className="text-[10px] uppercase font-bold text-slate-400">Your Subscription Tier</div>
+            <div className="font-bebas text-xl text-amber-400">
+              {user?.plan || (user?.planId === 'free' ? 'Free Rookie ($0/mo)' : 'Pro Champion ($4.99/mo)')}
+            </div>
+          </div>
+
+          {(!user?.planId || user?.planId === 'free' || (user?.plan && user?.plan.includes('Free'))) ? (
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => handleUpgradePlan('Pro Champion ($4.99/mo)', 'pro')}
+                className="btn-gold px-3.5 py-2 rounded-xl text-xs font-extrabold flex items-center gap-1.5 shadow-lg whitespace-nowrap"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Upgrade Pro ($4.99/mo)</span>
+              </button>
+              <button
+                onClick={() => handleUpgradePlan('SuperMacho Commissioner ($9.99/mo)', 'commissioner')}
+                className="px-3.5 py-2 rounded-xl text-xs font-extrabold bg-cyan-500 hover:bg-cyan-400 text-slate-950 flex items-center gap-1.5 shadow-lg whitespace-nowrap"
+              >
+                <Shield className="w-3.5 h-3.5" />
+                <span>Upgrade Commissioner ($9.99/mo)</span>
+              </button>
+            </div>
+          ) : (
+            <div className="bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-extrabold px-3 py-2 rounded-xl flex items-center gap-1.5">
+              <Check className="w-4 h-4 text-emerald-400" />
+              <span>PRO UNLOCKED</span>
+            </div>
+          )}
         </div>
       </div>
 
