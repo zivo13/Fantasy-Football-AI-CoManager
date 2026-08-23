@@ -144,6 +144,20 @@ export default async function handler(req, res) {
       } catch (e) {}
     }
 
+    const draftPlayers = [
+      { id: 'p1', name: 'Christian McCaffrey', pos: 'RB', team: 'SF', adp: '1.01', projPts: 312.4, floor: 18.2, ceiling: 34.5, upsideTier: 'S-TIER ELITE', valueSteal: 'CONSENSUS #1 PICK', needMatch: true },
+      { id: 'p2', name: 'CeeDee Lamb', pos: 'WR', team: 'DAL', adp: '1.02', projPts: 294.8, floor: 16.5, ceiling: 31.0, upsideTier: 'S-TIER ELITE', valueSteal: 'CONSENSUS #2 PICK', needMatch: false },
+      { id: 'p3', name: 'Breece Hall', pos: 'RB', team: 'NYJ', adp: '1.08', projPts: 268.4, floor: 14.2, ceiling: 26.5, upsideTier: 'S-TIER ELITE', valueSteal: '+4 Picks Value', needMatch: true },
+      { id: 'p4', name: 'Bijan Robinson', pos: 'RB', team: 'ATL', adp: '1.09', projPts: 262.1, floor: 13.8, ceiling: 25.1, upsideTier: 'S-TIER ELITE', valueSteal: '+2 Picks Value', needMatch: true },
+      { id: 'p5', name: 'Ja\'Marr Chase', pos: 'WR', team: 'CIN', adp: '1.04', projPts: 282.0, floor: 15.1, ceiling: 32.4, upsideTier: 'WR1 OVERALL CEILING', valueSteal: 'TOP 5 ANCHOR', needMatch: false },
+      { id: 'p6', name: 'Malik Nabers', pos: 'WR', team: 'NYG', adp: '2.04', projPts: 224.5, floor: 11.5, ceiling: 22.8, upsideTier: 'BREAKOUT UPSIDE', valueSteal: '+6 Picks Value', needMatch: false },
+      { id: 'p7', name: 'Marvin Harrison Jr.', pos: 'WR', team: 'ARI', adp: '2.06', projPts: 218.9, floor: 10.9, ceiling: 23.4, upsideTier: 'BREAKOUT UPSIDE', valueSteal: '+3 Picks Value', needMatch: false },
+      { id: 'p8', name: 'Lamar Jackson', pos: 'QB', team: 'BAL', adp: '3.02', projPts: 342.1, floor: 18.5, ceiling: 32.0, upsideTier: 'KONAMI CODE QB', valueSteal: 'Fair Value', needMatch: false },
+      { id: 'p9', name: 'Trey McBride', pos: 'TE', team: 'ARI', adp: '4.05', projPts: 184.2, floor: 9.4, ceiling: 19.8, upsideTier: 'ELITE TARGET SHARE', valueSteal: '+8 Picks Value', needMatch: true },
+      { id: 'p10', name: 'Kenneth Walker III', pos: 'RB', team: 'SEA', adp: '4.10', projPts: 204.8, floor: 10.1, ceiling: 21.5, upsideTier: 'TOUCHDOWN CEILING', valueSteal: '+5 Picks Value', needMatch: true },
+      { id: 'p11', name: 'Jayden Daniels', pos: 'QB', team: 'WAS', adp: '6.04', projPts: 298.5, floor: 14.0, ceiling: 28.5, upsideTier: 'RUSHING UPSIDE GEM', valueSteal: 'ROUND 6 STEAL', needMatch: false }
+    ];
+
     const payload = {
       status: 'REAL_ESPN_LIVE_SYNCED',
       lastUpdated: new Date().toISOString(),
@@ -152,6 +166,7 @@ export default async function handler(req, res) {
       gameCount: realGames.length,
       games: realGames,
       headlines: realHeadlines,
+      draftPlayers: draftPlayers,
       rapidEnriched: !!rapidData
     };
 
