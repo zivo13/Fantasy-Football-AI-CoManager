@@ -181,7 +181,7 @@ export const LandingPage = () => {
                   <span>{liveNflData?.games?.[0]?.homeAbbrev || 'KC Chiefs'}</span>
                 </div>
                 <span className="font-bebas text-lg text-amber-400">
-                  {liveNflData?.games?.[0]?.isLive ? `${liveNflData.games[0].homeScore} - ${liveNflData.games[0].awayScore}` : 'VS'}
+                  {(liveNflData?.games?.[0]?.hasScore || liveNflData?.games?.[0]?.isCompleted || liveNflData?.games?.[0]?.isLive) ? `${liveNflData.games[0].homeScore} - ${liveNflData.games[0].awayScore}` : 'VS'}
                 </span>
                 <div className="flex items-center gap-1.5">
                   <span>{liveNflData?.games?.[0]?.awayAbbrev || 'BAL Ravens'}</span>
@@ -206,7 +206,7 @@ export const LandingPage = () => {
                   <span>{liveNflData?.games?.[1]?.homeAbbrev || 'SF 49ers'}</span>
                 </div>
                 <span className="font-bebas text-lg text-amber-400">
-                  {liveNflData?.games?.[1]?.isLive ? `${liveNflData.games[1].homeScore} - ${liveNflData.games[1].awayScore}` : 'VS'}
+                  {(liveNflData?.games?.[1]?.hasScore || liveNflData?.games?.[1]?.isCompleted || liveNflData?.games?.[1]?.isLive) ? `${liveNflData.games[1].homeScore} - ${liveNflData.games[1].awayScore}` : 'VS'}
                 </span>
                 <div className="flex items-center gap-1.5">
                   <span>{liveNflData?.games?.[1]?.awayAbbrev || 'DAL Cowboys'}</span>

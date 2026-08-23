@@ -106,6 +106,8 @@ export default async function handler(req, res) {
         statusState: status.state, // 'pre', 'in', 'post'
         statusDetail: status.detail || status.description || 'Upcoming Game',
         isLive: status.state === 'in',
+        isCompleted: status.state === 'post',
+        hasScore: status.state === 'in' || status.state === 'post',
         homeTeam: home.team?.displayName || 'Home Team',
         homeAbbrev: home.team?.abbreviation || 'HOME',
         homeScore: home.score || '0',
