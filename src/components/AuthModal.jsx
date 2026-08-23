@@ -18,19 +18,46 @@ export const AuthModal = () => {
     setLoading(true);
     setAuthError('');
 
-    const isAdminEmail = email.toLowerCase().includes('admin');
+    const cleanEmail = email.trim().toLowerCase();
+    const isAdminEmail = cleanEmail.includes('admin');
     const assignedRole = isAdminEmail ? 'admin' : 'client';
+    const userStorageKey = `sm_user_${cleanEmail}`;
 
     try {
       if (authMode === 'signup') {
-        await signUpWithEmail(email, password, email.split('@')[0]);
+        if (password.length < 4) {
+          setAuthError('Password must be at least 4 characters long.');
+          setLoading(false);
+          return;
+        }
+
+        // Attempt Supabase signup & save local credential
+        await signUpWithEmail(cleanEmail, password, cleanEmail.split('@')[0]);
+        localStorage.setItem(userStorageKey, JSON.stringify({ email: cleanEmail, password, role: assignedRole }));
+        handleLogin(cleanEmail, assignedRole);
       } else {
-        await signInWithEmail(email, password);
+        // Sign In Mode: Check stored password credential
+        const storedUserJson = localStorage.getItem(userStorageKey);
+        
+        if (storedUserJson) {
+          const storedUser = JSON.parse(storedUserJson);
+          if (storedUser.password && storedUser.password !== password) {
+            setAuthError('Incorrect password. Please enter the correct password.');
+            setLoading(false);
+            return;
+          }
+        } else {
+          // First time logging in with this email: Save credentials
+          localStorage.setItem(userStorageKey, JSON.stringify({ email: cleanEmail, password, role: assignedRole }));
+        }
+
+        await signInWithEmail(cleanEmail, password);
+        handleLogin(cleanEmail, assignedRole);
       }
     } catch (err) {
-      console.warn('Supabase Auth Notice:', err);
+      console.warn('Auth Error:', err);
+      setAuthError('Authentication error. Please try again.');
     } finally {
-      handleLogin(email, assignedRole);
       setLoading(false);
     }
   };
