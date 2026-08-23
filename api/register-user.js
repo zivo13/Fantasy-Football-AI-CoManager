@@ -4,7 +4,7 @@ import fs from 'fs';
 const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://placeholder.supabase.co';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY || 'placeholder_key';
 
-const TMP_FILE = '/tmp/supermacho_users_v2.json';
+const TMP_FILE = '/tmp/supermacho_users_v3.json';
 
 const DEFAULT_SEED_USERS = [
   { id: 'u_100', user: 'zivo13@yahoo.com', plan: 'Free Rookie ($0/mo)', date: '2026-08-23', status: 'Active Subscriber' },

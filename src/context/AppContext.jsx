@@ -94,22 +94,10 @@ export const AppProvider = ({ children }) => {
         const res = await fetch('/api/register-user');
         const data = await res.json();
         if (data && data.users && Array.isArray(data.users)) {
-          setRegisteredUsersList(prev => {
-            const combined = [...data.users];
-            prev.forEach(p => {
-              const matched = combined.find(c => c.user.toLowerCase() === p.user.toLowerCase());
-              if (!matched) {
-                combined.push(p);
-              } else if (p.plan && p.plan !== matched.plan) {
-                // Keep Admin user list perfectly synchronized with actual client plan
-                matched.plan = p.plan;
-              }
-            });
-            try {
-              localStorage.setItem('sm_registered_users_list', JSON.stringify(combined));
-            } catch (e) {}
-            return combined;
-          });
+          setRegisteredUsersList(data.users);
+          try {
+            localStorage.setItem('sm_registered_users_list', JSON.stringify(data.users));
+          } catch (e) {}
         }
       } catch (e) {}
     };
