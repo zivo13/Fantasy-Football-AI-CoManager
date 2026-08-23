@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Trophy, Zap, Flame, Bot, Plus, Check, RefreshCw, AlertCircle, ArrowUpRight, Send, HelpCircle, Shield, Settings, Activity, Sparkles, TrendingUp, Award } from 'lucide-react';
+import { CheckoutModal } from '../CheckoutModal';
 
 export const ClientDashboard = () => {
   const { 
@@ -20,6 +21,13 @@ export const ClientDashboard = () => {
   const [activeTab, setActiveTab] = useState('lineup'); // 'lineup' | 'waivers' | 'trade' | 'chat'
   const [chatInput, setChatInput] = useState('');
   const [showConfigModal, setShowConfigModal] = useState(false);
+  const [showCheckoutModal, setShowCheckoutModal] = useState(false);
+  const [checkoutPlan, setCheckoutPlan] = useState(null);
+
+  const startCheckout = (name, price, id) => {
+    setCheckoutPlan({ name, price, id });
+    setShowCheckoutModal(true);
+  };
 
   // Upgrade Plan handler
   const handleUpgradePlan = (newPlan, newPlanId) => {
@@ -139,14 +147,14 @@ export const ClientDashboard = () => {
           {(!user?.planId || user?.planId === 'free' || (user?.plan && user?.plan.includes('Free'))) ? (
             <div className="flex flex-wrap gap-2">
               <button
-                onClick={() => handleUpgradePlan('Pro Champion ($4.99/mo)', 'pro')}
+                onClick={() => startCheckout('Pro Champion', '$4.99/mo', 'pro')}
                 className="btn-gold px-3.5 py-2 rounded-xl text-xs font-extrabold flex items-center gap-1.5 shadow-lg whitespace-nowrap"
               >
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>Upgrade Pro ($4.99/mo)</span>
               </button>
               <button
-                onClick={() => handleUpgradePlan('SuperMacho Commissioner ($9.99/mo)', 'commissioner')}
+                onClick={() => startCheckout('SuperMacho Commissioner', '$9.99/mo', 'commissioner')}
                 className="px-3.5 py-2 rounded-xl text-xs font-extrabold bg-cyan-500 hover:bg-cyan-400 text-slate-950 flex items-center gap-1.5 shadow-lg whitespace-nowrap"
               >
                 <Shield className="w-3.5 h-3.5" />
@@ -668,6 +676,14 @@ export const ClientDashboard = () => {
           </div>
         </div>
       )}
+
+      {/* STRIPE SECURE CHECKOUT MODAL */}
+      <CheckoutModal 
+        isOpen={showCheckoutModal} 
+        onClose={() => setShowCheckoutModal(false)} 
+        selectedPlan={checkoutPlan} 
+        onPaymentSuccess={handleUpgradePlan} 
+      />
 
     </div>
   );
