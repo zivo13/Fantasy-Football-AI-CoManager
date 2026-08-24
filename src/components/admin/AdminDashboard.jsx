@@ -490,14 +490,22 @@ export const AdminDashboard = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
-                  {registeredUsersList.length === 0 ? (
+                  {registeredUsersList.filter(u => {
+                    const clean = (u.user || u.email || '').toLowerCase();
+                    return u.role !== 'admin' && !clean.includes('admin') && clean !== 'zivo13@yahoo.com';
+                  }).length === 0 ? (
                     <tr>
                       <td colSpan={7} className="text-center py-8 text-slate-500 text-xs">
                         No client accounts found. Register a new client on Computer 2 / New Tab to begin live testing!
                       </td>
                     </tr>
                   ) : (
-                    registeredUsersList.map((u) => {
+                    registeredUsersList
+                      .filter(u => {
+                        const clean = (u.user || u.email || '').toLowerCase();
+                        return u.role !== 'admin' && !clean.includes('admin') && clean !== 'zivo13@yahoo.com';
+                      })
+                      .map((u) => {
                       const clean = (u.user || u.email || '').toLowerCase();
                       const hasProfile = u.profile?.profileCompleted || u.profile?.favoriteTeam || (accessCounts[clean] && accessCounts[clean] > 1);
                       const userTickets = supportTickets.filter(t => (t.user_email || '').toLowerCase() === clean);
@@ -897,7 +905,10 @@ export const AdminDashboard = () => {
               </thead>
               <tbody className="divide-y divide-slate-800/60 text-slate-300">
                 {registeredUsersList
-                  .filter(regUser => regUser && regUser.user)
+                  .filter(regUser => {
+                    const clean = (regUser.user || regUser.email || '').toLowerCase();
+                    return regUser.role !== 'admin' && !clean.includes('admin') && clean !== 'zivo13@yahoo.com';
+                  })
                   .map((regUser) => (
                   <tr key={regUser.id} className="bg-amber-500/10 hover:bg-amber-500/20 transition-colors border-l-4 border-amber-500">
                     <td className="p-4 font-bold text-white flex items-center gap-2">
