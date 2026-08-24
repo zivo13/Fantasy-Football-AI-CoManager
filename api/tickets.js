@@ -6,43 +6,19 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.
 
 const TMP_TICKETS_FILE = '/tmp/supermacho_tickets_v1.json';
 
-const DEFAULT_SEED_TICKETS = [
-  {
-    id: 'tick_1001',
-    user_email: 'doctorluismoralesae@gmail.com',
-    subject: 'ESPN League Import Sync Issue',
-    category: 'Technical',
-    priority: 'High',
-    status: 'In Progress',
-    created_at: new Date(Date.now() - 86400000).toISOString(),
-    messages: [
-      {
-        sender: 'doctorluismoralesae@gmail.com',
-        senderName: 'Dr. Luis Morales',
-        text: 'Hi SuperMacho support! My ESPN League ID 8492019 parameters were added, can you double check if live scoring updates every minute?',
-        timestamp: 'Yesterday 02:15 PM'
-      },
-      {
-        sender: 'support@supermacho.app',
-        senderName: 'SuperMacho Support Team',
-        text: 'Hey Dr. Morales! 🕶️ Checked your ESPN league params. Live scoring sync is ACTIVE and set to refresh every 30 seconds during Sunday game windows!',
-        timestamp: 'Yesterday 04:30 PM'
-      }
-    ]
-  }
-];
+const DEFAULT_SEED_TICKETS = [];
 
 function readTicketsState() {
   try {
     if (fs.existsSync(TMP_TICKETS_FILE)) {
       const raw = fs.readFileSync(TMP_TICKETS_FILE, 'utf8');
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) {
+      if (Array.isArray(parsed)) {
         return parsed;
       }
     }
   } catch (e) {}
-  return DEFAULT_SEED_TICKETS;
+  return [];
 }
 
 function saveTicketsState(tickets) {

@@ -6,11 +6,7 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.
 
 const TMP_FILE = '/tmp/supermacho_users_v3.json';
 
-const DEFAULT_SEED_USERS = [
-  { id: 'u_100', user: 'zivo13@yahoo.com', plan: 'Free Rookie ($0/mo)', date: '2026-08-23', status: 'Active Subscriber' },
-  { id: 'u_101', user: 'zivo13@hotmail.com', plan: 'Free Rookie ($0/mo)', date: '2026-08-23', status: 'Active Subscriber' },
-  { id: 'u_102', user: 'doctorluismoralesae@gmail.com', plan: 'Free Rookie ($0/mo)', date: '2026-08-23', status: 'Active Subscriber' }
-];
+const DEFAULT_SEED_USERS = [];
 
 // Helper to read persistent disk state across lambda invocations
 function readState() {
@@ -20,12 +16,8 @@ function readState() {
       const parsed = JSON.parse(raw);
       const deletedMap = parsed.deleted || {};
       
-      let userList = parsed.users;
-      if (!userList || userList.length === 0) {
-        userList = DEFAULT_SEED_USERS.filter(u => !deletedMap[u.user.toLowerCase()]);
-      } else {
-        userList = userList.filter(u => !deletedMap[u.user.toLowerCase()]);
-      }
+      let userList = parsed.users || [];
+      userList = userList.filter(u => u && u.user && !deletedMap[u.user.toLowerCase()]);
 
       return {
         users: userList,
@@ -36,7 +28,7 @@ function readState() {
     }
   } catch (e) {}
 
-  return { users: DEFAULT_SEED_USERS, suspended: {}, profiles: {}, deleted: {} };
+  return { users: [], suspended: {}, profiles: {}, deleted: {} };
 }
 
 // Helper to write persistent disk state
