@@ -96,10 +96,23 @@ export const AppProvider = ({ children }) => {
         const res = await fetch('/api/register-user');
         const data = await res.json();
         if (data && data.users && Array.isArray(data.users)) {
-          setRegisteredUsersList(data.users);
-          try {
-            localStorage.setItem('sm_registered_users_list', JSON.stringify(data.users));
-          } catch (e) {}
+          setRegisteredUsersList(prev => {
+            const map = new Map();
+            (prev || []).forEach(u => {
+              if (u && u.user) map.set(u.user.toLowerCase(), u);
+            });
+            data.users.forEach(u => {
+              if (u && u.user) {
+                const existing = map.get(u.user.toLowerCase());
+                map.set(u.user.toLowerCase(), existing ? { ...existing, ...u } : u);
+              }
+            });
+            const merged = Array.from(map.values());
+            try {
+              localStorage.setItem('sm_registered_users_list', JSON.stringify(merged));
+            } catch (e) {}
+            return merged;
+          });
         }
       } catch (e) {}
     };
