@@ -897,7 +897,7 @@ export const AdminDashboard = () => {
               </thead>
               <tbody className="divide-y divide-slate-800/60 text-slate-300">
                 {registeredUsersList
-                  .filter(regUser => regUser.user && !regUser.user.toLowerCase().includes('admin'))
+                  .filter(regUser => regUser && regUser.user)
                   .map((regUser) => (
                   <tr key={regUser.id} className="bg-amber-500/10 hover:bg-amber-500/20 transition-colors border-l-4 border-amber-500">
                     <td className="p-4 font-bold text-white flex items-center gap-2">

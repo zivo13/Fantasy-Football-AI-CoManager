@@ -195,8 +195,51 @@ export default async function handler(req, res) {
       return res.status(200).json({ email: getProfileEmail, profile });
     }
 
+    // Merge Supabase database profiles into users list if configured
+    let allUsers = [...currentState.users];
+
+    if (supabaseUrl && !supabaseUrl.includes('placeholder')) {
+      try {
+        const supabase = createClient(supabaseUrl, supabaseServiceKey);
+        const { data: dbProfiles } = await supabase.from('profiles').select('*');
+        if (dbProfiles && Array.isArray(dbProfiles) && dbProfiles.length > 0) {
+          const userMap = new Map();
+          
+          // Seed currentState users first
+          allUsers.forEach(u => {
+            if (u && u.user) userMap.set(u.user.toLowerCase(), u);
+          });
+
+          // Override / hydrate with Supabase DB profiles
+          dbProfiles.forEach(p => {
+            if (p && p.email) {
+              const cleanE = p.email.toLowerCase();
+              const planName = p.plan_id === 'pro' ? 'Pro Champion ($4.99/mo)' : p.plan_id === 'commissioner' ? 'SuperMacho Commissioner ($9.99/mo)' : 'Free Rookie ($0/mo)';
+              userMap.set(cleanE, {
+                id: p.id || 'u_' + cleanE,
+                user: cleanE,
+                plan: planName,
+                date: p.created_at ? new Date(p.created_at).toLocaleDateString() : 'Registered',
+                status: p.status || 'Active Subscriber',
+                profile: {
+                  email: cleanE,
+                  birthday: p.birthday,
+                  favoriteTeam: p.favorite_team,
+                  favoriteNumber: p.favorite_number,
+                  prefLang: p.preferred_language,
+                  profileCompleted: p.profile_completed
+                }
+              });
+            }
+          });
+
+          allUsers = Array.from(userMap.values());
+        }
+      } catch (e) {}
+    }
+
     return res.status(200).json({ 
-      users: currentState.users, 
+      users: allUsers, 
       suspended: currentState.suspended,
       profiles: currentState.profiles
     });

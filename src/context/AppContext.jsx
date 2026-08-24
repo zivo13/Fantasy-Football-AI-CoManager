@@ -290,7 +290,7 @@ export const AppProvider = ({ children }) => {
         .catch(() => {});
     } catch (e) {}
 
-    // Send global signup event to Vercel API endpoint
+    // Send global signup event to Vercel API endpoint & Supabase
     try {
       fetch('/api/register-user', {
         method: 'POST',
@@ -298,34 +298,35 @@ export const AppProvider = ({ children }) => {
         body: JSON.stringify({ 
           email: cleanEmail, 
           role, 
-          plan: role === 'admin' ? 'SuperMacho Commissioner' : 'Free Rookie ($0/mo)',
+          plan: userPlan,
           profile: userProfile 
         })
       });
     } catch (e) {}
 
-    if (role !== 'admin') {
-      setRegisteredUsersList(prev => {
-        const exists = prev.some(u => u.user.toLowerCase() === cleanEmail);
-        if (!exists) {
-          const updated = [
-            {
-              id: 'u_' + Date.now(),
-              user: cleanEmail,
-              plan: 'Free Rookie ($0/mo)',
-              date: 'Just now',
-              status: 'Registered User'
-            },
-            ...prev
-          ];
-          try {
-            localStorage.setItem('sm_registered_users_list', JSON.stringify(updated));
-          } catch (e) {}
-          return updated;
-        }
-        return prev;
-      });
-    }
+    setRegisteredUsersList(prev => {
+      const exists = prev.some(u => u && u.user && u.user.toLowerCase() === cleanEmail);
+      let updated;
+      if (!exists) {
+        updated = [
+          {
+            id: 'u_' + Date.now(),
+            user: cleanEmail,
+            plan: userPlan,
+            date: 'Just now',
+            status: 'Registered User',
+            profile: userProfile
+          },
+          ...prev
+        ];
+      } else {
+        updated = prev.map(u => u && u.user && u.user.toLowerCase() === cleanEmail ? { ...u, plan: userPlan, profile: userProfile || u.profile } : u);
+      }
+      try {
+        localStorage.setItem('sm_registered_users_list', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
 
     setShowAuthModal(false);
     setCurrentTab(role === 'admin' ? 'admin' : 'client');
