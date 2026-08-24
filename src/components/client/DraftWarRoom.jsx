@@ -2,7 +2,37 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Award, Zap, Target, Users, Flame, ShieldAlert, Sparkles, TrendingUp, ChevronRight, Scale, CheckCircle2, ArrowRight, HelpCircle } from 'lucide-react';
 
-export const DraftWarRoom = () => {
+class DraftWarRoomBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(error, errorInfo) {
+    console.error("DraftWarRoom caught error:", error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="p-8 text-center space-y-4 bg-slate-900 rounded-3xl border border-amber-500/30">
+          <h2 className="font-bebas text-3xl text-amber-400">DRAFT WAR ROOM REFRESHING...</h2>
+          <p className="text-xs text-slate-300">Click below to re-initialize your live draft strategy board.</p>
+          <button 
+            onClick={() => this.setState({ hasError: false })}
+            className="btn-gold px-6 py-2 rounded-xl text-xs font-bold uppercase"
+          >
+            Reload Board
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+const DraftWarRoomInner = () => {
   const appState = useApp() || {};
   const currentLeague = appState.currentLeague || (appState.leagues && appState.leagues[0]) || { scoring: 'PPR' };
   const tRaw = appState.t;
@@ -47,7 +77,7 @@ export const DraftWarRoom = () => {
     { id: 'p18', name: 'Jonathan Taylor', pos: 'RB', team: 'IND', bye: 14, adp: '2.06', projPts: 245.0, floor: 12.2, ceiling: 26.0, upsideTier: 'WORKHORSE RB', valueSteal: '+4 Picks Value', needMatch: true },
     { id: 'p19', name: 'De\'Von Achane', pos: 'RB', team: 'MIA', bye: 6, adp: '2.07', projPts: 240.2, floor: 11.5, ceiling: 29.8, upsideTier: 'HOME RUN CEILING', valueSteal: '+5 Picks Value', needMatch: true },
     { id: 'p20', name: 'Kyren Williams', pos: 'RB', team: 'LAR', bye: 6, adp: '2.08', projPts: 236.5, floor: 11.8, ceiling: 24.5, upsideTier: 'REDZONE TOUCHES', valueSteal: '+3 Picks Value', needMatch: true },
-    { id: 'p21', name: 'Josh Jacobs', pos: 'GB', team: 'GB', bye: 10, adp: '2.09', projPts: 230.1, floor: 11.0, ceiling: 24.0, upsideTier: 'WORKHORSE RB', valueSteal: '+4 Picks Value', needMatch: true },
+    { id: 'p21', name: 'Josh Jacobs', pos: 'RB', team: 'GB', bye: 10, adp: '2.09', projPts: 230.1, floor: 11.0, ceiling: 24.0, upsideTier: 'WORKHORSE RB', valueSteal: '+4 Picks Value', needMatch: true },
     { id: 'p22', name: 'Kenneth Walker III', pos: 'RB', team: 'SEA', bye: 10, adp: '2.10', projPts: 225.4, floor: 10.8, ceiling: 23.5, upsideTier: 'TOUCHDOWN CEILING', valueSteal: '+5 Picks Value', needMatch: true },
     { id: 'p23', name: 'James Cook', pos: 'RB', team: 'BUF', bye: 12, adp: '2.11', projPts: 220.0, floor: 10.5, ceiling: 22.8, upsideTier: 'PASS CATCHER RB', valueSteal: '+6 Picks Value', needMatch: true },
     { id: 'p24', name: 'Chuba Hubbard', pos: 'RB', team: 'CAR', bye: 11, adp: '3.02', projPts: 210.5, floor: 10.0, ceiling: 21.5, upsideTier: 'HIGH VOLUME RB', valueSteal: 'ROUND 3 VALUE', needMatch: true },
@@ -64,7 +94,7 @@ export const DraftWarRoom = () => {
       fetch('/api/nfl-sync')
         .then(res => res.json())
         .then(data => {
-          if (data && data.draftPlayers && Array.isArray(data.draftPlayers)) {
+          if (data && data.draftPlayers && Array.isArray(data.draftPlayers) && data.draftPlayers.length > 0) {
             setLiveDraftPool(data.draftPlayers);
           }
         })
@@ -72,7 +102,7 @@ export const DraftWarRoom = () => {
     } catch (e) {}
   }, []);
 
-  const availablePlayers = liveDraftPool || defaultAvailablePlayers;
+  const availablePlayers = (Array.isArray(liveDraftPool) && liveDraftPool.length > 0) ? liveDraftPool : defaultAvailablePlayers;
 
   const lang = appState.lang || 'en';
 
@@ -599,3 +629,9 @@ export const DraftWarRoom = () => {
     </div>
   );
 };
+
+export const DraftWarRoom = (props) => (
+  <DraftWarRoomBoundary>
+    <DraftWarRoomInner {...props} />
+  </DraftWarRoomBoundary>
+);
