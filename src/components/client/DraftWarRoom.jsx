@@ -51,6 +51,13 @@ const DraftWarRoomInner = () => {
   
   // State for active AI Coach Question
   const [activeQuestion, setActiveQuestion] = useState('target_pos');
+  const safeAdviceMap = (AI_ADVICE_MAP_MULTI && (AI_ADVICE_MAP_MULTI[lang] || AI_ADVICE_MAP_MULTI.en)) || (AI_ADVICE_MAP_MULTI && AI_ADVICE_MAP_MULTI.en) || {};
+  const currentAdvice = (safeAdviceMap && (safeAdviceMap[activeQuestion] || safeAdviceMap.target_pos)) || {
+    title: "🎯 TARGET RECOMMENDATION: RB2 (RUNNING BACK)",
+    alert: "⚠️ TIER DROP WARNING: Only 2 S-Tier RBs remain before a massive 35-point projection cliff!",
+    analysis: "You already anchored WR1 with CeeDee Lamb in Round 1. Your team urgent priority is securing RB2 before Round 3 ends.",
+    action: "Pick RB next in Round 2"
+  };
   const [filterPos, setFilterPos] = useState('ALL');
   const [liveDraftPool, setLiveDraftPool] = useState(null);
   const [showGlossary, setShowGlossary] = useState(false);
@@ -383,20 +390,20 @@ const DraftWarRoomInner = () => {
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
             <h3 className="font-bebas text-2xl text-white tracking-wider">
-              {currentAdvice.title}
+              {currentAdvice?.title || ''}
             </h3>
           </div>
           <span className="bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-extrabold px-3 py-1 rounded-xl">
-            {currentAdvice.action}
+            {currentAdvice?.action || ''}
           </span>
         </div>
 
         <div className="p-3.5 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-xs text-amber-300 font-bold">
-          {currentAdvice.alert}
+          {currentAdvice?.alert || ''}
         </div>
 
         <p className="text-xs text-slate-200 leading-relaxed font-medium whitespace-pre-line">
-          {currentAdvice.analysis}
+          {currentAdvice?.analysis || ''}
         </p>
       </div>
 
