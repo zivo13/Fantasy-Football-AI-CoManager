@@ -170,7 +170,12 @@ export const AppProvider = ({ children }) => {
       fetch('/api/register-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: cleanEmail, role, plan: role === 'admin' ? 'SuperMacho Commissioner' : 'Free Rookie ($0/mo)' })
+        body: JSON.stringify({ 
+          email: cleanEmail, 
+          role, 
+          plan: role === 'admin' ? 'SuperMacho Commissioner' : 'Free Rookie ($0/mo)',
+          profile: userProfile 
+        })
       });
     } catch (e) {}
 

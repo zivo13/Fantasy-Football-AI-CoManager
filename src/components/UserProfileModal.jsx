@@ -48,7 +48,7 @@ export const UserProfileModal = ({ isOpen, onClose }) => {
 
   // Load profile when modal opens
   useEffect(() => {
-    if (user?.email) {
+    if (user?.email && isOpen) {
       const clean = user.email.toLowerCase();
 
       const populate = (p) => {
@@ -62,23 +62,28 @@ export const UserProfileModal = ({ isOpen, onClose }) => {
         }
       };
 
+      // 1. Try React user context profile
       if (user.profile) {
         populate(user.profile);
       }
 
+      // 2. Try localStorage credential store
+      let hasLocalProfile = false;
       try {
         const savedProfile = localStorage.getItem(`sm_profile_${clean}`);
         if (savedProfile) {
-          populate(JSON.parse(savedProfile));
+          const parsed = JSON.parse(savedProfile);
+          populate(parsed);
+          hasLocalProfile = true;
         }
       } catch (e) {}
 
-      // Always fetch latest server profile (survives browser cache clears)
+      // 3. Fetch server profile to hydrate server state
       try {
         fetch(`/api/register-user?get_profile=${encodeURIComponent(clean)}`)
           .then(res => res.json())
           .then(data => {
-            if (data && data.profile) {
+            if (data && data.profile && !hasLocalProfile) {
               populate(data.profile);
               try {
                 localStorage.setItem(`sm_profile_${clean}`, JSON.stringify(data.profile));
@@ -88,7 +93,7 @@ export const UserProfileModal = ({ isOpen, onClose }) => {
           .catch(() => {});
       } catch (e) {}
     }
-  }, [user, isOpen]);
+  }, [user?.email, isOpen]);
 
   if (!isOpen) return null;
 
