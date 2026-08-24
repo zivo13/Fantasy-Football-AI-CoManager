@@ -100,7 +100,11 @@ export const AppProvider = ({ children }) => {
     }
   ]);
 
-  const DEFAULT_ADMIN_USERS = [];
+  const DEFAULT_ADMIN_USERS = [
+    { id: 'u_100', user: 'zivo13@yahoo.com', plan: 'SuperMacho Commissioner ($9.99/mo)', date: '2026-08-23', status: 'Active Subscriber' },
+    { id: 'u_101', user: 'zivo13@hotmail.com', plan: 'Free Rookie ($0/mo)', date: '2026-08-23', status: 'Active Subscriber' },
+    { id: 'u_102', user: 'doctorluismoralesae@gmail.com', plan: 'Free Rookie ($0/mo)', date: '2026-08-23', status: 'Active Subscriber' }
+  ];
 
   // Registered users store for Admin Dashboard
   const [registeredUsersList, setRegisteredUsersList] = useState(() => {
@@ -116,7 +120,7 @@ export const AppProvider = ({ children }) => {
         }
       }
     } catch (e) {}
-    return [];
+    return DEFAULT_ADMIN_USERS;
   });
 
   // Support Tickets State

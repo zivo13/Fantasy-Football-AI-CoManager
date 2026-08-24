@@ -1,0 +1,23 @@
+[
+  {
+    "id": "u_100",
+    "user": "zivo13@yahoo.com",
+    "plan": "SuperMacho Commissioner ($9.99/mo)",
+    "date": "2026-08-23",
+    "status": "Active Subscriber"
+  },
+  {
+    "id": "u_101",
+    "user": "zivo13@hotmail.com",
+    "plan": "Free Rookie ($0/mo)",
+    "date": "2026-08-23",
+    "status": "Active Subscriber"
+  },
+  {
+    "id": "u_102",
+    "user": "doctorluismoralesae@gmail.com",
+    "plan": "Free Rookie ($0/mo)",
+    "date": "2026-08-23",
+    "status": "Active Subscriber"
+  }
+]

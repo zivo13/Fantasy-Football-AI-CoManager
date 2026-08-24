@@ -6,29 +6,52 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.
 
 const TMP_FILE = '/tmp/supermacho_users_v3.json';
 
-const DEFAULT_SEED_USERS = [];
+import path from 'path';
+
+const BASE_USERS = [
+  { id: 'u_100', user: 'zivo13@yahoo.com', plan: 'SuperMacho Commissioner ($9.99/mo)', date: '2026-08-23', status: 'Active Subscriber' },
+  { id: 'u_101', user: 'zivo13@hotmail.com', plan: 'Free Rookie ($0/mo)', date: '2026-08-23', status: 'Active Subscriber' },
+  { id: 'u_102', user: 'doctorluismoralesae@gmail.com', plan: 'Free Rookie ($0/mo)', date: '2026-08-23', status: 'Active Subscriber' }
+];
 
 // Helper to read persistent disk state across lambda invocations
 function readState() {
+  let deletedMap = {};
+  let suspendedMap = {};
+  let profilesMap = {};
+  let userList = [];
+
   try {
     if (fs.existsSync(TMP_FILE)) {
       const raw = fs.readFileSync(TMP_FILE, 'utf8');
       const parsed = JSON.parse(raw);
-      const deletedMap = parsed.deleted || {};
-      
-      let userList = parsed.users || [];
-      userList = userList.filter(u => u && u.user && !deletedMap[u.user.toLowerCase()]);
-
-      return {
-        users: userList,
-        suspended: parsed.suspended || {},
-        profiles: parsed.profiles || {},
-        deleted: deletedMap
-      };
+      deletedMap = parsed.deleted || {};
+      suspendedMap = parsed.suspended || {};
+      profilesMap = parsed.profiles || {};
+      userList = parsed.users || [];
     }
   } catch (e) {}
 
-  return { users: [], suspended: {}, profiles: {}, deleted: {} };
+  if (!userList || userList.length === 0) {
+    userList = [...BASE_USERS];
+  } else {
+    // Ensure base users are present if not explicitly deleted
+    BASE_USERS.forEach(b => {
+      if (!userList.some(u => u && u.user && u.user.toLowerCase() === b.user.toLowerCase())) {
+        userList.push(b);
+      }
+    });
+  }
+
+  // Filter out any explicitly deleted users
+  userList = userList.filter(u => u && u.user && !deletedMap[u.user.toLowerCase()]);
+
+  return {
+    users: userList,
+    suspended: suspendedMap,
+    profiles: profilesMap,
+    deleted: deletedMap
+  };
 }
 
 // Helper to write persistent disk state
