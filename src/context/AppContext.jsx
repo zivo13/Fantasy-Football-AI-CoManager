@@ -21,9 +21,39 @@ export const AppProvider = ({ children }) => {
     } catch (e) {}
   };
 
-  const dict = TRANSLATIONS[lang] || TRANSLATIONS.en;
-  const t = (key) => dict[key] || TRANSLATIONS.en[key] || key;
+  // Custom Admin Translations State
+  const [customTranslations, setCustomTranslations] = useState(() => {
+    try {
+      const saved = localStorage.getItem('sm_custom_translations');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return null;
+  });
+
+  const activeTranslations = customTranslations || TRANSLATIONS;
+  const dict = (activeTranslations && activeTranslations[lang]) || (TRANSLATIONS[lang] || TRANSLATIONS.en);
+  
+  const t = (key) => {
+    if (activeTranslations && activeTranslations[lang] && activeTranslations[lang][key]) {
+      return activeTranslations[lang][key];
+    }
+    return dict[key] || (TRANSLATIONS.en && TRANSLATIONS.en[key]) || key;
+  };
   Object.assign(t, dict);
+
+  const updateCustomTranslations = (updatedObj) => {
+    setCustomTranslations(updatedObj);
+    try {
+      localStorage.setItem('sm_custom_translations', JSON.stringify(updatedObj));
+    } catch (e) {}
+  };
+
+  const resetCustomTranslations = () => {
+    setCustomTranslations(null);
+    try {
+      localStorage.removeItem('sm_custom_translations');
+    } catch (e) {}
+  };
 
   // Navigation tab: 'landing' | 'client' | 'admin' | 'auth'
   const [currentTab, setCurrentTab] = useState('landing');
@@ -325,7 +355,11 @@ export const AppProvider = ({ children }) => {
       demoWaivers: DEMO_WAIVERS,
       demoTrade: DEMO_TRADE_SCENARIO,
       adminMetrics: ADMIN_METRICS,
-      registeredUsersList
+      registeredUsersList,
+      customTranslations,
+      activeTranslations,
+      updateCustomTranslations,
+      resetCustomTranslations
     }}>
       {children}
     </AppContext.Provider>

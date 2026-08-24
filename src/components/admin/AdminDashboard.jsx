@@ -1,10 +1,51 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Shield, DollarSign, Users, TrendingUp, Plus, Edit2, Trash2, Check, X, Sparkles, Sliders, Cpu, Save, Lock, Unlock, Activity, Zap } from 'lucide-react';
+import { Shield, DollarSign, Users, TrendingUp, Plus, Edit2, Trash2, Check, X, Sparkles, Sliders, Cpu, Save, Lock, Unlock, Activity, Zap, Languages, RotateCcw, Search } from 'lucide-react';
 
 export const AdminDashboard = () => {
-  const { plans, handleSavePlan, handleDeletePlan, adminMetrics, user, registeredUsersList = [] } = useApp();
-  const [activeAdminTab, setActiveAdminTab] = useState('plans'); // 'plans' | 'users' | 'revenue' | 'system'
+  const { plans, handleSavePlan, handleDeletePlan, adminMetrics, user, registeredUsersList = [], activeTranslations, updateCustomTranslations, resetCustomTranslations } = useApp();
+  const [activeAdminTab, setActiveAdminTab] = useState('plans'); // 'plans' | 'users' | 'revenue' | 'system' | 'rapidapi' | 'translations'
+  
+  // Translation Manager State
+  const [transLang, setTransLang] = useState('es'); // 'es' | 'en' | 'pt'
+  const [transSearch, setTransSearch] = useState('');
+  const [editedDict, setEditedDict] = useState(() => JSON.parse(JSON.stringify(activeTranslations || {})));
+  const [transSuccessMsg, setTransSuccessMsg] = useState('');
+
+  // Sync editedDict when activeTranslations change
+  useEffect(() => {
+    if (activeTranslations) {
+      setEditedDict(JSON.parse(JSON.stringify(activeTranslations)));
+    }
+  }, [activeTranslations]);
+
+  const handleTranslationChange = (targetLang, key, newValue) => {
+    setEditedDict(prev => ({
+      ...prev,
+      [targetLang]: {
+        ...(prev[targetLang] || {}),
+        [key]: newValue
+      }
+    }));
+  };
+
+  const handleSaveTranslations = () => {
+    if (typeof updateCustomTranslations === 'function') {
+      updateCustomTranslations(editedDict);
+      setTransSuccessMsg('✅ Custom translations saved & live across SuperMacho!');
+      setTimeout(() => setTransSuccessMsg(''), 4000);
+    }
+  };
+
+  const handleResetTranslations = () => {
+    if (window.confirm('Reset all custom translations back to default built-in dictionaries?')) {
+      if (typeof resetCustomTranslations === 'function') {
+        resetCustomTranslations();
+        setTransSuccessMsg('🔄 Reset to default system translations.');
+        setTimeout(() => setTransSuccessMsg(''), 4000);
+      }
+    }
+  };
   
   // Plan Editor Form state
   const [editingPlan, setEditingPlan] = useState(null);
@@ -261,6 +302,17 @@ export const AdminDashboard = () => {
           <Activity className="w-4 h-4 text-amber-400" />
           <span>RapidAPI NFL Data Engine</span>
           <span className="bg-slate-950 text-amber-400 text-[10px] px-1.5 py-0.2 rounded font-extrabold">LIVE</span>
+        </button>
+
+        <button
+          onClick={() => setActiveAdminTab('translations')}
+          className={`px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all ${
+            activeAdminTab === 'translations' ? 'bg-cyan-500 text-slate-950 font-extrabold shadow-lg shadow-cyan-500/20' : 'text-cyan-400 hover:text-white bg-slate-900 border border-cyan-500/30'
+          }`}
+        >
+          <Languages className="w-4 h-4 text-cyan-400" />
+          <span>Translation Manager (Traductor)</span>
+          <span className="bg-slate-950 text-cyan-400 text-[10px] px-1.5 py-0.2 rounded font-extrabold">NEW</span>
         </button>
       </div>
 
@@ -645,6 +697,141 @@ export const AdminDashboard = () => {
             </div>
 
           </div>
+        </div>
+      )}
+
+      {/* TAB 6: TRANSLATION MANAGER */}
+      {activeAdminTab === 'translations' && (
+        <div className="space-y-6 animate-fade-in">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div>
+              <h3 className="font-bebas text-2xl text-white tracking-wider flex items-center gap-2">
+                <Languages className="w-6 h-6 text-cyan-400" />
+                <span>TRADUCTOR DE DICCIONARIO & FRASES (TRANSLATION MANAGER)</span>
+              </h3>
+              <p className="text-xs text-slate-400">
+                Customize Spanish 🇲🇽, English 🇺🇸, and Portuguese 🇧🇷 terminology in real-time. Adjust wording to match natural NFL Fantasy sports culture!
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleResetTranslations}
+                className="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white flex items-center gap-1.5 transition-colors"
+              >
+                <RotateCcw className="w-4 h-4 text-amber-400" />
+                <span>Reset Defaults</span>
+              </button>
+
+              <button
+                onClick={handleSaveTranslations}
+                className="btn-gold px-5 py-2.5 rounded-xl text-xs font-extrabold flex items-center gap-1.5 shadow-lg"
+              >
+                <Save className="w-4 h-4" />
+                <span>Save & Apply Translations</span>
+              </button>
+            </div>
+          </div>
+
+          {transSuccessMsg && (
+            <div className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 p-4 rounded-xl text-xs font-bold flex items-center gap-2">
+              <Check className="w-4 h-4 text-emerald-400" />
+              <span>{transSuccessMsg}</span>
+            </div>
+          )}
+
+          {/* Filter Bar: Select Target Language & Search Input */}
+          <div className="glass-panel p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 border border-slate-800">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <span className="text-xs font-bold text-slate-400 uppercase">Target Language:</span>
+              <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setTransLang('es')}
+                  className={`px-3 py-1 rounded-lg font-bold text-xs transition-colors ${
+                    transLang === 'es' ? 'bg-cyan-500 text-slate-950 font-extrabold' : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  🇲🇽 Spanish (Español)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTransLang('en')}
+                  className={`px-3 py-1 rounded-lg font-bold text-xs transition-colors ${
+                    transLang === 'en' ? 'bg-cyan-500 text-slate-950 font-extrabold' : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  🇺🇸 English
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTransLang('pt')}
+                  className={`px-3 py-1 rounded-lg font-bold text-xs transition-colors ${
+                    transLang === 'pt' ? 'bg-cyan-500 text-slate-950 font-extrabold' : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  🇧🇷 Portuguese
+                </button>
+              </div>
+            </div>
+
+            <div className="relative w-full sm:w-80">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+              <input
+                type="text"
+                placeholder="Search keys or phrases (e.g. draft, gut check)..."
+                value={transSearch}
+                onChange={(e) => setTransSearch(e.target.value)}
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-4 py-2.5 text-xs text-white focus:border-cyan-500"
+              />
+            </div>
+          </div>
+
+          {/* Translation Key & Phrase Table */}
+          <div className="glass-panel rounded-3xl overflow-hidden border border-slate-800">
+            <div className="max-h-[600px] overflow-y-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-950 border-b border-slate-800 text-slate-400 font-bold uppercase tracking-wider sticky top-0 z-10 backdrop-blur-md">
+                  <tr>
+                    <th className="p-4 w-1/4">Translation Key</th>
+                    <th className="p-4 w-1/3">English Reference (Original)</th>
+                    <th className="p-4 w-5/12">
+                      {transLang === 'es' ? '🇲🇽 Spanish Translation (Editable)' : transLang === 'pt' ? '🇧🇷 Portuguese Translation (Editable)' : '🇺🇸 English Text (Editable)'}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60 text-slate-300">
+                  {Object.keys(editedDict.en || {})
+                    .filter(key => {
+                      if (!transSearch) return true;
+                      const q = transSearch.toLowerCase();
+                      const enVal = ((editedDict.en && editedDict.en[key]) || '').toLowerCase();
+                      const targetVal = ((editedDict[transLang] && editedDict[transLang][key]) || '').toLowerCase();
+                      return key.toLowerCase().includes(q) || enVal.includes(q) || targetVal.includes(q);
+                    })
+                    .map(key => (
+                      <tr key={key} className="hover:bg-slate-900/60 transition-colors">
+                        <td className="p-4 font-mono text-[11px] text-cyan-400 font-bold">
+                          {key}
+                        </td>
+                        <td className="p-4 text-slate-400 text-[11px] leading-relaxed">
+                          {editedDict.en[key]}
+                        </td>
+                        <td className="p-4">
+                          <textarea
+                            rows={editedDict.en[key] && editedDict.en[key].length > 60 ? 2 : 1}
+                            value={(editedDict[transLang] && editedDict[transLang][key]) || ''}
+                            onChange={(e) => handleTranslationChange(transLang, key, e.target.value)}
+                            className="w-full bg-slate-950 border border-slate-800 hover:border-slate-700 focus:border-cyan-500 rounded-xl px-3 py-2 text-xs text-amber-300 font-medium transition-colors resize-y"
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
         </div>
       )}
 
