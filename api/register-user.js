@@ -9,7 +9,7 @@ const TMP_FILE = '/tmp/supermacho_users_v3.json';
 const DEFAULT_SEED_USERS = [
   { id: 'u_100', user: 'zivo13@yahoo.com', plan: 'Free Rookie ($0/mo)', date: '2026-08-23', status: 'Active Subscriber' },
   { id: 'u_101', user: 'zivo13@hotmail.com', plan: 'Free Rookie ($0/mo)', date: '2026-08-23', status: 'Active Subscriber' },
-  { id: 'u_102', user: 'doctorluismoralesae@gmail.com', plan: 'Pro Champion ($4.99/mo)', date: '2026-08-23', status: 'Active Subscriber' }
+  { id: 'u_102', user: 'doctorluismoralesae@gmail.com', plan: 'Free Rookie ($0/mo)', date: '2026-08-23', status: 'Active Subscriber' }
 ];
 
 // Helper to read persistent disk state across lambda invocations

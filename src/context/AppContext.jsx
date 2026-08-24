@@ -103,7 +103,7 @@ export const AppProvider = ({ children }) => {
   const DEFAULT_ADMIN_USERS = [
     { id: 'u_100', user: 'zivo13@yahoo.com', plan: 'Free Rookie ($0/mo)', date: '2026-08-23', status: 'Active Subscriber' },
     { id: 'u_101', user: 'zivo13@hotmail.com', plan: 'Free Rookie ($0/mo)', date: '2026-08-23', status: 'Active Subscriber' },
-    { id: 'u_102', user: 'doctorluismoralesae@gmail.com', plan: 'Pro Champion ($4.99/mo)', date: '2026-08-23', status: 'Active Subscriber' }
+    { id: 'u_102', user: 'doctorluismoralesae@gmail.com', plan: 'Free Rookie ($0/mo)', date: '2026-08-23', status: 'Active Subscriber' }
   ];
 
   // Registered users store for Admin Dashboard
