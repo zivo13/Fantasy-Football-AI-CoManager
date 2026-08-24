@@ -440,7 +440,14 @@ export const AdminDashboard = () => {
 
                           const clean = regUser.user.toLowerCase();
 
-                          // 1. Update React state immediately
+                          // 1. Record in persistent deleted users map
+                          try {
+                            const delMap = JSON.parse(localStorage.getItem('sm_deleted_users') || '{}');
+                            delMap[clean] = true;
+                            localStorage.setItem('sm_deleted_users', JSON.stringify(delMap));
+                          } catch (e) {}
+
+                          // 2. Update React state immediately
                           if (typeof setRegisteredUsersList === 'function') {
                             setRegisteredUsersList(prev => {
                               const updated = prev.filter(u => u.user.toLowerCase() !== clean);
@@ -451,13 +458,13 @@ export const AdminDashboard = () => {
                             });
                           }
 
-                          // 2. Remove local credentials
+                          // 3. Remove local credentials
                           try {
                             localStorage.removeItem(`sm_user_${clean}`);
                             localStorage.removeItem(`sm_profile_${clean}`);
                           } catch (e) {}
 
-                          // 3. Send DELETE request to Vercel API endpoint
+                          // 4. Send DELETE request to Vercel API endpoint
                           try {
                             await fetch('/api/register-user', {
                               method: 'DELETE',

@@ -73,19 +73,21 @@ export const AppProvider = ({ children }) => {
   const DEFAULT_ADMIN_USERS = [
     { id: 'u_100', user: 'zivo13@yahoo.com', plan: 'Free Rookie ($0/mo)', date: '2026-08-23', status: 'Active Subscriber' },
     { id: 'u_101', user: 'zivo13@hotmail.com', plan: 'Free Rookie ($0/mo)', date: '2026-08-23', status: 'Active Subscriber' },
-    { id: 'u_102', user: 'doctorluismoralesae@gmail.com', plan: 'Pro Champion ($4.99/mo)', date: '2026-08-23', status: 'Active Subscriber' },
-    { id: 'u_103', user: 'testuser@supermacho.app', plan: 'Free Rookie ($0/mo)', date: '2026-08-20', status: 'Active Subscriber' },
-    { id: 'u_104', user: 'league_champ@gmail.com', plan: 'Pro Champion ($4.99/mo)', date: '2026-08-21', status: 'Active Subscriber' },
-    { id: 'u_105', user: 'dynasty_boss@yahoo.com', plan: 'SuperMacho Commissioner ($9.99/mo)', date: '2026-08-22', status: 'Active Subscriber' }
+    { id: 'u_102', user: 'doctorluismoralesae@gmail.com', plan: 'Pro Champion ($4.99/mo)', date: '2026-08-23', status: 'Active Subscriber' }
   ];
 
   // Registered users store for Admin Dashboard
   const [registeredUsersList, setRegisteredUsersList] = useState(() => {
     try {
       const saved = localStorage.getItem('sm_registered_users_list');
+      const deletedMapStr = localStorage.getItem('sm_deleted_users');
+      const deletedMap = deletedMapStr ? JSON.parse(deletedMapStr) : {};
+      
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.filter(u => u && u.user && !deletedMap[u.user.toLowerCase()]);
+        }
       }
     } catch (e) {}
     return DEFAULT_ADMIN_USERS;
@@ -99,17 +101,26 @@ export const AppProvider = ({ children }) => {
         const data = await res.json();
         if (data && data.users && Array.isArray(data.users)) {
           setRegisteredUsersList(prev => {
+            let deletedMap = {};
+            try {
+              deletedMap = JSON.parse(localStorage.getItem('sm_deleted_users') || '{}');
+            } catch (e) {}
+
             const map = new Map();
             (prev || []).forEach(u => {
-              if (u && u.user) map.set(u.user.toLowerCase(), u);
+              if (u && u.user && !deletedMap[u.user.toLowerCase()]) {
+                map.set(u.user.toLowerCase(), u);
+              }
             });
+
             data.users.forEach(u => {
-              if (u && u.user) {
+              if (u && u.user && !deletedMap[u.user.toLowerCase()]) {
                 const existing = map.get(u.user.toLowerCase());
                 map.set(u.user.toLowerCase(), existing ? { ...existing, ...u } : u);
               }
             });
-            const merged = Array.from(map.values());
+
+            const merged = Array.from(map.values()).filter(u => !deletedMap[u.user.toLowerCase()]);
             try {
               localStorage.setItem('sm_registered_users_list', JSON.stringify(merged));
             } catch (e) {}
