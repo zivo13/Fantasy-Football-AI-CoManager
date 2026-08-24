@@ -124,3 +124,54 @@ export const saveUserLeague = async (userId, leagueData) => {
     return { data: [leagueData], error: null };
   }
 };
+
+// Support Ticket Helpers
+export const createSupportTicketInDB = async (userEmail, subject, category, priority, message) => {
+  if (!isConfigured || !supabase) return { data: null, error: null };
+  try {
+    const { data, error } = await supabase
+      .from('support_tickets')
+      .insert([
+        {
+          user_email: userEmail,
+          subject,
+          category,
+          priority,
+          status: 'Open',
+          messages: [{ sender: userEmail, text: message, timestamp: new Date().toISOString() }]
+        }
+      ])
+      .select();
+    return { data, error };
+  } catch (err) {
+    return { data: null, error: err };
+  }
+};
+
+export const fetchUserTicketsFromDB = async (userEmail) => {
+  if (!isConfigured || !supabase) return { data: [], error: null };
+  try {
+    const { data, error } = await supabase
+      .from('support_tickets')
+      .select('*')
+      .eq('user_email', userEmail)
+      .order('created_at', { ascending: false });
+    return { data, error };
+  } catch (err) {
+    return { data: [], error: err };
+  }
+};
+
+export const fetchAllTicketsFromDB = async () => {
+  if (!isConfigured || !supabase) return { data: [], error: null };
+  try {
+    const { data, error } = await supabase
+      .from('support_tickets')
+      .select('*')
+      .order('created_at', { ascending: false });
+    return { data, error };
+  } catch (err) {
+    return { data: [], error: err };
+  }
+};
+

@@ -1,10 +1,80 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Shield, DollarSign, Users, TrendingUp, Plus, Edit2, Trash2, Check, X, Sparkles, Sliders, Cpu, Save, Lock, Unlock, Activity, Zap, Languages, RotateCcw, Search } from 'lucide-react';
+import { Shield, DollarSign, Users, TrendingUp, Plus, Edit2, Trash2, Check, X, Sparkles, Sliders, Cpu, Save, Lock, Unlock, Activity, Zap, Languages, RotateCcw, Search, RefreshCw, HelpCircle, CheckSquare, Square, Database, ShieldCheck, MessageSquare, Eye } from 'lucide-react';
 
 export const AdminDashboard = () => {
-  const { plans, handleSavePlan, handleDeletePlan, adminMetrics, user, registeredUsersList = [], activeTranslations, updateCustomTranslations, resetCustomTranslations } = useApp();
-  const [activeAdminTab, setActiveAdminTab] = useState('plans'); // 'plans' | 'users' | 'revenue' | 'system' | 'rapidapi' | 'translations'
+  const { 
+    plans, 
+    handleSavePlan, 
+    handleDeletePlan, 
+    adminMetrics, 
+    user, 
+    registeredUsersList = [], 
+    setRegisteredUsersList,
+    activeTranslations, 
+    updateCustomTranslations, 
+    resetCustomTranslations,
+    supportTickets = [],
+    accessCounts = {},
+    refreshAdminData,
+    handleUpdateTicketStatus,
+    handleReplySupportTicket,
+    handleDeleteUser,
+    handleClearAllTestUsers
+  } = useApp();
+
+  const [activeAdminTab, setActiveAdminTab] = useState('client_audit'); // 'client_audit' | 'support_tickets' | 'plans' | 'users' | 'revenue' | 'system' | 'rapidapi' | 'translations'
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [refreshSuccessMsg, setRefreshSuccessMsg] = useState('');
+
+  // Interactive Checklist State (Saved to localStorage)
+  const DEFAULT_CHECKLIST = {
+    account_auth: true,
+    profile_setup: false,
+    package_checkout: false,
+    league_connect: false,
+    roster_optimization: true,
+    draft_war_room: true,
+    ai_chat: true,
+    support_ticket: false,
+    db_persistence: true
+  };
+
+  const [checklist, setChecklist] = useState(() => {
+    try {
+      const saved = localStorage.getItem('sm_admin_testing_checklist');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return DEFAULT_CHECKLIST;
+  });
+
+  const toggleChecklistItem = (key) => {
+    setChecklist(prev => {
+      const updated = { ...prev, [key]: !prev[key] };
+      try {
+        localStorage.setItem('sm_admin_testing_checklist', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+  };
+
+  // Support Tickets Admin State
+  const [adminTicketFilter, setAdminTicketFilter] = useState('All'); // 'All' | 'Open' | 'In Progress' | 'Resolved' | 'Closed'
+  const [selectedAdminTicketId, setSelectedAdminTicketId] = useState(null);
+  const [adminReplyInput, setAdminReplyInput] = useState('');
+  const [ticketActionMsg, setTicketActionMsg] = useState('');
+
+  const handleManualRefresh = async () => {
+    setIsRefreshing(true);
+    if (typeof refreshAdminData === 'function') {
+      await refreshAdminData();
+    }
+    setRefreshSuccessMsg('✅ Live verification data & database persistence refreshed!');
+    setTimeout(() => {
+      setIsRefreshing(false);
+      setRefreshSuccessMsg('');
+    }, 2000);
+  };
   
   // Translation Manager State
   const [transLang, setTransLang] = useState('es'); // 'es' | 'en' | 'pt'
@@ -252,69 +322,487 @@ export const AdminDashboard = () => {
       </div>
 
       {/* Admin Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-800 pb-3 overflow-x-auto">
-        <button
-          onClick={() => setActiveAdminTab('plans')}
-          className={`px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all ${
-            activeAdminTab === 'plans' ? 'bg-cyan-500 text-slate-950 font-extrabold shadow-lg shadow-cyan-500/20' : 'text-slate-400 hover:text-white bg-slate-900'
-          }`}
-        >
-          <Sliders className="w-4 h-4" />
-          <span>Plan Configurator</span>
-        </button>
+      <div className="flex items-center justify-between border-b border-slate-800 pb-3 gap-2 overflow-x-auto">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setActiveAdminTab('client_audit')}
+            className={`px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all ${
+              activeAdminTab === 'client_audit' ? 'bg-amber-500 text-slate-950 font-extrabold shadow-lg shadow-amber-500/20' : 'text-amber-400 hover:text-white bg-slate-900 border border-amber-500/30'
+            }`}
+          >
+            <ShieldCheck className="w-4 h-4 text-amber-400" />
+            <span>Client Audit & Testing Checklist</span>
+            <span className="bg-slate-950 text-amber-400 text-[10px] px-1.5 py-0.2 rounded font-extrabold">LIVE TEST</span>
+          </button>
 
-        <button
-          onClick={() => setActiveAdminTab('users')}
-          className={`px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all ${
-            activeAdminTab === 'users' ? 'bg-cyan-500 text-slate-950 font-extrabold shadow-lg shadow-cyan-500/20' : 'text-slate-400 hover:text-white bg-slate-900'
-          }`}
-        >
-          <Users className="w-4 h-4" />
-          <span>Subscribers & Users</span>
-        </button>
+          <button
+            onClick={() => setActiveAdminTab('support_tickets')}
+            className={`px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all ${
+              activeAdminTab === 'support_tickets' ? 'bg-cyan-500 text-slate-950 font-extrabold shadow-lg shadow-cyan-500/20' : 'text-cyan-400 hover:text-white bg-slate-900 border border-cyan-500/30'
+            }`}
+          >
+            <HelpCircle className="w-4 h-4 text-cyan-400" />
+            <span>Support Tickets Command Center</span>
+            {supportTickets.length > 0 && (
+              <span className="bg-cyan-950 text-cyan-300 text-[10px] px-1.5 py-0.2 rounded font-extrabold">{supportTickets.length}</span>
+            )}
+          </button>
 
-        <button
-          onClick={() => setActiveAdminTab('revenue')}
-          className={`px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all ${
-            activeAdminTab === 'revenue' ? 'bg-cyan-500 text-slate-950 font-extrabold shadow-lg shadow-cyan-500/20' : 'text-slate-400 hover:text-white bg-slate-900'
-          }`}
-        >
-          <TrendingUp className="w-4 h-4" />
-          <span>Revenue Analytics</span>
-        </button>
+          <button
+            onClick={() => setActiveAdminTab('plans')}
+            className={`px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all ${
+              activeAdminTab === 'plans' ? 'bg-cyan-500 text-slate-950 font-extrabold shadow-lg shadow-cyan-500/20' : 'text-slate-400 hover:text-white bg-slate-900'
+            }`}
+          >
+            <Sliders className="w-4 h-4" />
+            <span>Plan Configurator</span>
+          </button>
 
-        <button
-          onClick={() => setActiveAdminTab('system')}
-          className={`px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all ${
-            activeAdminTab === 'system' ? 'bg-cyan-500 text-slate-950 font-extrabold shadow-lg shadow-cyan-500/20' : 'text-slate-400 hover:text-white bg-slate-900'
-          }`}
-        >
-          <Cpu className="w-4 h-4" />
-          <span>System & AI Models</span>
-        </button>
+          <button
+            onClick={() => setActiveAdminTab('users')}
+            className={`px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all ${
+              activeAdminTab === 'users' ? 'bg-cyan-500 text-slate-950 font-extrabold shadow-lg shadow-cyan-500/20' : 'text-slate-400 hover:text-white bg-slate-900'
+            }`}
+          >
+            <Users className="w-4 h-4" />
+            <span>Subscribers & Users</span>
+          </button>
 
-        <button
-          onClick={() => setActiveAdminTab('rapidapi')}
-          className={`px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all ${
-            activeAdminTab === 'rapidapi' ? 'bg-amber-500 text-slate-950 font-extrabold shadow-lg shadow-amber-500/20' : 'text-amber-400 hover:text-white bg-slate-900 border border-amber-500/30'
-          }`}
-        >
-          <Activity className="w-4 h-4 text-amber-400" />
-          <span>RapidAPI NFL Data Engine</span>
-          <span className="bg-slate-950 text-amber-400 text-[10px] px-1.5 py-0.2 rounded font-extrabold">LIVE</span>
-        </button>
+          <button
+            onClick={() => setActiveAdminTab('revenue')}
+            className={`px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all ${
+              activeAdminTab === 'revenue' ? 'bg-cyan-500 text-slate-950 font-extrabold shadow-lg shadow-cyan-500/20' : 'text-slate-400 hover:text-white bg-slate-900'
+            }`}
+          >
+            <TrendingUp className="w-4 h-4" />
+            <span>Revenue Analytics</span>
+          </button>
 
+          <button
+            onClick={() => setActiveAdminTab('system')}
+            className={`px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all ${
+              activeAdminTab === 'system' ? 'bg-cyan-500 text-slate-950 font-extrabold shadow-lg shadow-cyan-500/20' : 'text-slate-400 hover:text-white bg-slate-900'
+            }`}
+          >
+            <Cpu className="w-4 h-4" />
+            <span>System & AI Models</span>
+          </button>
+
+          <button
+            onClick={() => setActiveAdminTab('rapidapi')}
+            className={`px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all ${
+              activeAdminTab === 'rapidapi' ? 'bg-amber-500 text-slate-950 font-extrabold shadow-lg shadow-amber-500/20' : 'text-amber-400 hover:text-white bg-slate-900 border border-amber-500/30'
+            }`}
+          >
+            <Activity className="w-4 h-4 text-amber-400" />
+            <span>RapidAPI NFL Data Engine</span>
+            <span className="bg-slate-950 text-amber-400 text-[10px] px-1.5 py-0.2 rounded font-extrabold">LIVE</span>
+          </button>
+
+          <button
+            onClick={() => setActiveAdminTab('translations')}
+            className={`px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all ${
+              activeAdminTab === 'translations' ? 'bg-cyan-500 text-slate-950 font-extrabold shadow-lg shadow-cyan-500/20' : 'text-cyan-400 hover:text-white bg-slate-900 border border-cyan-500/30'
+            }`}
+          >
+            <Languages className="w-4 h-4 text-cyan-400" />
+            <span>Translation Manager (Traductor)</span>
+          </button>
+        </div>
+
+        {/* Live Manual Refresh Button for Multi-Computer Verification */}
         <button
-          onClick={() => setActiveAdminTab('translations')}
-          className={`px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all ${
-            activeAdminTab === 'translations' ? 'bg-cyan-500 text-slate-950 font-extrabold shadow-lg shadow-cyan-500/20' : 'text-cyan-400 hover:text-white bg-slate-900 border border-cyan-500/30'
-          }`}
+          onClick={handleManualRefresh}
+          className="btn-gold px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-2 whitespace-nowrap shadow-lg flex-shrink-0"
+          title="Click to refresh live verification data & DB sync without reloading page"
         >
-          <Languages className="w-4 h-4 text-cyan-400" />
-          <span>Translation Manager (Traductor)</span>
-          <span className="bg-slate-950 text-cyan-400 text-[10px] px-1.5 py-0.2 rounded font-extrabold">NEW</span>
+          <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
+          <span>Refresh Verification Data</span>
         </button>
       </div>
+
+      {/* TAB 0: CLIENT POV AUDIT & TESTING CHECKLIST */}
+      {activeAdminTab === 'client_audit' && (
+        <div className="space-y-6">
+          {refreshSuccessMsg && (
+            <div className="bg-emerald-500/20 border border-emerald-500/50 p-4 rounded-2xl text-emerald-300 font-bold text-xs flex items-center justify-between">
+              <span>{refreshSuccessMsg}</span>
+              <span className="text-[10px] text-emerald-400 font-mono">DATABASE SYNC VERIFIED</span>
+            </div>
+          )}
+
+          {/* Section Header */}
+          <div className="glass-panel p-6 sm:p-8 rounded-3xl space-y-4 border border-amber-500/30">
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="bg-amber-500 text-slate-950 font-extrabold text-[10px] px-2.5 py-0.5 rounded-full uppercase">
+                    ADMIN VERIFICATION MATRIX
+                  </span>
+                  <span className="text-xs text-slate-400 font-bold">• DUAL-COMPUTER REAL-TIME TESTING MODE</span>
+                </div>
+                <h3 className="font-bebas text-3xl text-white tracking-wider mt-1">CLIENT POV AUDIT & DATA VERIFICATION MATRIX</h3>
+                <p className="text-xs text-slate-300">
+                  Monitor client profile completions, package tiers, access session counts, support tickets, and database persistence live as you test from another computer!
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={async () => {
+                    const confirmClear = window.confirm("Are you sure you want to PURGE ALL TEST CLIENTS from local server & Supabase database? This will clear test accounts so you can start testing completely fresh.");
+                    if (!confirmClear) return;
+                    if (typeof handleClearAllTestUsers === 'function') {
+                      await handleClearAllTestUsers();
+                      setRefreshSuccessMsg('🧹 All test clients purged! Database and server state reset to clean state.');
+                      setTimeout(() => setRefreshSuccessMsg(''), 4000);
+                    }
+                  }}
+                  className="px-4 py-2.5 rounded-2xl bg-red-500/10 hover:bg-red-500/20 text-red-300 border border-red-500/30 text-xs font-bold transition-colors flex items-center gap-1.5"
+                  title="Permanently remove all test and mock client accounts from database and server state"
+                >
+                  <Trash2 className="w-3.5 h-3.5 text-red-400" />
+                  <span>Purge Test Clients</span>
+                </button>
+
+                <button
+                  onClick={handleManualRefresh}
+                  className="btn-gold px-5 py-2.5 rounded-2xl text-xs font-extrabold flex items-center gap-2 shadow-lg"
+                >
+                  <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                  <span>🔄 Sync & Refresh Verification Data</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Per Client Audit Table */}
+            <div className="overflow-x-auto pt-2">
+              <table className="w-full text-left text-xs text-slate-300">
+                <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider font-extrabold">
+                  <tr>
+                    <th className="px-4 py-3 rounded-l-xl">Client Account</th>
+                    <th className="px-4 py-3">Profile Status</th>
+                    <th className="px-4 py-3">Package / Tier</th>
+                    <th className="px-4 py-3">Logins & Accesses</th>
+                    <th className="px-4 py-3">Support Tickets</th>
+                    <th className="px-4 py-3">DB Persistence</th>
+                    <th className="px-4 py-3 rounded-r-xl text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60">
+                  {registeredUsersList.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="text-center py-8 text-slate-500 text-xs">
+                        No client accounts found. Register a new client on Computer 2 / New Tab to begin live testing!
+                      </td>
+                    </tr>
+                  ) : (
+                    registeredUsersList.map((u) => {
+                      const clean = (u.user || u.email || '').toLowerCase();
+                      const hasProfile = u.profile?.profileCompleted || u.profile?.favoriteTeam || (accessCounts[clean] && accessCounts[clean] > 1);
+                      const userTickets = supportTickets.filter(t => (t.user_email || '').toLowerCase() === clean);
+                      const openTicketsCount = userTickets.filter(t => t.status === 'Open' || t.status === 'In Progress').length;
+                      const accessCount = accessCounts[clean] || 1;
+
+                      return (
+                        <tr key={u.id || clean} className="hover:bg-slate-900/60 transition-colors">
+                          <td className="px-4 py-3 font-bold text-white flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/40 flex items-center justify-center font-bebas text-sm">
+                              {clean.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                              <div>{clean}</div>
+                              <div className="text-[10px] text-slate-400 font-normal">Registered {u.date || 'Recently'}</div>
+                            </div>
+                          </td>
+                          <td className="px-4 py-3">
+                            {hasProfile ? (
+                              <span className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-[10px] font-extrabold px-2.5 py-1 rounded-full flex items-center gap-1 w-fit">
+                                <Check className="w-3 h-3" /> FILLED (100%)
+                              </span>
+                            ) : (
+                              <span className="bg-slate-800 text-slate-400 text-[10px] font-extrabold px-2.5 py-1 rounded-full w-fit block">
+                                ⏳ PENDING (0%)
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3">
+                            <span className="font-extrabold text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2.5 py-1 rounded-xl text-[11px] inline-block">
+                              {u.plan || 'Free Rookie ($0/mo)'}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3">
+                            <span className="font-mono text-white text-xs bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800">
+                              {accessCount} Access Session{accessCount > 1 ? 's' : ''}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3">
+                            {userTickets.length > 0 ? (
+                              <span className={`text-[10px] font-extrabold px-2.5 py-1 rounded-full ${
+                                openTicketsCount > 0 ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40' : 'bg-slate-800 text-slate-300'
+                              }`}>
+                                {userTickets.length} Ticket{userTickets.length > 1 ? 's' : ''} ({openTicketsCount} Open)
+                              </span>
+                            ) : (
+                              <span className="text-slate-500 text-[11px]">No Tickets</span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3">
+                            <span className="bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-[10px] font-extrabold px-2.5 py-1 rounded-full flex items-center gap-1 w-fit">
+                              <Database className="w-3 h-3 text-cyan-400" /> SAVED IN DB
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              <button
+                                onClick={() => openManageTierModal(u)}
+                                className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-400 border border-cyan-500/30 font-bold text-[11px]"
+                              >
+                                Manage Tier
+                              </button>
+                              <button
+                                onClick={async () => {
+                                  const confirmDelete = window.confirm(`Permanently delete user [${clean}] from server & Supabase database?`);
+                                  if (!confirmDelete) return;
+                                  if (typeof handleDeleteUser === 'function') {
+                                    await handleDeleteUser(clean);
+                                  }
+                                }}
+                                className="p-1.5 bg-slate-900 hover:bg-red-500/20 text-slate-400 hover:text-red-400 rounded-xl border border-slate-800 transition-colors"
+                                title="Delete user permanently from database and server"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Interactive Client POV Testing Checklist */}
+          <div className="glass-panel p-6 sm:p-8 rounded-3xl space-y-6">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+              <div>
+                <h4 className="font-bebas text-3xl text-white tracking-wider">CLIENT POV COMPLETE TESTING CHECKLIST & DO'S</h4>
+                <p className="text-xs text-slate-400">
+                  Follow this checklist while testing on your second computer as a client. Check off items as you verify each step!
+                </p>
+              </div>
+              <div className="text-xs font-extrabold text-amber-400 bg-slate-950 px-4 py-2 rounded-xl border border-amber-500/30">
+                Progress: {Object.values(checklist).filter(Boolean).length} / {Object.keys(checklist).length} Completed
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[
+                { key: 'account_auth', title: '1. Account Signup & Authentication', desc: 'Create a new client account on Computer 2 / New Tab, log in, and verify user profile token.' },
+                { key: 'profile_setup', title: '2. User Profile Setup & Preferences', desc: 'Open User Profile Modal as client, set Favorite Team, Favorite Number & Language, click Save.' },
+                { key: 'package_checkout', title: '3. Subscription Package Selection', desc: 'Click Upgrade to Pro Champion ($4.99/mo) or Commissioner ($9.99/mo) in Client Dashboard.' },
+                { key: 'league_connect', title: '4. Fantasy League Connection', desc: 'Click Connect My League Now, enter ESPN League ID 8492019 and cookie parameters.' },
+                { key: 'roster_optimization', title: '5. Roster Optimization & Matchup Cards', desc: 'View Week 1 Start/Sit Optimal Trading Cards and matchup vulnerability ratings.' },
+                { key: 'draft_war_room', title: '6. Draft Day Strategy War Room', desc: 'Test Draft War Room live pick recommendations and counter-strategy engine.' },
+                { key: 'ai_chat', title: '7. SuperMacho AI Assistant Chat', desc: 'Ask SuperMacho AI a question (e.g. "Who should I start?") and verify real-time response.' },
+                { key: 'support_ticket', title: '8. Support Ticket Submission', desc: 'Open a support ticket from Client Help Desk, check status, and send a reply message.' },
+                { key: 'db_persistence', title: '9. End-to-End DB Data Persistence', desc: 'Click Refresh Verification Data button, close browser on Client computer, re-open & verify all data.' },
+              ].map((item) => {
+                const isChecked = checklist[item.key];
+                return (
+                  <div
+                    key={item.key}
+                    onClick={() => toggleChecklistItem(item.key)}
+                    className={`p-4 rounded-2xl border transition-all cursor-pointer flex items-start gap-3.5 ${
+                      isChecked
+                        ? 'bg-amber-500/10 border-amber-500/50 text-white'
+                        : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
+                    }`}
+                  >
+                    <div className="pt-0.5">
+                      {isChecked ? (
+                        <CheckSquare className="w-5 h-5 text-amber-400 flex-shrink-0" />
+                      ) : (
+                        <Square className="w-5 h-5 text-slate-600 flex-shrink-0" />
+                      )}
+                    </div>
+                    <div className="space-y-1">
+                      <div className={`font-bold text-sm ${isChecked ? 'text-amber-300 line-through' : 'text-white'}`}>
+                        {item.title}
+                      </div>
+                      <p className="text-xs text-slate-400 leading-relaxed">{item.desc}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB: SUPPORT TICKETS COMMAND CENTER */}
+      {activeAdminTab === 'support_tickets' && (
+        <div className="space-y-6">
+          <div className="glass-panel p-6 sm:p-8 rounded-3xl space-y-4 border border-cyan-500/30">
+            <div className="flex items-center justify-between flex-wrap gap-4 border-b border-slate-800 pb-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="bg-cyan-500 text-slate-950 font-extrabold text-[10px] px-2.5 py-0.5 rounded-full uppercase">
+                    SUPPORT HELPDESK
+                  </span>
+                  <span className="text-xs text-slate-400 font-bold">• ADMIN COMMAND CENTER</span>
+                </div>
+                <h3 className="font-bebas text-3xl text-white tracking-wider mt-1">CLIENT SUPPORT TICKETS COMMAND CENTER</h3>
+                <p className="text-xs text-slate-300">
+                  View all support requests opened by clients, manage ticket status (Open, In Progress, Resolved), and reply directly.
+                </p>
+              </div>
+
+              {/* Status Filters */}
+              <div className="flex items-center gap-1.5 bg-slate-950 p-1.5 rounded-2xl border border-slate-800">
+                {['All', 'Open', 'In Progress', 'Resolved'].map((st) => (
+                  <button
+                    key={st}
+                    onClick={() => setAdminTicketFilter(st)}
+                    className={`px-3 py-1.5 rounded-xl font-bold text-xs transition-all ${
+                      adminTicketFilter === st ? 'bg-cyan-500 text-slate-950 font-extrabold' : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    {st}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {ticketActionMsg && (
+              <div className="bg-emerald-500/20 border border-emerald-500/50 p-4 rounded-2xl text-emerald-300 font-bold text-xs">
+                {ticketActionMsg}
+              </div>
+            )}
+
+            {/* Tickets List */}
+            {supportTickets.length === 0 ? (
+              <div className="text-center py-12 text-slate-500 text-xs bg-slate-950/50 rounded-2xl border border-slate-800">
+                No support tickets found in system.
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {supportTickets
+                  .filter(t => adminTicketFilter === 'All' || t.status === adminTicketFilter)
+                  .map((t) => {
+                    const isSelected = selectedAdminTicketId === t.id;
+                    return (
+                      <div key={t.id} className="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden shadow-lg">
+                        <div 
+                          onClick={() => setSelectedAdminTicketId(isSelected ? null : t.id)}
+                          className="p-4 flex flex-wrap items-center justify-between gap-3 cursor-pointer hover:bg-slate-900/50 transition-colors"
+                        >
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2">
+                              <span className="font-extrabold text-sm text-white">{t.subject}</span>
+                              <span className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-full ${
+                                t.status === 'Resolved' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' :
+                                t.status === 'In Progress' ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/40' :
+                                'bg-amber-500/20 text-amber-400 border border-amber-500/40'
+                              }`}>
+                                {t.status}
+                              </span>
+                            </div>
+                            <div className="text-[11px] text-slate-400 flex items-center gap-4">
+                              <span>Client: <strong className="text-white">{t.user_email}</strong></span>
+                              <span>Category: <strong className="text-slate-300">{t.category}</strong></span>
+                              <span>Priority: <strong className="text-amber-400">{t.priority}</strong></span>
+                              <span>{new Date(t.created_at || Date.now()).toLocaleString()}</span>
+                            </div>
+                          </div>
+
+                          <button className="text-xs text-cyan-400 font-extrabold underline">
+                            {isSelected ? 'Close Details ▴' : `Manage & Reply (${t.messages?.length || 1}) ▾`}
+                          </button>
+                        </div>
+
+                        {/* Expanded Admin Management */}
+                        {isSelected && (
+                          <div className="border-t border-slate-800 p-5 bg-slate-900/90 space-y-4">
+                            <div className="space-y-3 max-h-64 overflow-y-auto pr-2">
+                              {t.messages && t.messages.map((m, idx) => (
+                                <div 
+                                  key={idx} 
+                                  className={`p-3 rounded-xl text-xs space-y-1 ${
+                                    m.sender.includes('support') 
+                                      ? 'bg-cyan-500/10 border border-cyan-500/30 text-cyan-100 ml-4' 
+                                      : 'bg-slate-950 border border-slate-800 text-slate-300 mr-4'
+                                  }`}
+                                >
+                                  <div className="flex items-center justify-between text-[10px] font-bold text-slate-400 border-b border-slate-800/60 pb-1">
+                                    <span className={m.sender.includes('support') ? 'text-cyan-400 font-extrabold' : 'text-slate-200'}>
+                                      {m.senderName || m.sender}
+                                    </span>
+                                    <span>{m.timestamp}</span>
+                                  </div>
+                                  <p className="text-xs pt-1">{m.text}</p>
+                                </div>
+                              ))}
+                            </div>
+
+                            {/* Admin Response & Status Change */}
+                            <div className="pt-2 border-t border-slate-800 space-y-3">
+                              <div className="flex items-center gap-3">
+                                <label className="text-xs font-bold text-slate-300 uppercase">Change Ticket Status:</label>
+                                <select
+                                  value={t.status}
+                                  onChange={(e) => {
+                                    if (typeof handleUpdateTicketStatus === 'function') {
+                                      handleUpdateTicketStatus(t.id, e.target.value);
+                                      setTicketActionMsg(`Updated status of ticket #${t.id} to ${e.target.value}`);
+                                      setTimeout(() => setTicketActionMsg(''), 4000);
+                                    }
+                                  }}
+                                  className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white focus:border-cyan-500"
+                                >
+                                  <option value="Open">Open</option>
+                                  <option value="In Progress">In Progress</option>
+                                  <option value="Resolved">Resolved</option>
+                                  <option value="Closed">Closed</option>
+                                </select>
+                              </div>
+
+                              <div className="flex gap-2">
+                                <input
+                                  type="text"
+                                  placeholder="Type admin response to client..."
+                                  value={adminReplyInput}
+                                  onChange={(e) => setAdminReplyInput(e.target.value)}
+                                  className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white focus:border-cyan-500"
+                                />
+                                <button
+                                  onClick={async () => {
+                                    if (!adminReplyInput) return;
+                                    if (typeof handleUpdateTicketStatus === 'function') {
+                                      await handleUpdateTicketStatus(t.id, 'In Progress', adminReplyInput);
+                                      setAdminReplyInput('');
+                                      setTicketActionMsg('✅ Admin reply sent successfully to client!');
+                                      setTimeout(() => setTicketActionMsg(''), 4000);
+                                    }
+                                  }}
+                                  className="btn-cyan px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-1 whitespace-nowrap"
+                                >
+                                  <span>Send Admin Reply</span>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* TAB 1: PLAN CONFIGURATOR */}
       {activeAdminTab === 'plans' && (

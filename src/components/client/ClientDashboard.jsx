@@ -17,14 +17,48 @@ export const ClientDashboard = () => {
     handleSendAiMessage,
     user,
     setUser,
-    t
+    setCurrentTab,
+    t,
+    supportTickets = [],
+    handleCreateSupportTicket,
+    handleReplySupportTicket
   } = useApp();
 
-  const [activeTab, setActiveTab] = useState('lineup'); // 'lineup' | 'waivers' | 'trade' | 'chat'
+  const [activeTab, setActiveTab] = useState('lineup'); // 'lineup' | 'waivers' | 'trade' | 'chat' | 'draft' | 'support'
   const [chatInput, setChatInput] = useState('');
   const [showConfigModal, setShowConfigModal] = useState(false);
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
   const [checkoutPlan, setCheckoutPlan] = useState(null);
+
+  // Support Ticket state
+  const [ticketSubject, setTicketSubject] = useState('');
+  const [ticketCategory, setTicketCategory] = useState('General Help');
+  const [ticketPriority, setTicketPriority] = useState('Medium');
+  const [ticketDescription, setTicketDescription] = useState('');
+  const [selectedTicketId, setSelectedTicketId] = useState(null);
+  const [replyText, setReplyText] = useState('');
+  const [ticketSuccessMsg, setTicketSuccessMsg] = useState('');
+
+  const submitNewTicket = async (e) => {
+    e.preventDefault();
+    if (!ticketSubject || !ticketDescription) return;
+    if (typeof handleCreateSupportTicket === 'function') {
+      await handleCreateSupportTicket(ticketSubject, ticketCategory, ticketPriority, ticketDescription);
+      setTicketSuccessMsg('✅ Support ticket submitted successfully! SuperMacho Support Team will reply shortly.');
+      setTicketSubject('');
+      setTicketDescription('');
+      setTimeout(() => setTicketSuccessMsg(''), 5000);
+    }
+  };
+
+  const submitTicketReply = async (e) => {
+    e.preventDefault();
+    if (!replyText || !selectedTicketId) return;
+    if (typeof handleReplySupportTicket === 'function') {
+      await handleReplySupportTicket(selectedTicketId, replyText, user?.email, user?.name);
+      setReplyText('');
+    }
+  };
 
   const startCheckout = (name, price, id) => {
     setCheckoutPlan({ name, price, id });
@@ -231,6 +265,26 @@ export const ClientDashboard = () => {
           <Bot className="w-4 h-4" />
           <span>{t.tabAi || 'SuperMacho AI Assistant'}</span>
           <span className="bg-slate-950 text-cyan-400 text-[10px] px-1.5 py-0.2 rounded font-extrabold">LIVE</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('support')}
+          className={`px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 whitespace-nowrap transition-all ${
+            activeTab === 'support' ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20 font-extrabold' : 'text-slate-400 hover:text-white bg-slate-900'
+          }`}
+        >
+          <HelpCircle className="w-4 h-4" />
+          <span>Support & Help Desk</span>
+          <span className="bg-slate-950 text-amber-400 text-[10px] px-1.5 py-0.5 rounded font-extrabold">24/7</span>
+        </button>
+
+        <button
+          onClick={() => setCurrentTab('admin')}
+          className="px-5 py-2.5 rounded-xl font-extrabold text-xs flex items-center gap-2 whitespace-nowrap transition-all bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-lg shadow-amber-500/20 cursor-pointer"
+        >
+          <Shield className="w-4 h-4 text-slate-950" />
+          <span>🛡️ Admin Panel & Testing Checklist</span>
+          <span className="bg-slate-950 text-amber-400 text-[9px] px-1.5 py-0.5 rounded font-black">FULL ACCESS</span>
         </button>
       </div>
 
@@ -520,6 +574,189 @@ export const ClientDashboard = () => {
           </form>
         </div>
       )}
+
+      {/* TAB 6: SUPPORT & HELP DESK MODULE */}
+      {activeTab === 'support' && (
+        <div className="space-y-6">
+          <div className="glass-panel p-6 sm:p-8 rounded-3xl space-y-4 border border-amber-500/30">
+            <div className="flex items-center justify-between flex-wrap gap-4 border-b border-slate-800 pb-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="bg-amber-500 text-slate-950 font-extrabold text-[10px] px-2.5 py-0.5 rounded-full uppercase">
+                    CLIENT HELP DESK
+                  </span>
+                  <span className="text-xs text-slate-400 font-bold">• 24/7 TICKET SYSTEM</span>
+                </div>
+                <h3 className="font-bebas text-3xl text-white tracking-wider mt-1">OPEN A SUPPORT TICKET</h3>
+                <p className="text-xs text-slate-300">
+                  Have a question about your subscription, ESPN league connection, or Draft War Room? Submit a ticket below.
+                </p>
+              </div>
+            </div>
+
+            {ticketSuccessMsg && (
+              <div className="bg-emerald-500/20 border border-emerald-500/50 p-4 rounded-2xl text-emerald-300 font-bold text-xs">
+                {ticketSuccessMsg}
+              </div>
+            )}
+
+            {/* Ticket Creation Form */}
+            <form onSubmit={submitNewTicket} className="space-y-4 bg-slate-950 p-5 rounded-2xl border border-slate-800">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Category</label>
+                  <select
+                    value={ticketCategory}
+                    onChange={(e) => setTicketCategory(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white focus:border-amber-500"
+                  >
+                    <option value="General Help">General Help</option>
+                    <option value="Billing & Subscription">Billing & Subscription</option>
+                    <option value="ESPN / Sleeper Sync">ESPN / Sleeper Sync</option>
+                    <option value="Draft War Room">Draft War Room</option>
+                    <option value="Bug Report / Feature Request">Bug Report / Feature Request</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Priority Level</label>
+                  <select
+                    value={ticketPriority}
+                    onChange={(e) => setTicketPriority(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white focus:border-amber-500"
+                  >
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                    <option value="Urgent">Urgent</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Ticket Subject</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Need help connecting ESPN cookie"
+                    value={ticketSubject}
+                    onChange={(e) => setTicketSubject(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white focus:border-amber-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Message / Issue Details</label>
+                <textarea
+                  required
+                  rows={3}
+                  placeholder="Describe your issue or request in detail so SuperMacho Support can assist you immediately..."
+                  value={ticketDescription}
+                  onChange={(e) => setTicketDescription(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-800 rounded-xl p-4 text-xs text-white focus:border-amber-500 resize-none"
+                />
+              </div>
+
+              <button type="submit" className="btn-gold px-6 py-3 rounded-xl text-xs font-extrabold flex items-center gap-2 uppercase tracking-wider">
+                <Plus className="w-4 h-4" />
+                <span>Submit Ticket Now</span>
+              </button>
+            </form>
+          </div>
+
+          {/* User Submitted Tickets List */}
+          <div className="glass-panel p-6 rounded-3xl space-y-4">
+            <h4 className="font-bebas text-2xl text-white tracking-wider">MY SUPPORT TICKETS</h4>
+
+            {supportTickets.filter(t => (t.user_email || '').toLowerCase() === (user?.email || '').toLowerCase()).length === 0 ? (
+              <div className="text-center py-8 text-slate-500 text-xs bg-slate-950/50 rounded-2xl border border-slate-800/60">
+                You have no active support tickets. Submit one above if you need any assistance!
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {supportTickets
+                  .filter(t => (t.user_email || '').toLowerCase() === (user?.email || '').toLowerCase())
+                  .map((t) => {
+                    const isSelected = selectedTicketId === t.id;
+                    return (
+                      <div key={t.id} className="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden shadow-lg">
+                        <div 
+                          onClick={() => setSelectedTicketId(isSelected ? null : t.id)}
+                          className="p-4 flex flex-wrap items-center justify-between gap-3 cursor-pointer hover:bg-slate-900/50 transition-colors"
+                        >
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2">
+                              <span className="font-extrabold text-sm text-white">{t.subject}</span>
+                              <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ${
+                                t.status === 'Resolved' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' :
+                                t.status === 'In Progress' ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/40' :
+                                'bg-amber-500/20 text-amber-400 border border-amber-500/40'
+                              }`}>
+                                {t.status}
+                              </span>
+                            </div>
+                            <div className="text-[11px] text-slate-400 flex items-center gap-3">
+                              <span>Category: <strong className="text-slate-200">{t.category}</strong></span>
+                              <span>Priority: <strong className="text-amber-400">{t.priority}</strong></span>
+                              <span>{new Date(t.created_at || Date.now()).toLocaleString()}</span>
+                            </div>
+                          </div>
+
+                          <button className="text-xs text-amber-400 font-extrabold underline">
+                            {isSelected ? 'Hide Thread ▴' : `View Messages (${t.messages?.length || 1}) ▾`}
+                          </button>
+                        </div>
+
+                        {/* Thread detail */}
+                        {isSelected && (
+                          <div className="border-t border-slate-800 p-4 bg-slate-900/80 space-y-4">
+                            <div className="space-y-3 max-h-60 overflow-y-auto pr-2">
+                              {t.messages && t.messages.map((m, idx) => (
+                                <div 
+                                  key={idx} 
+                                  className={`p-3 rounded-xl text-xs space-y-1 ${
+                                    m.sender.includes('support') 
+                                      ? 'bg-amber-500/10 border border-amber-500/30 text-amber-100 ml-4' 
+                                      : 'bg-slate-950 border border-slate-800 text-slate-300 mr-4'
+                                  }`}
+                                >
+                                  <div className="flex items-center justify-between text-[10px] font-bold text-slate-400 border-b border-slate-800/60 pb-1">
+                                    <span className={m.sender.includes('support') ? 'text-amber-400' : 'text-slate-200'}>
+                                      {m.senderName || m.sender}
+                                    </span>
+                                    <span>{m.timestamp}</span>
+                                  </div>
+                                  <p className="text-xs pt-1">{m.text}</p>
+                                </div>
+                              ))}
+                            </div>
+
+                            {/* Reply Form */}
+                            <form onSubmit={submitTicketReply} className="flex gap-2">
+                              <input
+                                type="text"
+                                required
+                                placeholder="Type your reply to support..."
+                                value={replyText}
+                                onChange={(e) => setReplyText(e.target.value)}
+                                className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-xs text-white focus:border-amber-500"
+                              />
+                              <button type="submit" className="btn-gold px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1">
+                                <span>Reply</span>
+                                <Send className="w-3 h-3" />
+                              </button>
+                            </form>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
 
       {/* PARAMETER CONFIGURATION MODAL */}
       {showConfigModal && (

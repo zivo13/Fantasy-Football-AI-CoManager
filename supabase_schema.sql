@@ -89,3 +89,41 @@ DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- 4. Support Tickets Table
+CREATE TABLE IF NOT EXISTS public.support_tickets (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
+  user_email TEXT NOT NULL,
+  subject TEXT NOT NULL,
+  category TEXT DEFAULT 'General',
+  priority TEXT DEFAULT 'Medium',
+  status TEXT DEFAULT 'Open', -- 'Open', 'In Progress', 'Resolved', 'Closed'
+  messages JSONB DEFAULT '[]'::jsonb,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
+);
+ALTER TABLE public.support_tickets ENABLE ROW LEVEL SECURITY;
+
+-- Additional profile tracking columns
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS profile_completed BOOLEAN DEFAULT false;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS access_count INT DEFAULT 1;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS last_login_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now());
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS favorite_team TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS favorite_number TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS birthday TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS preferred_language TEXT DEFAULT 'en';
+
+-- RLS POLICIES FOR SUPPORT TICKETS
+DROP POLICY IF EXISTS "Users can view own support tickets" ON public.support_tickets;
+CREATE POLICY "Users can view own support tickets" ON public.support_tickets
+  FOR SELECT USING (auth.uid() = user_id OR user_email = current_setting('request.jwt.claim.email', true));
+
+DROP POLICY IF EXISTS "Users can insert own support tickets" ON public.support_tickets;
+CREATE POLICY "Users can insert own support tickets" ON public.support_tickets
+  FOR INSERT WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Users can update own support tickets" ON public.support_tickets;
+CREATE POLICY "Users can update own support tickets" ON public.support_tickets
+  FOR UPDATE USING (true);
+

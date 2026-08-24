@@ -131,7 +131,26 @@ export default async function handler(req, res) {
 
   if (req.method === 'DELETE') {
     try {
-      const { email } = req.body || {};
+      const { email, clearAllTestUsers } = req.body || {};
+
+      if (clearAllTestUsers) {
+        // Clear all users except primary admin
+        currentState.users = currentState.users.filter(u => u.user && u.user.toLowerCase().includes('admin'));
+        currentState.profiles = {};
+        currentState.suspended = {};
+        currentState.deleted = {};
+        saveState(currentState);
+
+        if (supabaseUrl && !supabaseUrl.includes('placeholder')) {
+          try {
+            const supabase = createClient(supabaseUrl, supabaseServiceKey);
+            await supabase.from('profiles').delete().neq('role', 'admin');
+          } catch (e) {}
+        }
+
+        return res.status(200).json({ success: true, users: currentState.users });
+      }
+
       if (email) {
         const cleanEmail = email.trim().toLowerCase();
         currentState.deleted[cleanEmail] = true;
@@ -139,6 +158,14 @@ export default async function handler(req, res) {
         delete currentState.suspended[cleanEmail];
         delete currentState.profiles[cleanEmail];
         saveState(currentState);
+
+        // Delete from Supabase profiles table if configured
+        if (supabaseUrl && !supabaseUrl.includes('placeholder')) {
+          try {
+            const supabase = createClient(supabaseUrl, supabaseServiceKey);
+            await supabase.from('profiles').delete().eq('email', cleanEmail);
+          } catch (e) {}
+        }
       }
       return res.status(200).json({ success: true, users: currentState.users });
     } catch (err) {

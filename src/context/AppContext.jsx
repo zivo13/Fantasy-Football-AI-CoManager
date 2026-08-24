@@ -123,47 +123,110 @@ export const AppProvider = ({ children }) => {
     return DEFAULT_ADMIN_USERS;
   });
 
-  // Fetch global registered users from Vercel API
-  useEffect(() => {
-    const fetchGlobalUsers = async () => {
+  // Support Tickets State
+  const [supportTickets, setSupportTickets] = useState([]);
+  const [accessCounts, setAccessCounts] = useState(() => {
+    try {
+      const saved = localStorage.getItem('sm_access_counts');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return {};
+  });
+
+  const fetchGlobalTickets = async () => {
+    try {
+      const res = await fetch('/api/tickets');
+      const data = await res.json();
+      if (data && data.tickets && Array.isArray(data.tickets)) {
+        setSupportTickets(data.tickets);
+      }
+    } catch (e) {}
+  };
+
+  // Fetch global registered users from Vercel API / Vite API
+  const fetchGlobalUsers = async () => {
+    try {
+      const res = await fetch('/api/register-user');
+      const data = await res.json();
+      if (data && data.users && Array.isArray(data.users)) {
+        let deletedMap = {};
+        try {
+          deletedMap = JSON.parse(localStorage.getItem('sm_deleted_users') || '{}');
+        } catch (e) {}
+
+        const serverUsers = data.users.filter(u => u && u.user && !deletedMap[u.user.toLowerCase()]);
+        setRegisteredUsersList(serverUsers);
+        try {
+          localStorage.setItem('sm_registered_users_list', JSON.stringify(serverUsers));
+        } catch (e) {}
+      }
+    } catch (e) {}
+  };
+
+  const handleDeleteUser = async (emailToDelete) => {
+    if (!emailToDelete) return;
+    const clean = emailToDelete.trim().toLowerCase();
+
+    // 1. Record in local deleted map
+    let deletedMap = {};
+    try {
+      deletedMap = JSON.parse(localStorage.getItem('sm_deleted_users') || '{}');
+      deletedMap[clean] = true;
+      localStorage.setItem('sm_deleted_users', JSON.stringify(deletedMap));
+      localStorage.removeItem(`sm_user_${clean}`);
+      localStorage.removeItem(`sm_profile_${clean}`);
+    } catch (e) {}
+
+    // 2. Update local state
+    setRegisteredUsersList(prev => {
+      const updated = prev.filter(u => u.user.toLowerCase() !== clean);
       try {
-        const res = await fetch('/api/register-user');
-        const data = await res.json();
-        if (data && data.users && Array.isArray(data.users)) {
-          setRegisteredUsersList(prev => {
-            let deletedMap = {};
-            try {
-              deletedMap = JSON.parse(localStorage.getItem('sm_deleted_users') || '{}');
-            } catch (e) {}
-
-            const map = new Map();
-            (prev || []).forEach(u => {
-              if (u && u.user && !deletedMap[u.user.toLowerCase()]) {
-                map.set(u.user.toLowerCase(), u);
-              }
-            });
-
-            data.users.forEach(u => {
-              if (u && u.user && !deletedMap[u.user.toLowerCase()]) {
-                const existing = map.get(u.user.toLowerCase());
-                map.set(u.user.toLowerCase(), existing ? { ...existing, ...u } : u);
-              }
-            });
-
-            const merged = Array.from(map.values()).filter(u => !deletedMap[u.user.toLowerCase()]);
-            try {
-              localStorage.setItem('sm_registered_users_list', JSON.stringify(merged));
-            } catch (e) {}
-            return merged;
-          });
-        }
+        localStorage.setItem('sm_registered_users_list', JSON.stringify(updated));
       } catch (e) {}
-    };
+      return updated;
+    });
 
+    // 3. Send DELETE request to API endpoint
+    try {
+      await fetch('/api/register-user', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: clean })
+      });
+    } catch (e) {}
+  };
+
+  const handleClearAllTestUsers = async () => {
+    try {
+      await fetch('/api/register-user', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clearAllTestUsers: true })
+      });
+    } catch (e) {}
+
+    try {
+      localStorage.removeItem('sm_registered_users_list');
+      localStorage.removeItem('sm_deleted_users');
+    } catch (e) {}
+
+    setRegisteredUsersList([]);
+  };
+
+  const refreshAdminData = async () => {
+    await Promise.all([fetchGlobalUsers(), fetchGlobalTickets()]);
+  };
+
+  useEffect(() => {
     fetchGlobalUsers();
-    const interval = setInterval(fetchGlobalUsers, 10000); // Polling every 10s for Admin
+    fetchGlobalTickets();
+    const interval = setInterval(() => {
+      fetchGlobalUsers();
+      fetchGlobalTickets();
+    }, 5000); // Live multi-computer auto-polling every 5s
     return () => clearInterval(interval);
   }, []);
+
 
   // Actions
   const handleLogin = (email, role = 'client') => {
@@ -192,6 +255,16 @@ export const AppProvider = ({ children }) => {
         }
       }
     } catch (e) {}
+
+    // Track access count
+    setAccessCounts(prev => {
+      const current = prev[cleanEmail] || 0;
+      const updated = { ...prev, [cleanEmail]: current + 1 };
+      try {
+        localStorage.setItem('sm_access_counts', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
 
     setUser({
       name: role === 'admin' ? 'SuperMacho Admin' : cleanEmail.split('@')[0],
@@ -271,6 +344,120 @@ export const AppProvider = ({ children }) => {
       isLoggedIn: false
     });
     setCurrentTab('landing');
+  };
+
+  const handleCreateSupportTicket = async (subject, category, priority, message) => {
+    if (!user || !user.email) return;
+    try {
+      const res = await fetch('/api/tickets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_email: user.email,
+          senderName: user.name || user.email.split('@')[0],
+          subject,
+          category,
+          priority,
+          message
+        })
+      });
+      const data = await res.json();
+      if (data && data.tickets) {
+        setSupportTickets(data.tickets);
+      }
+    } catch (e) {
+      // Fallback local state ticket
+      const newT = {
+        id: 'tick_' + Date.now(),
+        user_email: user.email,
+        subject,
+        category,
+        priority,
+        status: 'Open',
+        created_at: new Date().toISOString(),
+        messages: [
+          {
+            sender: user.email,
+            senderName: user.name || user.email.split('@')[0],
+            text: message,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          }
+        ]
+      };
+      setSupportTickets(prev => [newT, ...prev]);
+    }
+  };
+
+  const handleReplySupportTicket = async (ticketId, message, senderEmail, senderName) => {
+    try {
+      const res = await fetch('/api/tickets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'reply',
+          ticketId,
+          message,
+          senderEmail: senderEmail || user?.email,
+          senderName: senderName || user?.name
+        })
+      });
+      const data = await res.json();
+      if (data && data.tickets) {
+        setSupportTickets(data.tickets);
+      }
+    } catch (e) {
+      setSupportTickets(prev => prev.map(t => {
+        if (t.id === ticketId) {
+          return {
+            ...t,
+            messages: [
+              ...t.messages,
+              {
+                sender: senderEmail || user?.email || 'support@supermacho.app',
+                senderName: senderName || 'User',
+                text: message,
+                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+              }
+            ]
+          };
+        }
+        return t;
+      }));
+    }
+  };
+
+  const handleUpdateTicketStatus = async (ticketId, status, adminReply) => {
+    try {
+      const res = await fetch('/api/tickets', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ticketId,
+          status,
+          adminReply
+        })
+      });
+      const data = await res.json();
+      if (data && data.tickets) {
+        setSupportTickets(data.tickets);
+      }
+    } catch (e) {
+      setSupportTickets(prev => prev.map(t => {
+        if (t.id === ticketId) {
+          const updatedMsgs = [...t.messages];
+          if (adminReply) {
+            updatedMsgs.push({
+              sender: 'support@supermacho.app',
+              senderName: 'SuperMacho Support Team',
+              text: adminReply,
+              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            });
+          }
+          return { ...t, status: status || t.status, messages: updatedMsgs };
+        }
+        return t;
+      }));
+    }
   };
 
   const handleSavePlan = (updatedPlan) => {
@@ -359,7 +546,15 @@ export const AppProvider = ({ children }) => {
       customTranslations,
       activeTranslations,
       updateCustomTranslations,
-      resetCustomTranslations
+      resetCustomTranslations,
+      supportTickets,
+      accessCounts,
+      refreshAdminData,
+      handleCreateSupportTicket,
+      handleReplySupportTicket,
+      handleUpdateTicketStatus,
+      handleDeleteUser,
+      handleClearAllTestUsers
     }}>
       {children}
     </AppContext.Provider>
@@ -367,3 +562,4 @@ export const AppProvider = ({ children }) => {
 };
 
 export const useApp = () => useContext(AppContext);
+

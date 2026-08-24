@@ -106,7 +106,8 @@ export const UserProfileModal = ({ isOpen, onClose }) => {
       birthday,
       favoriteNumber,
       favoriteTeam,
-      prefLang
+      prefLang,
+      profileCompleted: true
     };
 
     // Save profile locally

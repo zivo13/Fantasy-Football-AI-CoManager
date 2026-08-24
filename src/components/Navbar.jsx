@@ -51,11 +51,11 @@ export const Navbar = () => {
             </div>
           </div>
 
-          {/* Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-1 bg-slate-900/60 p-1.5 rounded-2xl border border-slate-800">
+          {/* Navigation Links - Visible on ALL screen sizes */}
+          <nav className="flex items-center gap-1 bg-slate-900/60 p-1.5 rounded-2xl border border-slate-800 overflow-x-auto">
             <button
               onClick={() => setCurrentTab('landing')}
-              className={`px-4 py-2 rounded-xl font-semibold text-sm transition-all ${
+              className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl font-semibold text-xs sm:text-sm transition-all whitespace-nowrap ${
                 currentTab === 'landing' 
                   ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-lg shadow-amber-500/10' 
                   : 'text-slate-300 hover:text-white hover:bg-slate-900'
@@ -73,29 +73,28 @@ export const Navbar = () => {
                   setShowAuthModal(true);
                 }
               }}
-              className={`px-4 py-2 rounded-xl font-semibold text-sm transition-all flex items-center gap-2 ${
+              className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl font-semibold text-xs sm:text-sm transition-all flex items-center gap-1.5 sm:gap-2 whitespace-nowrap ${
                 currentTab === 'client' 
                   ? 'bg-gradient-to-r from-amber-500/20 to-amber-600/20 text-amber-300 border border-amber-500/40 shadow-lg shadow-amber-500/10' 
                   : 'text-slate-300 hover:text-white hover:bg-slate-900'
               }`}
             >
-              <LayoutDashboard className="w-4 h-4 text-amber-400" />
+              <LayoutDashboard className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400" />
               <span>{t.navClient || 'Client Dashboard'}</span>
             </button>
 
-            {user.role === 'admin' && (
-              <button
-                onClick={() => setCurrentTab('admin')}
-                className={`px-4 py-2 rounded-xl font-semibold text-sm transition-all flex items-center gap-2 ${
-                  currentTab === 'admin' 
-                    ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-lg shadow-cyan-500/10' 
-                    : 'text-slate-400 hover:text-cyan-300 hover:bg-slate-900'
-                }`}
-              >
-                <Shield className="w-4 h-4 text-cyan-400" />
-                <span>{t.navAdmin || 'Admin'}</span>
-              </button>
-            )}
+            <button
+              onClick={() => setCurrentTab('admin')}
+              className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl font-extrabold text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 sm:gap-2 whitespace-nowrap ${
+                currentTab === 'admin' 
+                  ? 'bg-amber-500 text-slate-950 font-extrabold shadow-lg shadow-amber-500/20' 
+                  : 'text-amber-400 hover:text-white bg-amber-500/10 border border-amber-500/40'
+              }`}
+            >
+              <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400" />
+              <span>{t.navAdmin || 'Admin Command Center'}</span>
+              <span className="bg-slate-950 text-amber-400 text-[9px] px-1.5 py-0.5 rounded font-black hidden sm:inline">FULL ACCESS</span>
+            </button>
           </nav>
 
           {/* Right Action & Profile */}
