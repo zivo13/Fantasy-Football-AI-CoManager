@@ -6,7 +6,18 @@ export const DraftWarRoom = () => {
   const appState = useApp() || {};
   const currentLeague = appState.currentLeague || (appState.leagues && appState.leagues[0]) || { scoring: 'PPR' };
   const tRaw = appState.t;
-  const t = typeof tRaw === 'function' ? tRaw : (key => (tRaw && tRaw[key]) || key);
+  const t = (key) => {
+    try {
+      if (typeof tRaw === 'function') {
+        const res = tRaw(key);
+        if (typeof res === 'string') return res;
+      }
+      if (tRaw && typeof tRaw === 'object' && typeof tRaw[key] === 'string') {
+        return tRaw[key];
+      }
+    } catch (e) {}
+    return key;
+  };
   
   // State for active AI Coach Question
   const [activeQuestion, setActiveQuestion] = useState('target_pos');
@@ -200,7 +211,19 @@ export const DraftWarRoom = () => {
     }
   };
 
-  const labels = LABELS_MULTI[lang] || LABELS_MULTI.en;
+  const defaultLabels = {
+    badge: "LIVE DRAFT EXPERT ASSISTANT",
+    desc: "Real-time roster access, tier-drop alerts, best available players, and league comparison engine.",
+    clockPick: "Current On-Clock Pick",
+    boardTitle: "BEST AVAILABLE PLAYERS BOARD",
+    boardDesc: "Ranked by SuperMacho AI Value Steal Rating & Projections",
+    fitNeed: "FIT NEED",
+    draftTarget: "Draft Target",
+    needsTitle: "ROSTER NEEDS & STARTER GAPS",
+    compareTitle: "LEAGUE TEAM COMPARISON"
+  };
+
+  const labels = (LABELS_MULTI && (LABELS_MULTI[lang] || LABELS_MULTI.en)) || defaultLabels;
 
   const filteredPlayers = filterPos === 'ALL' 
     ? availablePlayers 
