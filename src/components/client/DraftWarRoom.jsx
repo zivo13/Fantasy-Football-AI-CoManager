@@ -63,41 +63,144 @@ export const DraftWarRoom = () => {
 
   const availablePlayers = liveDraftPool || defaultAvailablePlayers;
 
-  // AI Advice Preset Mapping for the 5 User Questions
-  const AI_ADVICE_MAP = {
-    target_pos: {
-      title: "🎯 TARGET RECOMMENDATION: RB2 (RUNNING BACK)",
-      alert: "⚠️ TIER DROP WARNING: Only 2 S-Tier RBs remain before a massive 35-point projection cliff!",
-      analysis: "You already anchored WR1 with CeeDee Lamb in Round 1. Your team urgent priority is securing RB2 before Round 3 ends. Target Breece Hall or Bijan Robinson now to balance your floor.",
-      action: "Pick RB next in Round 2"
+  const lang = appState.lang || 'en';
+
+  const AI_ADVICE_MAP_MULTI = {
+    en: {
+      target_pos: {
+        title: "🎯 TARGET RECOMMENDATION: RB2 (RUNNING BACK)",
+        alert: "⚠️ TIER DROP WARNING: Only 2 S-Tier RBs remain before a massive 35-point projection cliff!",
+        analysis: "You already anchored WR1 with CeeDee Lamb in Round 1. Your team urgent priority is securing RB2 before Round 3 ends. Target Breece Hall or Bijan Robinson now to balance your floor.",
+        action: "Pick RB next in Round 2"
+      },
+      best_rb: {
+        title: "🏃 BEST AVAILABLE PLAYERS & TIER DROP RADAR",
+        alert: "🔥 TOP TARGET: Bijan Robinson (ATL - 298.2 Proj Pts, 84% Snap Share)",
+        analysis: "1. Bijan Robinson (RB - ATL) — 88% Redzone Touch Share, S-Tier Floor\n2. Saquon Barkley (RB - PHI) — 84% Touch Share, Top 3 Pick\n3. Breece Hall (RB - NYJ) — +2 Picks Value Steal",
+        action: "Draft Bijan Robinson"
+      },
+      team_compare: {
+        title: "📊 LEAGUE TEAM COMPARISON & RANKINGS",
+        alert: "🏆 YOUR TEAM RANKING: #2 OUT OF 12 LEAGUE TEAMS (84.2/100 GRADE)",
+        analysis: "Your roster leads the league in Projected Weekly Floor (114.2 Pts). You have a +24.8 Pts advantage in WR target share over League Rival 'Gridiron Kings'. Securing an elite RB2 will move you to #1 overall.",
+        action: "Maintain High-Floor Strategy"
+      },
+      upside: {
+        title: "⚡ PLAYER UPSIDE COMPARISON (Breece Hall vs. Bijan Robinson)",
+        alert: "🔥 HIGHER CEILING: Breece Hall (+1.4 Pts Ceiling Advantage)",
+        analysis: "Breece Hall has a 28.2 Pts single-game ceiling due to receiving volume in NYJ offense. Bijan Robinson has higher floor stability (15.8 Pts floor). AI Recommendation: Draft Breece Hall for championship tournament upside.",
+        action: "Breece Hall (+4% Win Probability)"
+      },
+      roster_needs: {
+        title: "⚠️ URGENT ROSTER NEEDS ANALYSIS",
+        alert: "🚨 BIGGEST GAP: RB2 (CRITICAL NEED) & TE1 (SECONDARY NEED)",
+        analysis: "Filled Starters: QB1 (Lamar Jackson), WR1 (CeeDee Lamb), WR2 (Brandon Aiyuk).\nMissing Gaps: RB2 position is currently EMPTY. If you skip RB now, your projected RB2 starting points drop by -4.8 Pts/week.",
+        action: "Address RB2 Immediately"
+      }
     },
-    best_rb: {
-      title: "🏃 BEST AVAILABLE RBs & TIER DROP RADAR",
-      alert: "🔥 TOP TARGET: Breece Hall (NYJ - 268.4 Proj Pts, 82% Snap Share)",
-      analysis: "1. Breece Hall (RB - NYJ) — 88% Redzone Touch Share, +4 Picks Value\n2. Bijan Robinson (RB - ATL) — 78% Target Share, S-Tier Floor\n3. Kenneth Walker III (RB - SEA) — Round 4 Value Steal (+5 Picks Value)",
-      action: "Draft Breece Hall"
+    es: {
+      target_pos: {
+        title: "🎯 RECOMENDACIÓN DE TARGET: BUSCAR RB2 (CORREDOR)",
+        alert: "⚠️ ADVERTENCIA DE CAÍDA DE NIVEL: ¡Solo quedan 2 RBs de Nivel S antes de una caída de 35 puntos!",
+        analysis: "Ya aseguraste a tu WR1 con CeeDee Lamb en la Ronda 1. La prioridad urgente de tu equipo es asegurar tu RB2 antes de terminar la Ronda 3. Busca a Breece Hall o Bijan Robinson ahora.",
+        action: "Seleccionar RB en Ronda 2"
+      },
+      best_rb: {
+        title: "🏃 MEJORES JUGADORES DISPONIBLES Y RADAR DE NIVELES",
+        alert: "🔥 OBJETIVO PRINCIPAL: Bijan Robinson (ATL - 298.2 Pts Proyectados)",
+        analysis: "1. Bijan Robinson (RB - ATL) — 88% de Volumen en Zona Roja, Piso Nivel S\n2. Saquon Barkley (RB - PHI) — 84% de Toques, Pick Top 3\n3. Breece Hall (RB - NYJ) — +2 Picks de Robo de Valor",
+        action: "Draftear a Bijan Robinson"
+      },
+      team_compare: {
+        title: "📊 COMPARACIÓN Y CLASIFICACIÓN DE EQUIPOS DE LA LIGA",
+        alert: "🏆 TU EQUIPO ESTÁ EN EL PUESTO #2 DE 12 EQUIPOS (CALIFICACIÓN 84.2/100)",
+        analysis: "Tu plantilla lidera la liga en Piso Semanal Proyectado (114.2 Pts). Tienes una ventaja de +24.8 Pts sobre tu rival 'Gridiron Kings'. Asegurar un RB2 élite te llevará al #1 absoluto.",
+        action: "Mantener Estrategia de Piso Alto"
+      },
+      upside: {
+        title: "⚡ COMPARACIÓN DE POTENCIAL (Breece Hall vs. Bijan Robinson)",
+        alert: "🔥 MAYOR TECHO EXPLOSIVO: Breece Hall (+1.4 Pts de Ventaja en Techo)",
+        analysis: "Breece Hall tiene un techo de 28.2 Pts por su volumen de pases en NYJ. Bijan Robinson tiene mayor estabilidad de piso (15.8 Pts). Recomendación IA: Draftea a Breece Hall para mayor potencial.",
+        action: "Breece Hall (+4% Probabilidad de Ganar)"
+      },
+      roster_needs: {
+        title: "⚠️ ANÁLISIS DE NECESIDADES URGENTES DE PLANTILLA",
+        alert: "🚨 MAYOR HUECO: RB2 (NECESIDAD CRÍTICA) Y TE1 (SEGUNDA NECESIDAD)",
+        analysis: "Titulares Cubiertos: QB1 (Lamar Jackson), WR1 (CeeDee Lamb), WR2 (Brandon Aiyuk).\nHuecos Faltantes: La posición de RB2 está VACÍA. Si no seleccionas RB ahora, tus puntos caerán -4.8 Pts/semana.",
+        action: "Cubrir RB2 Inmediatamente"
+      }
     },
-    team_compare: {
-      title: "📊 LEAGUE TEAM COMPARISON & RANKINGS",
-      alert: "🏆 YOUR TEAM RANKING: #2 OUT OF 12 LEAGUE TEAMS (84.2/100 GRADE)",
-      analysis: "Your roster leads the league in Projected Weekly Floor (114.2 Pts). You have a +24.8 Pts advantage in WR target share over League Rival 'Gridiron Kings'. Securing an elite RB2 will move you to #1 overall.",
-      action: "Maintain High-Floor Strategy"
-    },
-    upside: {
-      title: "⚡ PLAYER UPSIDE COMPARISON (Breece Hall vs. Bijan Robinson)",
-      alert: "🔥 HIGHER CEILING: Breece Hall (+1.4 Pts Ceiling Advantage)",
-      analysis: "Breece Hall has a 26.5 Pts single-game ceiling due to receiving volume in NYJ offense. Bijan Robinson has higher floor stability (13.8 Pts floor). AI Recommendation: Draft Breece Hall for championship tournament upside.",
-      action: "Breece Hall has +4% Higher Win Probability"
-    },
-    roster_needs: {
-      title: "⚠️ URGENT ROSTER NEEDS ANALYSIS",
-      alert: "🚨 BIGGEST GAP: RB2 (CRITICAL NEED) & TE1 (SECONDARY NEED)",
-      analysis: "Filled Starters: QB1 (Lamar Jackson), WR1 (CeeDee Lamb), WR2 (Brandon Aiyuk).\nMissing Gaps: RB2 position is currently EMPTY. If you skip RB now, your projected RB2 starting points drop by -4.8 Pts/week.",
-      action: "Address RB2 Immediately"
+    pt: {
+      target_pos: {
+        title: "🎯 RECOMENDAÇÃO DE TARGET: FOCAR EM RB2 (RUNNING BACK)",
+        alert: "⚠️ ALERTA DE QUEDA DE NÍVEL: Restam apenas 2 RBs Nível S antes de uma queda de 35 pontos!",
+        analysis: "Você já garantiu seu WR1 com CeeDee Lamb na Rodada 1. A prioridade urgente do seu time é garantir um RB2 antes da Rodada 3 terminar. Escolha Breece Hall ou Bijan Robinson agora.",
+        action: "Escolher RB na Rodada 2"
+      },
+      best_rb: {
+        title: "🏃 MELHORES JOGADORES DISPONÍVEIS E RADAR DE NÍVEIS",
+        alert: "🔥 PRINCIPAL ALVO: Bijan Robinson (ATL - 298.2 Pontos Projetados)",
+        analysis: "1. Bijan Robinson (RB - ATL) — 88% de Volume na Redzone, Piso Nível S\n2. Saquon Barkley (RB - PHI) — 84% de Toques, Escolha Top 3\n3. Breece Hall (RB - NYJ) — +2 Escolhas de Valor",
+        action: "Selecionar Bijan Robinson"
+      },
+      team_compare: {
+        title: "📊 COMPARAÇÃO E CLASSIFICAÇÃO DOS TIMES DA LIGA",
+        alert: "🏆 SEU TIME ESTÁ NA POSIÇÃO #2 DE 12 TIMES (NOTA 84.2/100)",
+        analysis: "Seu time lidera a liga em Piso Semanal Projetado (114.2 Pts). Você tem uma vantagem de +24.8 Pts sobre o rival 'Gridiron Kings'. Garantir um RB2 de elite colocará você em #1 geral.",
+        action: "Manter Estratégia de Piso Alto"
+      },
+      upside: {
+        title: "⚡ COMPARAÇÃO DE POTENCIAL (Breece Hall vs. Bijan Robinson)",
+        alert: "🔥 MAIOR TETO EXPLOSIVO: Breece Hall (+1.4 Pts de Vantagem no Teto)",
+        analysis: "Breece Hall tem um teto de 28.2 Pts pelas recepções no NYJ. Bijan Robinson tem maior estabilidade no piso (15.8 Pts). Recomendação IA: Escolha Breece Hall para maior potencial.",
+        action: "Breece Hall (+4% Chance de Vitória)"
+      },
+      roster_needs: {
+        title: "⚠️ ANÁLISE DE NECESSIDADES URGENTES DO TIME",
+        alert: "🚨 MAIOR LACUNA: RB2 (CRÍTICA) E TE1 (SECUNDÁRIA)",
+        analysis: "Titulares Preenchidos: QB1 (Lamar Jackson), WR1 (CeeDee Lamb), WR2 (Brandon Aiyuk).\nLacunas: A posição de RB2 está VAZIA. Se você pular RB agora, suas projeções caem -4.8 Pts/semana.",
+        action: "Cobrir RB2 Imediatamente"
+      }
     }
   };
 
-  const currentAdvice = AI_ADVICE_MAP[activeQuestion];
+  const LABELS_MULTI = {
+    en: {
+      badge: "LIVE DRAFT EXPERT ASSISTANT",
+      desc: "Real-time roster access, tier-drop alerts, best available players, and league comparison engine.",
+      clockPick: "Current On-Clock Pick",
+      boardTitle: "BEST AVAILABLE PLAYERS BOARD",
+      boardDesc: "Ranked by SuperMacho AI Value Steal Rating & Projections",
+      fitNeed: "FIT NEED",
+      draftTarget: "Draft Target",
+      needsTitle: "ROSTER NEEDS & STARTER GAPS",
+      compareTitle: "LEAGUE TEAM COMPARISON"
+    },
+    es: {
+      badge: "ASISTENTE EXPERTO EN DRAFT EN VIVO",
+      desc: "Acceso en tiempo real a plantillas, alertas de caídas de nivel y motor de comparación de ligas.",
+      clockPick: "Turno Actual en el Reloj",
+      boardTitle: "TABLERO DE MEJORES JUGADORES DISPONIBLES",
+      boardDesc: "Clasificado por el Rating de Valor de la IA de SuperMacho y Proyecciones",
+      fitNeed: "CUBRE HUECO",
+      draftTarget: "Fijar Target",
+      needsTitle: "NECESIDADES Y HUECOS DE TITULARES",
+      compareTitle: "COMPARACIÓN DE EQUIPOS EN LA LIGA"
+    },
+    pt: {
+      badge: "ASSISTENTE DE DRAFT AO VIVO",
+      desc: "Acesso em tempo real a elencos, alertas de quedas de nível e motor de comparação de ligas.",
+      clockPick: "Escolha Atual no Relógio",
+      boardTitle: "TABULEIRO DE MELHORES JOGADORES DISPONÍVEIS",
+      boardDesc: "Classificado pelo Rating de Valor da IA do SuperMacho e Projeções",
+      fitNeed: "PREENCHE LACUNA",
+      draftTarget: "Fixar Alvo",
+      needsTitle: "NECESSIDADES E LACUNAS DE TITULARES",
+      compareTitle: "COMPARAÇÃO DE TIMES DA LIGA"
+    }
+  };
+
+  const labels = LABELS_MULTI[lang] || LABELS_MULTI.en;
 
   const filteredPlayers = filterPos === 'ALL' 
     ? availablePlayers 
@@ -111,7 +214,7 @@ export const DraftWarRoom = () => {
         <div className="space-y-2 z-10">
           <div className="flex items-center gap-2">
             <span className="bg-amber-500 text-slate-950 font-extrabold text-xs px-3 py-0.5 rounded-full uppercase">
-              LIVE DRAFT EXPERT ASSISTANT
+              {labels.badge}
             </span>
             <span className="text-xs text-amber-400 font-bold">• SCORING: {currentLeague?.scoring || 'PPR'}</span>
           </div>
@@ -119,13 +222,13 @@ export const DraftWarRoom = () => {
             {t('draftWarRoomTitle')}
           </h1>
           <p className="text-slate-300 text-xs sm:text-sm font-medium">
-            Real-time roster access, tier-drop alerts, best available players, and league comparison engine.
+            {labels.desc}
           </p>
         </div>
 
         <div className="flex items-center gap-3 z-10 bg-slate-950/80 p-4 rounded-2xl border border-amber-500/30">
           <div className="text-right">
-            <div className="text-[10px] uppercase font-bold text-slate-400">Current On-Clock Pick</div>
+            <div className="text-[10px] uppercase font-bold text-slate-400">{labels.clockPick}</div>
             <div className="font-bebas text-2xl text-amber-400">ROUND 2 • PICK #14</div>
           </div>
           <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/40 flex items-center justify-center font-bold">
@@ -301,8 +404,8 @@ export const DraftWarRoom = () => {
       <div className="glass-panel p-6 rounded-3xl space-y-4 border border-slate-800">
         <div className="flex items-center justify-between flex-wrap gap-4 border-b border-slate-800 pb-4">
           <div>
-            <h3 className="font-bebas text-2xl text-white tracking-wider">BEST AVAILABLE PLAYERS BOARD</h3>
-            <p className="text-xs text-slate-400 font-medium">Ranked by SuperMacho AI Value Steal Rating & Projections</p>
+            <h3 className="font-bebas text-2xl text-white tracking-wider">{labels.boardTitle}</h3>
+            <p className="text-xs text-slate-400 font-medium">{labels.boardDesc}</p>
           </div>
 
           {/* Position Filters */}
@@ -342,7 +445,7 @@ export const DraftWarRoom = () => {
                     <span>{player.name}</span>
                     <span className="text-[11px] text-slate-400">({player.team})</span>
                     {player.needMatch && (
-                      <span className="bg-amber-500 text-slate-950 text-[10px] font-extrabold px-2 py-0.5 rounded">FIT NEED</span>
+                      <span className="bg-amber-500 text-slate-950 text-[10px] font-extrabold px-2 py-0.5 rounded">{labels.fitNeed}</span>
                     )}
                   </div>
                   <div className="text-[11px] text-slate-400 font-semibold flex items-center gap-3 mt-0.5">
@@ -361,7 +464,7 @@ export const DraftWarRoom = () => {
                   onClick={() => alert(`Draft Target Lock: ${player.name} added to your live draft queue!`)}
                   className="btn-gold px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-1 shadow-md uppercase whitespace-nowrap"
                 >
-                  <span>Draft Target</span>
+                  <span>{labels.draftTarget}</span>
                   <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
@@ -378,7 +481,7 @@ export const DraftWarRoom = () => {
           <div className="flex items-center justify-between border-b border-slate-800 pb-3">
             <h3 className="font-bebas text-2xl text-white tracking-wider flex items-center gap-2">
               <ShieldAlert className="w-5 h-5 text-amber-400" />
-              <span>ROSTER NEEDS & STARTER GAPS</span>
+              <span>{labels.needsTitle}</span>
             </h3>
             <span className="text-xs font-bold text-amber-400">3/7 Starters Filled</span>
           </div>
@@ -423,7 +526,7 @@ export const DraftWarRoom = () => {
           <div className="flex items-center justify-between border-b border-slate-800 pb-3">
             <h3 className="font-bebas text-2xl text-white tracking-wider flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-cyan-400" />
-              <span>LEAGUE TEAM COMPARISON</span>
+              <span>{labels.compareTitle}</span>
             </h3>
             <span className="text-xs font-bold text-cyan-400">12 Teams Scored</span>
           </div>
