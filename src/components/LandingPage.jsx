@@ -63,6 +63,33 @@ export const LandingPage = () => {
     }
   };
 
+  // Real-Time Dynamic NFL Kickoff Countdown Timer
+  const [timeLeft, setTimeLeft] = useState({ days: 9, hours: 3, minutes: 15, seconds: 40 });
+
+  useEffect(() => {
+    // Official NFL Kickoff Game: Thursday, September 3, 2026 at 20:20 EDT
+    const kickoffTarget = new Date('2026-09-03T20:20:00-04:00').getTime();
+
+    const updateCountdown = () => {
+      const now = new Date().getTime();
+      const difference = kickoffTarget - now;
+
+      if (difference > 0) {
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+        setTimeLeft({ days, hours, minutes, seconds });
+      } else {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      }
+    };
+
+    updateCountdown();
+    const timer = setInterval(updateCountdown, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <div className="space-y-24 pb-20">
       
@@ -85,7 +112,7 @@ export const LandingPage = () => {
           {/* Top Urgency Countdown Banner */}
           <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-slate-900/90 border border-amber-500/40 text-amber-400 text-xs font-extrabold uppercase tracking-widest shadow-xl shadow-amber-500/10">
             <Clock className="w-4 h-4 text-amber-400 animate-pulse" />
-            <span>WEEK 1 FANTASY KICKOFF IN: <strong className="text-white">03 DAYS 14 HRS 22 MINS</strong></span>
+            <span>WEEK 1 FANTASY KICKOFF IN: <strong className="text-white">{String(timeLeft.days).padStart(2, '0')} DAYS {String(timeLeft.hours).padStart(2, '0')} HRS {String(timeLeft.minutes).padStart(2, '0')} MINS {String(timeLeft.seconds).padStart(2, '0')} SECS</strong></span>
           </div>
 
           {/* Centered Mascot Emblem Feature */}
