@@ -417,35 +417,8 @@ export const LandingPage = () => {
           </p>
         </div>
 
-        {/* 4 Credit Packs Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
-          
-          {/* Card 1: Free Rookie */}
-          <div className="glass-panel p-6 rounded-3xl flex flex-col justify-between space-y-6 border border-slate-800 hover:border-slate-700 transition-all">
-            <div className="space-y-4">
-              <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">{t.packStartHere || 'START HERE'}</div>
-              <h3 className="font-bebas text-3xl text-white tracking-wider">{t.packFreeTitle || 'FREE ROOKIE'}</h3>
-              <div className="py-2 border-y border-slate-800">
-                <span className="font-bebas text-4xl text-amber-400">{t.packFreeCredits || '20 Free Credits'}</span>
-                <div className="text-slate-400 text-[11px] font-semibold">{t.packFreeDesc || 'Included on Free Account Creation'}</div>
-              </div>
-              <ul className="space-y-2.5 text-xs text-slate-300">
-                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400 flex-shrink-0" /> {t.packFreeItem1 || '20 Start/Sit Lineup Checks'}</li>
-                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400 flex-shrink-0" /> {t.packFreeItem2 || 'ESPN / Sleeper Sync'}</li>
-                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400 flex-shrink-0" /> {t.packFreeItem3 || 'Ask AI Coach Chat'}</li>
-              </ul>
-            </div>
-            <button
-              onClick={() => {
-                setAuthMode('signup');
-                setShowAuthModal(true);
-              }}
-              className="w-full btn-outline py-3.5 rounded-2xl text-xs font-extrabold flex items-center justify-center gap-2 uppercase tracking-wider"
-            >
-              <span>{t.packFreeBtn || 'Get 20 Free Credits'}</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
+        {/* 3 AI Credit Packs Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
 
           {/* Card 2: Pay-As-You-Go Booster */}
           <div className="glass-panel p-6 rounded-3xl flex flex-col justify-between space-y-6 border border-amber-500/30 hover:border-amber-500/60 transition-all">
