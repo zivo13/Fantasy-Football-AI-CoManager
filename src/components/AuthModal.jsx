@@ -4,7 +4,7 @@ import { X, Sparkles, Shield, User, Lock, Mail, ArrowRight } from 'lucide-react'
 import { signUpWithEmail, signInWithEmail, signInWithGoogle } from '../services/supabaseClient';
 
 export const AuthModal = () => {
-  const { showAuthModal, setShowAuthModal, authMode, setAuthMode, handleLogin } = useApp();
+  const { showAuthModal, setShowAuthModal, authMode, setAuthMode, handleLogin, t } = useApp();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -161,10 +161,10 @@ export const AuthModal = () => {
             <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
           <h3 className="font-bebas text-2xl sm:text-3xl text-white tracking-wider">
-            {authMode === 'login' ? 'WELCOME BACK, CHAMP!' : 'JOIN SUPERMACHO TODAY'}
+            {authMode === 'login' ? (t.authWelcomeBack || 'WELCOME BACK, CHAMP!') : (t.authJoinToday || 'JOIN SUPERMACHO TODAY')}
           </h3>
           <p className="text-[11px] sm:text-xs text-slate-400 mt-1 font-medium">
-            {authMode === 'login' ? 'Log in to access your AI Fantasy Co-Manager' : "Start winning your fantasy league & let's make money!"}
+            {authMode === 'login' ? (t.authLoginSub || 'Log in to access your AI Fantasy Co-Manager') : (t.authSignupSub || "Start winning your fantasy league & let's make money!")}
           </p>
         </div>
 

@@ -20,6 +20,7 @@ function readState() {
   let suspendedMap = {};
   let profilesMap = {};
   let userList = [];
+  let fileExists = false;
 
   try {
     if (fs.existsSync(TMP_FILE)) {
@@ -29,18 +30,12 @@ function readState() {
       suspendedMap = parsed.suspended || {};
       profilesMap = parsed.profiles || {};
       userList = parsed.users || [];
+      fileExists = true;
     }
   } catch (e) {}
 
-  if (!userList || userList.length === 0) {
+  if (!fileExists) {
     userList = [...BASE_USERS];
-  } else {
-    // Ensure base users exist if not deleted
-    BASE_USERS.forEach(bu => {
-      if (!deletedMap[bu.user.toLowerCase()] && !userList.some(u => u && u.user && u.user.toLowerCase() === bu.user.toLowerCase())) {
-        userList.push(bu);
-      }
-    });
   }
 
   // Filter out any explicitly deleted users
@@ -195,10 +190,17 @@ export default async function handler(req, res) {
       if (supabaseUrl && !supabaseUrl.includes('placeholder')) {
         try {
           const supabase = createClient(supabaseUrl, supabaseServiceKey);
+          const mappedPlanId = plan ? (
+            plan.toLowerCase().includes('300') || plan.toLowerCase().includes('commissioner') ? 'commissioner' :
+            plan.toLowerCase().includes('100') || plan.toLowerCase().includes('pro') ? 'pro' :
+            plan.toLowerCase().includes('50') || plan.toLowerCase().includes('booster') ? 'booster' :
+            'free'
+          ) : 'free';
+
           await supabase.from('profiles').upsert({
             email: cleanEmail,
             role: role || 'client',
-            plan_id: plan ? plan.split(' ')[0].toLowerCase() : 'free',
+            plan_id: mappedPlanId,
             status: status || 'active',
             birthday: profile?.birthday || null,
             favorite_number: profile?.favoriteNumber || null,
@@ -311,13 +313,22 @@ export default async function handler(req, res) {
           dbProfiles.forEach(p => {
             if (p && p.email) {
               const cleanE = p.email.toLowerCase();
-              const planName = p.plan_id === 'pro' ? 'Pro Champion ($4.99/mo)' : p.plan_id === 'commissioner' ? 'SuperMacho Commissioner ($9.99/mo)' : 'Free Rookie ($0/mo)';
+              if (currentState.deleted && currentState.deleted[cleanE]) return;
+
+              const existingUser = userMap.get(cleanE);
+              const planName = existingUser?.plan || (
+                p.plan_id === 'commissioner' ? '300 Credits Commissioner ($24.99 USD)' :
+                p.plan_id === 'pro' ? '100 Credits Pro Champion ($9.99 USD)' :
+                p.plan_id === 'booster' ? '50 Credits Quick Booster ($5.99 USD)' :
+                '20 Free Credits Rookie ($0.00 USD)'
+              );
+
               userMap.set(cleanE, {
                 id: p.id || 'u_' + cleanE,
                 user: cleanE,
                 plan: planName,
-                date: p.created_at ? new Date(p.created_at).toLocaleDateString() : 'Registered',
-                status: p.status || 'Active Subscriber',
+                date: p.created_at ? new Date(p.created_at).toLocaleDateString() : (existingUser?.date || 'Registered'),
+                status: p.status || existingUser?.status || 'Active Subscriber',
                 profile: {
                   email: cleanE,
                   birthday: p.birthday,

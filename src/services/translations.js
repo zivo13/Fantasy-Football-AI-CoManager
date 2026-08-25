@@ -2,6 +2,10 @@
 
 export const TRANSLATIONS = {
   en: {
+    authWelcomeBack: "WELCOME BACK, CHAMP!",
+    authJoinToday: "JOIN SUPERMACHO TODAY",
+    authLoginSub: "Log in to access your AI Fantasy Co-Manager",
+    authSignupSub: "Start winning your fantasy league & let's make money!",
     motto: "BE THE SUPERMACHO OF YOUR LEAGUE • LEAD THE PACK & WIN THE MONEY",
     mottoShort: "Be The SuperMacho!",
     movementTitle: "BE THE SUPERMACHO OF YOUR LEAGUE 👑",
@@ -163,6 +167,10 @@ export const TRANSLATIONS = {
     prizesWon: "Prizes Won:"
   },
   es: {
+    authWelcomeBack: "¡BIENVENIDO DE VUELTA, CAMPEÓN!",
+    authJoinToday: "ÚNETE A SUPERMACHO HOY",
+    authLoginSub: "Inicia sesión para acceder a tu Co-Manager Fantasy de IA",
+    authSignupSub: "¡Empieza a ganar tu liga de fantasy y hagamos dinero!",
     motto: "SÉ EL SUPERMACHO DE TU LIGA • SÉ EL LÍDER DE LA MANADA Y GANA EL DINERO",
     mottoShort: "¡Sé El SuperMacho!",
     movementTitle: "SÉ EL SUPERMACHO DE TU LIGA 👑",
@@ -297,6 +305,10 @@ export const TRANSLATIONS = {
     prizesWon: "Premios Ganados:"
   },
   pt: {
+    authWelcomeBack: "BEM-VINDO DE VOLTA, CAMPEÃO!",
+    authJoinToday: "JUNTE-SE AO SUPERMACHO HOJE",
+    authLoginSub: "Faça login para acessar o seu Co-Manager Fantasy de IA",
+    authSignupSub: "Comece a ganhar na sua liga de fantasy e vamos fazer dinheiro!",
     motto: "SEJA O SUPERMACHO DA SUA LIGA • SEJA O LÍDER DA ALCATEIA E GANHE O DINHEIRO",
     mottoShort: "Seja O SuperMacho!",
     movementTitle: "SEJA O SUPERMACHO DA SUA LIGA 👑",
