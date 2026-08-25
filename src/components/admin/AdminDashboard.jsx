@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Shield, DollarSign, Users, TrendingUp, Plus, Edit2, Trash2, Check, X, Sparkles, Sliders, Cpu, Save, Lock, Unlock, Activity, Zap, Languages, RotateCcw, Search, RefreshCw, HelpCircle, CheckSquare, Square, Database, ShieldCheck, MessageSquare, Eye } from 'lucide-react';
+import { Shield, DollarSign, Users, TrendingUp, Plus, Edit2, Trash2, Check, X, Sparkles, Sliders, Cpu, Save, Lock, Unlock, Activity, Zap, Flame, Languages, RotateCcw, Search, RefreshCw, HelpCircle, CheckSquare, Square, Database, ShieldCheck, MessageSquare, Eye } from 'lucide-react';
 
 export const AdminDashboard = () => {
   const { 
