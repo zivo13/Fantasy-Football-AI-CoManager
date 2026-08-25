@@ -332,15 +332,6 @@ export const ClientDashboard = () => {
           <span>Support & Help Desk</span>
           <span className="bg-slate-950 text-amber-400 text-[10px] px-1.5 py-0.5 rounded font-extrabold">24/7</span>
         </button>
-
-        <button
-          onClick={() => setCurrentTab('admin')}
-          className="px-5 py-2.5 rounded-xl font-extrabold text-xs flex items-center gap-2 whitespace-nowrap transition-all bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-lg shadow-amber-500/20 cursor-pointer"
-        >
-          <Shield className="w-4 h-4 text-slate-950" />
-          <span>🛡️ Admin Panel & Testing Checklist</span>
-          <span className="bg-slate-950 text-amber-400 text-[9px] px-1.5 py-0.5 rounded font-black">FULL ACCESS</span>
-        </button>
       </div>
 
       {/* TAB 1: OPTIMAL LINEUP ESPORTS TRADING CARDS */}
@@ -357,25 +348,28 @@ export const ClientDashboard = () => {
           </div>
 
           {/* DATA STATUS & TRADING CARDS EXPLANATION LEGEND */}
-          <div className="bg-slate-950 p-4 rounded-2xl border border-amber-500/30 space-y-2.5 shadow-lg">
+          <div className="bg-slate-950 p-4 rounded-2xl border border-emerald-500/40 space-y-2.5 shadow-lg">
             <div className="flex items-center justify-between flex-wrap gap-2 border-b border-slate-800 pb-2">
               <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
-                <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">
-                  {t.demoDataMode || 'DEMO DATA MODE • REAL-TIME AI PROJECTIONS ACTIVE'}
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span className="text-xs font-extrabold text-emerald-400 uppercase tracking-wider">
+                  {isLeagueConnected 
+                    ? `LIVE OFFICIAL ${currentLeague?.platform || 'ESPN'} DATA ACTIVE • REAL-TIME AI PROJECTIONS ENABLED` 
+                    : 'LIVE OFFICIAL NFL DATA ACTIVE • REAL-TIME AI PROJECTIONS ENABLED'
+                  }
                 </span>
               </div>
               <button
                 onClick={() => setShowConfigModal(true)}
                 className="text-[11px] font-extrabold text-cyan-400 hover:text-cyan-300 underline flex items-center gap-1"
               >
-                <span>{t.connectRosterLink || '+ Connect Your Real ESPN / Sleeper Roster'}</span>
+                <span>{isLeagueConnected ? '⚙️ Edit Roster Credentials' : '+ Connect Your Real ESPN / Sleeper Roster'}</span>
                 <ArrowUpRight className="w-3.5 h-3.5" />
               </button>
             </div>
 
             <p className="text-xs text-slate-300 leading-relaxed">
-              💡 {t.legendExplanationText || "Below is SuperMacho's AI-generated Start/Sit Matchup Matrix. The 'GUT CHECK VALIDATED' rating measures defensive matchup vulnerability, target share, and weather factors. Click the button above to sync your actual fantasy league!"}
+              💡 {t.legendExplanationText || "Below is SuperMacho's AI-generated Start/Sit Matchup Matrix based on official real-time NFL player data. The 'GUT CHECK VALIDATED' rating measures defensive matchup vulnerability, target share, and weather factors."}
             </p>
           </div>
 
