@@ -22,6 +22,15 @@ export const AppProvider = ({ children }) => {
     } catch (e) {}
   };
 
+  // User state (Default to Guest for new visitors)
+  const [user, setUser] = useState({
+    name: '',
+    email: '',
+    role: 'guest', // 'guest' | 'client' | 'admin'
+    planId: 'free',
+    isLoggedIn: false
+  });
+
   // Custom Admin Translations State
   const [customTranslations, setCustomTranslations] = useState(() => {
     try {
@@ -167,15 +176,6 @@ export const AppProvider = ({ children }) => {
   // Navigation tab: 'landing' | 'client' | 'admin' | 'auth'
   const [currentTab, setCurrentTab] = useState('landing');
   
-  // User state (Default to Guest for new visitors)
-  const [user, setUser] = useState({
-    name: '',
-    email: '',
-    role: 'guest', // 'guest' | 'client' | 'admin'
-    planId: 'free',
-    isLoggedIn: false
-  });
-
   // Auth modal visibility
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState('login'); // 'login' | 'signup'
@@ -685,8 +685,8 @@ export const AppProvider = ({ children }) => {
       <CreditPurchaseModal
         isOpen={showCreditModal}
         onClose={() => setShowCreditModal(false)}
-        requiredCredits={creditModalReq.requiredCredits}
-        targetFeature={creditModalReq.targetFeature}
+        requiredCredits={creditModalReq?.requiredCredits || 0}
+        targetFeature={creditModalReq?.targetFeature || ''}
       />
     </AppContext.Provider>
   );
