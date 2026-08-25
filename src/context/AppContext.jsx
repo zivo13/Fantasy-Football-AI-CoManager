@@ -181,7 +181,44 @@ export const AppProvider = ({ children }) => {
   const [authMode, setAuthMode] = useState('login'); // 'login' | 'signup'
 
   // Admin Configurable Plans State
-  const [plans, setPlans] = useState(INITIAL_PLANS);
+  const [plans, setPlans] = useState(() => {
+    try {
+      const saved = localStorage.getItem('sm_admin_plans');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+    return INITIAL_PLANS;
+  });
+
+  const handleSavePlan = (updatedPlan) => {
+    if (!updatedPlan) return;
+    setPlans(prev => {
+      const exists = prev.some(p => p.id === updatedPlan.id);
+      let newPlans;
+      if (exists) {
+        newPlans = prev.map(p => p.id === updatedPlan.id ? updatedPlan : p);
+      } else {
+        newPlans = [...prev, updatedPlan];
+      }
+      try {
+        localStorage.setItem('sm_admin_plans', JSON.stringify(newPlans));
+      } catch (e) {}
+      return newPlans;
+    });
+  };
+
+  const handleDeletePlan = (planId) => {
+    if (!planId) return;
+    setPlans(prev => {
+      const newPlans = prev.filter(p => p.id !== planId);
+      try {
+        localStorage.setItem('sm_admin_plans', JSON.stringify(newPlans));
+      } catch (e) {}
+      return newPlans;
+    });
+  };
 
   // League Configurations
   const [leagues, setLeagues] = useState([
@@ -573,21 +610,6 @@ export const AppProvider = ({ children }) => {
         return t;
       }));
     }
-  };
-
-  const handleSavePlan = (updatedPlan) => {
-    setPlans(prev => {
-      const exists = prev.some(p => p.id === updatedPlan.id);
-      if (exists) {
-        return prev.map(p => p.id === updatedPlan.id ? updatedPlan : p);
-      } else {
-        return [...prev, updatedPlan];
-      }
-    });
-  };
-
-  const handleDeletePlan = (planId) => {
-    setPlans(prev => prev.filter(p => p.id !== planId));
   };
 
   const handleAddLeague = (newLeague) => {
