@@ -8,9 +8,9 @@ export const AppProvider = ({ children }) => {
   // Language state: 'en' | 'es' | 'pt'
   const [lang, setLangState] = useState(() => {
     try {
-      return localStorage.getItem('sm_lang') || 'en';
+      return localStorage.getItem('sm_lang') || 'es';
     } catch (e) {
-      return 'en';
+      return 'es';
     }
   });
 
