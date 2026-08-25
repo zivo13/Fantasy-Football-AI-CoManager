@@ -170,7 +170,7 @@ export const ClientDashboard = () => {
         <div className="space-y-2 z-10">
           <div className="flex items-center gap-2">
             <span className="bg-amber-500 text-slate-950 font-extrabold text-xs px-3 py-0.5 rounded-full">
-              PRO CHAMPION COMMAND CENTER
+              SUPERMACHO AI COMMAND CENTER
             </span>
             <span className="text-xs text-slate-400 font-bold">• WEEK 1 ACTIVATED</span>
           </div>
@@ -182,37 +182,24 @@ export const ClientDashboard = () => {
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 z-10 w-full md:w-auto justify-end bg-slate-950/80 p-4 rounded-2xl border border-amber-500/30">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 z-10 w-full md:w-auto justify-end bg-slate-950/80 p-4 rounded-2xl border border-amber-500/30">
           <div>
-            <div className="text-[10px] uppercase font-bold text-slate-400">{t.subTierTitle || 'Your Subscription Tier'}</div>
+            <div className="text-[10px] uppercase font-bold text-slate-400">Your AI Credit Pack Tier</div>
             <div className="font-bebas text-xl text-amber-400">
-              {user?.plan || (user?.planId === 'free' ? 'Free Rookie ($0/mo)' : 'Pro Champion ($4.99/mo)')}
+              {user?.plan || '20 Free Credits Rookie ($0.00 USD)'}
+            </div>
+            <div className="text-xs font-extrabold text-cyan-400 mt-0.5">
+              🪙 {userCredits} Credits Available
             </div>
           </div>
 
-          {(!user?.planId || user?.planId === 'free' || (user?.plan && user?.plan.includes('Free'))) ? (
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => startCheckout('Pro Champion', '$4.99/mo', 'pro')}
-                className="btn-gold px-3.5 py-2 rounded-xl text-xs font-extrabold flex items-center gap-1.5 shadow-lg whitespace-nowrap"
-              >
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>{t.upgradeProBtn || 'Upgrade Pro ($4.99/mo)'}</span>
-              </button>
-              <button
-                onClick={() => startCheckout('SuperMacho Commissioner', '$9.99/mo', 'commissioner')}
-                className="px-3.5 py-2 rounded-xl text-xs font-extrabold bg-cyan-500 hover:bg-cyan-400 text-slate-950 flex items-center gap-1.5 shadow-lg whitespace-nowrap"
-              >
-                <Shield className="w-3.5 h-3.5" />
-                <span>{t.upgradeCommBtn || 'Upgrade Commissioner ($9.99/mo)'}</span>
-              </button>
-            </div>
-          ) : (
-            <div className="bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-extrabold px-3 py-2 rounded-xl flex items-center gap-1.5">
-              <Check className="w-4 h-4 text-emerald-400" />
-              <span>{t.proUnlocked || 'PRO UNLOCKED'}</span>
-            </div>
-          )}
+          <button
+            onClick={() => setShowCreditModal(true)}
+            className="btn-gold px-4 py-2.5 rounded-xl text-xs font-extrabold flex items-center gap-1.5 shadow-lg whitespace-nowrap uppercase"
+          >
+            <Sparkles className="w-4 h-4" />
+            <span>Buy AI Credit Packs</span>
+          </button>
         </div>
       </div>
 
