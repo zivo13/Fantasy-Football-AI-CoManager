@@ -30,7 +30,7 @@ export const Navbar = () => {
           
           {/* Brand Logo & Mascot Badge */}
           <div 
-            onClick={() => setCurrentTab('landing')}
+            onClick={() => setCurrentTab(user.isLoggedIn ? 'client' : 'landing')}
             className="flex items-center gap-2 sm:gap-3 cursor-pointer group flex-shrink-0"
           >
             <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-2xl overflow-hidden border-2 border-amber-500 shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform bg-slate-900 p-0.5">
@@ -51,54 +51,22 @@ export const Navbar = () => {
             </div>
           </div>
 
-          {/* Navigation Links - Visible on ALL screen sizes */}
-          <nav className="flex items-center gap-1 bg-slate-900/60 p-1.5 rounded-2xl border border-slate-800 overflow-x-auto">
-            <button
-              onClick={() => setCurrentTab('landing')}
-              className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl font-semibold text-xs sm:text-sm transition-all whitespace-nowrap ${
-                currentTab === 'landing' 
-                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-lg shadow-amber-500/10' 
-                  : 'text-slate-300 hover:text-white hover:bg-slate-900'
-              }`}
-            >
-              {t.navOverview || 'Overview'}
-            </button>
-
-            <button
-              onClick={() => {
-                if (user.isLoggedIn) {
-                  setCurrentTab('client');
-                } else {
-                  setAuthMode('signup');
-                  setShowAuthModal(true);
-                }
-              }}
-              className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl font-semibold text-xs sm:text-sm transition-all flex items-center gap-1.5 sm:gap-2 whitespace-nowrap ${
-                currentTab === 'client' 
-                  ? 'bg-gradient-to-r from-amber-500/20 to-amber-600/20 text-amber-300 border border-amber-500/40 shadow-lg shadow-amber-500/10' 
-                  : 'text-slate-300 hover:text-white hover:bg-slate-900'
-              }`}
-            >
-              <LayoutDashboard className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400" />
-              <span>{t.navClient || 'Client Dashboard'}</span>
-            </button>
-
-            <button
-              onClick={() => setCurrentTab('admin')}
-              className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl font-extrabold text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 sm:gap-2 whitespace-nowrap ${
-                currentTab === 'admin' 
-                  ? 'bg-amber-500 text-slate-950 font-extrabold shadow-lg shadow-amber-500/20' 
-                  : 'text-amber-400 hover:text-white bg-amber-500/10 border border-amber-500/40'
-              }`}
-            >
-              <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400" />
-              <span>{t.navAdmin || 'Admin Command Center'}</span>
-              <span className="bg-slate-950 text-amber-400 text-[9px] px-1.5 py-0.5 rounded font-black hidden sm:inline">FULL ACCESS</span>
-            </button>
-          </nav>
-
           {/* Right Action & Profile */}
           <div className="flex items-center gap-2 sm:gap-3">
+            {/* Admin Panel Button - Discreetly shown only for Admin Users */}
+            {(user.role === 'admin' || (user.email && (user.email.includes('admin') || user.email.includes('zivo13')))) && (
+              <button
+                onClick={() => setCurrentTab('admin')}
+                className={`px-3 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all whitespace-nowrap ${
+                  currentTab === 'admin' 
+                    ? 'bg-amber-500 text-slate-950 font-extrabold shadow-md' 
+                    : 'text-amber-400 bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20'
+                }`}
+              >
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>Admin Panel</span>
+              </button>
+            )}
             {/* Glowing Credit Balance Button */}
             <button
               onClick={() => setShowCreditModal(true)}
