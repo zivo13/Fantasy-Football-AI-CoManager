@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Award, Zap, Target, Users, Flame, ShieldAlert, Sparkles, TrendingUp, ChevronRight, Scale, CheckCircle2, ArrowRight, HelpCircle } from 'lucide-react';
+import { Award, Zap, Target, Users, Flame, ShieldAlert, Sparkles, TrendingUp, ChevronRight, Scale, CheckCircle2, ArrowRight, HelpCircle, BookOpen, Lightbulb, X } from 'lucide-react';
 
 // TOP-LEVEL CONSTANTS (Defined before any component execution)
 const defaultAvailablePlayers = [
@@ -183,6 +183,398 @@ const defaultLabels = {
   compareTitle: "LEAGUE TEAM COMPARISON"
 };
 
+const DRAFT_TUTORIAL_DATA = {
+  es: {
+    modalTitle: "📖 GUÍA Y TUTORIAL DRAFT DAY WAR ROOM",
+    modalSub: "Aprende a dominar tu Draft de Fantasy Football con Inteligencia Artificial paso a paso.",
+    tabs: {
+      overview: "🚀 1. Visión General",
+      stepByStep: "🎓 2. Paso a Paso",
+      strategies: "💡 3. Estrategias Pro",
+      faq: "❓ 4. Dúvidas y Glosario"
+    },
+    overview: {
+      title: "¿Qué es la Draft Day Strategy War Room?",
+      desc: "La War Room es tu Co-Piloto de Inteligencia Artificial que analiza tu liga en tiempo real durante tu draft oficial (ESPN o Sleeper). La IA calcula caídas de nivel (Tier Drops), identifica robos de valor (Value Steals), mide el piso/techo de cada jugador y compara tu plantilla contra tus rivales.",
+      f1Title: "1. Radar de Caídas de Nivel (Tier Drop Radar)",
+      f1Desc: "Te alerta cuando solo quedan 1 o 2 jugadores estrella en una posición antes de que los puntos proyectados caigan drásticamente.",
+      f2Title: "2. Matriz de Preguntas Tácticas IA",
+      f2Desc: "Haz clic en las 5 preguntas rápidas para recomendaciones inmediatas sobre a quién elegir.",
+      f3Title: "3. Tablero de Disponibles & Filtros Posicionales",
+      f3Desc: "Filtra por QB, RB, WR o TE. Revisa el Rating de Robo de Valor, Piso Semanal y Techo Explosivo.",
+      f4Title: "4. Registro de Picks ('Draftear Jugador')",
+      f4Desc: "Presiona 'Draftear Jugador' al elegir en tu app oficial (ESPN/Sleeper) para actualizar tus necesidades automáticamente."
+    },
+    steps: [
+      {
+        num: "PASO 1",
+        title: "Sincroniza o Revisa las Reglas de tu Liga",
+        desc: "Asegúrate de seleccionar tu liga oficial (PPR, Half-PPR o Estándar). La IA ajusta las valoraciones según tu sistema de puntuación.",
+        tip: "💡 Consejo: En ligas PPR, los Receptores (WR) y Corredores receptores tienen mayor valor."
+      },
+      {
+        num: "PASO 2",
+        title: "Consulta las 5 Preguntas Tácticas de la IA",
+        desc: "Usa los botones superiores para preguntarle a la IA: '🎯 Target por Posición', '🏃 Mejores RBs Disponibles', '📊 Comparación de Equipos', '⚡ Comparación de Techo Explosivo' o '⚠️ Análisis de Necesidades'.",
+        tip: "💡 Consejo: Consulta a la IA antes de cada pick para no dejar pasar jugadores élite."
+      },
+      {
+        num: "PASO 3",
+        title: "Filtra el Tablero y Revisa Piso vs Techo",
+        desc: "Filtra por la posición requerida. Compara el 'Piso' (puntos seguros en semana mala) y el 'Techo' (potencial máximo explosivo).",
+        tip: "💡 Consejo: En primeras rondas busca Piso Seguro. En rondas medias/tardías busca Techo Explosivo."
+      },
+      {
+        num: "PASO 4",
+        title: "Confirma tu Selección ('Draftear Jugador')",
+        desc: "Cuando selecciones un jugador en ESPN o Sleeper, presiona 'Draftear Jugador' en SuperMacho para moverlo a tu equipo y recalcular tus siguientes elecciones.",
+        tip: "💡 Consejo: Mantén SuperMacho abierto al lado de tu app de ESPN/Sleeper."
+      }
+    ],
+    strategies: {
+      s1Title: "🏈 Estrategia 'Hero RB' (Un Corredor Élite Primero)",
+      s1Desc: "Asegura un Corredor de Nivel S en la Ronda 1 o 2 (ej. Bijan Robinson o Saquon Barkley). Luego llena tus posiciones de Receptores (WR) en las siguientes rondas.",
+      s2Title: "⚡ Estrategia 'Zero RB' (Dominio de Receptores)",
+      s2Desc: "Selecciona Receptores élite (WR1 y WR2) en las primeras rondas para monopolizar los pases. Luego draftea RBs de alto volumen en rondas 4-7.",
+      s3Title: "🎯 Selección de QB y TE",
+      s3Desc: "No draftees un QB o TE temprano a menos que caiga significativamente de su ADP. Los QBs móviles (como Josh Allen o Lamar Jackson) aportan puntos decisivos por tierra."
+    },
+    faq: [
+      {
+        q: "¿Tengo que hacer los picks también en ESPN o Sleeper?",
+        a: "¡Sí! ESPN o Sleeper es la plataforma oficial donde juegas. SuperMacho es tu Entrenador de IA al oído diciéndote la mejor elección en tiempo real."
+      },
+      {
+        q: "¿Qué significan los términos ADP, Floor, Ceiling y Value Steal?",
+        a: "• ADP: Posición Promedio de Draft.\n• Floor (Piso): Puntos mínimos seguros.\n• Ceiling (Techo): Máximo potencial explosivo.\n• Value Steal: Jugador élite disponible más tarde de su turno habitual."
+      },
+      {
+        q: "¿Consume créditos usar la War Room?",
+        a: "Las acciones completas de la War Room deducen los créditos de IA configurados (predeterminado: 5 créditos) para calcular datos en tiempo real."
+      }
+    ]
+  },
+  en: {
+    modalTitle: "📖 DRAFT DAY WAR ROOM GUIDE & TUTORIAL",
+    modalSub: "Learn how to leverage SuperMacho AI to dominate your Fantasy Football draft step-by-step.",
+    tabs: {
+      overview: "🚀 1. Overview",
+      stepByStep: "🎓 2. Step-by-Step",
+      strategies: "💡 3. Pro Strategies",
+      faq: "❓ 4. FAQs & Glossary"
+    },
+    overview: {
+      title: "What is the Draft Day Strategy War Room?",
+      desc: "The War Room is your AI Co-Pilot analyzing your live draft round-by-round (ESPN or Sleeper). The AI monitors tier drops, identifies value steals, measures player floor/ceiling variance, and compares your roster with rival managers.",
+      f1Title: "1. Tier Drop Radar Alert System",
+      f1Desc: "Alerts you when only 1 or 2 S-Tier players remain in a position before projected points drop off a cliff.",
+      f2Title: "2. Tactical AI Coach Question Matrix",
+      f2Desc: "Click any of the 5 quick tactical buttons for instant pick recommendations.",
+      f3Title: "3. Best Available Players Board & Filters",
+      f3Desc: "Filter by QB, RB, WR, or TE. Review Value Steal ratings, Weekly Floor, and Explosive Ceiling.",
+      f4Title: "4. Draft Pick Lock & Roster Tracker",
+      f4Desc: "Click 'Draft Player' when making your selection in ESPN/Sleeper so SuperMacho updates your needs in real time."
+    },
+    steps: [
+      {
+        num: "STEP 1",
+        title: "Sync or Review Your League Rules",
+        desc: "Ensure your official league is selected (PPR, Half-PPR, or Standard). The AI automatically adjusts values for your scoring rules.",
+        tip: "💡 Tip: PPR leagues give extra value to Receivers (WR) and pass-catching Running Backs."
+      },
+      {
+        num: "STEP 2",
+        title: "Consult the 5 Tactical AI Questions",
+        desc: "Ask the AI: '🎯 Target Position', '🏃 Best Available RBs', '📊 Team Comparison', '⚡ Upside Ceiling Comparison', or '⚠️ Roster Needs'.",
+        tip: "💡 Tip: Check the AI before every pick so you never miss a falling star."
+      },
+      {
+        num: "STEP 3",
+        title: "Filter the Board & Review Floor vs Ceiling",
+        desc: "Filter by required position. Review 'Floor' (safe baseline) and 'Ceiling' (maximum upside potential).",
+        tip: "💡 Tip: In early rounds, prioritize High Floor. In middle/late rounds, chase High Ceiling."
+      },
+      {
+        num: "STEP 4",
+        title: "Lock Your Selection ('Draft Player')",
+        desc: "When selecting a player in ESPN or Sleeper, click 'Draft Player' in SuperMacho to move them to your roster and recalculate needs.",
+        tip: "💡 Tip: Keep SuperMacho open right alongside your official draft app."
+      }
+    ],
+    strategies: {
+      s1Title: "🏈 Hero RB Strategy (One Anchor RB First)",
+      s1Desc: "Draft an S-Tier Running Back in Round 1 or 2 (e.g. Bijan Robinson or Saquon Barkley). Then stack top Wide Receivers (WR) in subsequent rounds.",
+      s2Title: "⚡ Zero RB Strategy (Receiver Dominance)",
+      s2Desc: "Select elite Receivers (WR1 and WR2) in early rounds. Draft high-volume RBs in rounds 4-7.",
+      s3Title: "🎯 When to Draft QB and TE",
+      s3Desc: "Avoid reaching for a QB or TE early unless they fall significantly past their ADP. Dual-threat QBs (like Josh Allen or Lamar Jackson) add massive rushing floors."
+    },
+    faq: [
+      {
+        q: "Do I still make my picks in my ESPN or Sleeper app?",
+        a: "Yes! ESPN or Sleeper is your official league app. SuperMacho is your AI Head Coach in your ear telling you exact pick recommendations in real time."
+      },
+      {
+        q: "What do ADP, Floor, Ceiling, and Value Steal mean?",
+        a: "• ADP: Average Draft Position.\n• Floor: Minimum safe projected points.\n• Ceiling: Maximum potential points.\n• Value Steal: Elite player dropping past their consensus pick."
+      },
+      {
+        q: "Does using the War Room cost credits?",
+        a: "Full War Room actions deduct configurable AI credits (default: 5 credits) to calculate real-time tier drops and projections."
+      }
+    ]
+  },
+  pt: {
+    modalTitle: "📖 GUIA E TUTORIAL DRAFT DAY WAR ROOM",
+    modalSub: "Aprenda a dominar o seu draft de Fantasy Football com Inteligência Artificial passo a passo.",
+    tabs: {
+      overview: "🚀 1. Visão Geral",
+      stepByStep: "🎓 2. Passo a Passo",
+      strategies: "💡 3. Estratégias Pro",
+      faq: "❓ 4. Dúvidas e Glossário"
+    },
+    overview: {
+      title: "O que é a Draft Day Strategy War Room?",
+      desc: "A War Room é seu Co-Piloto de IA que analisa seu draft oficial (ESPN ou Sleeper) em tempo real. A IA calcula quedas de nível (Tier Drops), identifica achados de valor (Value Steals), mede piso/teto dos jogadores e compara seu time com os rivais.",
+      f1Title: "1. Radar de Alerta de Queda de Nível",
+      f1Desc: "Alerta quando restam apenas 1 ou 2 jogadores estrela em uma posição antes que a pontuação caia drasticamente.",
+      f2Title: "2. Matriz de Perguntas Táticas de IA",
+      f2Desc: "Clique nas 5 perguntas rápidas para receber recomendações instantâneas de quem escolher.",
+      f3Title: "3. Tabuleiro de Melhores Disponíveis e Filtros",
+      f3Desc: "Filtre por QB, RB, WR ou TE. Veja a classificação de Valor, Piso Semanal e Teto Explosivo.",
+      f4Title: "4. Registro de Picks ('Selecionar Jogador')",
+      f4Desc: "Clique em 'Selecionar Jogador' ao escolher no app oficial para atualizar suas necessidades automaticamente."
+    },
+    steps: [
+      {
+        num: "PASSO 1",
+        title: "Sincronize ou Revise as Regras da sua Liga",
+        desc: "Verifique se sua liga oficial está selecionada (PPR, Half-PPR ou Standard). A IA ajusta automaticamente os valores para suas regras.",
+        tip: "💡 Dica: Ligas PPR valorizam mais Recebedores (WR) e Running Backs que recebem passes."
+      },
+      {
+        num: "PASSO 2",
+        title: "Consulte as 5 Perguntas Táticas da IA",
+        desc: "Pergunte à IA: '🎯 Target por Posição', '🏃 Melhores RBs Disponíveis', '📊 Comparação de Times', etc.",
+        tip: "💡 Dica: Consulte a IA antes de cada escolha para não perder oportunidades."
+      },
+      {
+        num: "PASSO 3",
+        title: "Filtre o Tabuleiro e Analise Piso vs Teto",
+        desc: "Filtre pela posição necessária. Analise o 'Piso' (pontos seguros) e o 'Teto' (potencial máximo).",
+        tip: "💡 Dica: Nas primeiras rodadas priorize Piso Alto. Nas rodadas intermediárias/finais, busque Teto Explosivo."
+      },
+      {
+        num: "PASSO 4",
+        title: "Confirme sua Escolha ('Selecionar Jogador')",
+        desc: "Ao escolher no ESPN ou Sleeper, clique em 'Selecionar Jogador' no SuperMacho para mover para seu time e recalcular necessidades.",
+        tip: "💡 Dica: Mantenha o SuperMacho aberto ao lado do seu aplicativo oficial de draft."
+      }
+    ],
+    strategies: {
+      s1Title: "🏈 Estratégia 'Hero RB' (Um RB de Elite Primeiro)",
+      s1Desc: "Garanta um Running Back Nível S na Rodada 1 ou 2 (ex: Bijan Robinson ou Saquon Barkley). Depois acumule principais Recebedores (WR).",
+      s2Title: "⚡ Estratégia 'Zero RB' (Domínio de Recebedores)",
+      s2Desc: "Escolha Recebedores de elite nas primeiras rodadas. Escolha RBs de alto volume nas rodadas 4-7.",
+      s3Title: "🎯 Quando Escolher QB e TE",
+      s3Desc: "Evite escolher QB ou TE muito cedo, a menos que caiam bastante em relação ao ADP. QBs móveis (como Josh Allen ou Lamar Jackson) garantem pontos extras correndo."
+    },
+    faq: [
+      {
+        q: "Ainda preciso fazer as escolhas no app da ESPN ou Sleeper?",
+        a: "Sim! ESPN ou Sleeper é onde você joga oficialmente. O SuperMacho é seu Treinador de IA dizendo a melhor escolha em tempo real."
+      },
+      {
+        q: "O que significam ADP, Piso, Teto e Value Steal?",
+        a: "• ADP: Posição Média de Draft.\n• Piso (Floor): Pontos mínimos seguros.\n• Teto (Ceiling): Potencial máximo.\n• Value Steal: Jogador de elite caindo além da escolha habitual."
+      },
+      {
+        q: "Usar a War Room consome créditos?",
+        a: "Sim, ações da War Room deduzem créditos de IA configurados (padrão: 5 créditos) para calcular dados em tempo real."
+      }
+    ]
+  }
+};
+
+const DraftWarRoomTutorialModal = ({ isOpen, onClose, lang = 'es' }) => {
+  const [activeTab, setActiveTab] = useState('overview');
+
+  if (!isOpen) return null;
+
+  const data = DRAFT_TUTORIAL_DATA[lang] || DRAFT_TUTORIAL_DATA.es || DRAFT_TUTORIAL_DATA.en;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
+      <div className="relative w-full max-w-4xl max-h-[90vh] bg-slate-900 border-2 border-amber-500/40 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl flex flex-col overflow-hidden">
+        
+        {/* Modal Header */}
+        <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="bg-amber-500 text-slate-950 font-extrabold text-[10px] px-2.5 py-0.5 rounded-full uppercase">
+                SUPERMACHO ACADEMY
+              </span>
+              <span className="text-xs text-amber-400 font-bold">• 🇲🇽 ES | 🇺🇸 EN | 🇧🇷 PT</span>
+            </div>
+            <h2 className="font-bebas text-3xl sm:text-4xl text-white tracking-wider">
+              {data.modalTitle}
+            </h2>
+            <p className="text-xs text-slate-300 font-medium">
+              {data.modalSub}
+            </p>
+          </div>
+          <button 
+            onClick={onClose} 
+            className="p-2 rounded-xl bg-slate-950 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800 transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Tab Navigation */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 border-b border-slate-800">
+          {Object.entries(data.tabs).map(([key, label]) => (
+            <button
+              key={key}
+              onClick={() => setActiveTab(key)}
+              className={`px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition-all ${
+                activeTab === key
+                  ? 'bg-amber-500 text-slate-950 shadow-md scale-105'
+                  : 'bg-slate-950 text-slate-300 hover:bg-slate-800 border border-slate-800'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {/* Tab Content Container */}
+        <div className="flex-1 overflow-y-auto space-y-6 pr-2">
+          
+          {/* 1. OVERVIEW TAB */}
+          {activeTab === 'overview' && (
+            <div className="space-y-6">
+              <div className="bg-slate-950 p-5 rounded-2xl border border-amber-500/30 space-y-2">
+                <h3 className="font-bebas text-2xl text-amber-400 tracking-wider flex items-center gap-2">
+                  <Sparkles className="w-5 h-5" />
+                  <span>{data.overview.title}</span>
+                </h3>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  {data.overview.desc}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-1.5">
+                  <div className="flex items-center gap-2 text-amber-400 font-extrabold text-xs">
+                    <ShieldAlert className="w-4 h-4 text-amber-400" />
+                    <span>{data.overview.f1Title}</span>
+                  </div>
+                  <p className="text-[11px] text-slate-400">{data.overview.f1Desc}</p>
+                </div>
+
+                <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-1.5">
+                  <div className="flex items-center gap-2 text-amber-400 font-extrabold text-xs">
+                    <Sparkles className="w-4 h-4 text-amber-400" />
+                    <span>{data.overview.f2Title}</span>
+                  </div>
+                  <p className="text-[11px] text-slate-400">{data.overview.f2Desc}</p>
+                </div>
+
+                <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-1.5">
+                  <div className="flex items-center gap-2 text-amber-400 font-extrabold text-xs">
+                    <Award className="w-4 h-4 text-amber-400" />
+                    <span>{data.overview.f3Title}</span>
+                  </div>
+                  <p className="text-[11px] text-slate-400">{data.overview.f3Desc}</p>
+                </div>
+
+                <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-1.5">
+                  <div className="flex items-center gap-2 text-amber-400 font-extrabold text-xs">
+                    <Target className="w-4 h-4 text-amber-400" />
+                    <span>{data.overview.f4Title}</span>
+                  </div>
+                  <p className="text-[11px] text-slate-400">{data.overview.f4Desc}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 2. STEP-BY-STEP TAB */}
+          {activeTab === 'stepByStep' && (
+            <div className="space-y-4">
+              {data.steps.map((step, idx) => (
+                <div key={idx} className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="bg-amber-500/20 text-amber-400 border border-amber-500/40 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase">
+                      {step.num}
+                    </span>
+                    <span className="text-[10px] text-slate-500 font-bold">ETAPA {idx + 1} DE 4</span>
+                  </div>
+                  <h4 className="font-bebas text-2xl text-white tracking-wider">{step.title}</h4>
+                  <p className="text-xs text-slate-300">{step.desc}</p>
+                  <div className="bg-slate-900/80 p-3 rounded-xl border border-amber-500/20 text-amber-300 text-xs font-bold flex items-center gap-2">
+                    <Lightbulb className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                    <span>{step.tip}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* 3. STRATEGIES TAB */}
+          {activeTab === 'strategies' && (
+            <div className="space-y-4">
+              <div className="bg-slate-950 p-5 rounded-2xl border border-amber-500/30 space-y-2">
+                <h4 className="font-bebas text-2xl text-amber-400 tracking-wider">{data.strategies.s1Title}</h4>
+                <p className="text-xs text-slate-300 leading-relaxed">{data.strategies.s1Desc}</p>
+              </div>
+
+              <div className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-2">
+                <h4 className="font-bebas text-2xl text-cyan-400 tracking-wider">{data.strategies.s2Title}</h4>
+                <p className="text-xs text-slate-300 leading-relaxed">{data.strategies.s2Desc}</p>
+              </div>
+
+              <div className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-2">
+                <h4 className="font-bebas text-2xl text-emerald-400 tracking-wider">{data.strategies.s3Title}</h4>
+                <p className="text-xs text-slate-300 leading-relaxed">{data.strategies.s3Desc}</p>
+              </div>
+            </div>
+          )}
+
+          {/* 4. FAQ & GLOSSARY TAB */}
+          {activeTab === 'faq' && (
+            <div className="space-y-4">
+              {data.faq.map((item, idx) => (
+                <div key={idx} className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-2">
+                  <h4 className="font-bold text-white text-sm flex items-center gap-2">
+                    <HelpCircle className="w-4 h-4 text-amber-400" />
+                    <span>{item.q}</span>
+                  </h4>
+                  <p className="text-xs text-slate-300 whitespace-pre-line leading-relaxed pl-6">{item.a}</p>
+                </div>
+              ))}
+            </div>
+          )}
+
+        </div>
+
+        {/* Modal Footer */}
+        <div className="border-t border-slate-800 pt-4 flex items-center justify-between">
+          <span className="text-xs text-slate-400 font-semibold">SuperMacho AI Draft Coach • Season 2026</span>
+          <button
+            onClick={onClose}
+            className="btn-gold px-6 py-2.5 rounded-xl text-xs font-extrabold uppercase shadow-lg"
+          >
+            ¡Entendido, Ir a la War Room!
+          </button>
+        </div>
+
+      </div>
+    </div>
+  );
+};
+
 class DraftWarRoomBoundary extends React.Component {
   constructor(props) {
     super(props);
@@ -236,6 +628,7 @@ const DraftWarRoomInner = () => {
   const [filterPos, setFilterPos] = useState('ALL');
   const [liveDraftPool, setLiveDraftPool] = useState(null);
   const [showGlossary, setShowGlossary] = useState(false);
+  const [showTutorialModal, setShowTutorialModal] = useState(false);
 
   useEffect(() => {
     try {
@@ -280,13 +673,26 @@ const DraftWarRoomInner = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-3 z-10 bg-slate-950/80 p-4 rounded-2xl border border-amber-500/30">
-          <div className="text-right">
-            <div className="text-[10px] uppercase font-bold text-slate-400">{labels.clockPick}</div>
-            <div className="font-bebas text-2xl text-amber-400">ROUND 2 • PICK #14</div>
-          </div>
-          <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/40 flex items-center justify-center font-bold">
-            <Target className="w-5 h-5" />
+        <div className="flex flex-wrap items-center gap-3 z-10">
+          <button
+            onClick={() => setShowTutorialModal(true)}
+            className="btn-gold px-4 py-2.5 rounded-2xl text-xs font-extrabold flex items-center gap-2 shadow-lg hover:scale-105 transition-all"
+            title="Abrir Guía y Tutorial Interactivo"
+          >
+            <BookOpen className="w-4 h-4" />
+            <span>
+              {lang === 'es' ? '📖 ¿Cómo Usar la War Room? (Guía & Tutorial)' : lang === 'pt' ? '📖 Como Usar a War Room? (Guia & Tutorial)' : '📖 How to Use the War Room? (Guide & Tutorial)'}
+            </span>
+          </button>
+
+          <div className="flex items-center gap-3 bg-slate-950/80 p-4 rounded-2xl border border-amber-500/30">
+            <div className="text-right">
+              <div className="text-[10px] uppercase font-bold text-slate-400">{labels.clockPick}</div>
+              <div className="font-bebas text-2xl text-amber-400">ROUND 2 • PICK #14</div>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/40 flex items-center justify-center font-bold">
+              <Target className="w-5 h-5" />
+            </div>
           </div>
         </div>
       </div>
@@ -626,6 +1032,13 @@ const DraftWarRoomInner = () => {
         </div>
 
       </div>
+
+      {/* DRAFT WAR ROOM MULTILINGUAL TUTORIAL MODAL */}
+      <DraftWarRoomTutorialModal
+        isOpen={showTutorialModal}
+        onClose={() => setShowTutorialModal(false)}
+        lang={lang}
+      />
 
     </div>
   );
