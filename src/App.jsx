@@ -10,8 +10,10 @@ import { CookieBanner } from './components/CookieBanner';
 import { PrivacyPolicyModal } from './components/PrivacyPolicyModal';
 
 const MainLayout = () => {
-  const { currentTab } = useApp();
+  const { currentTab, user = {} } = useApp();
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+
+  const isAdmin = user.isLoggedIn && (user.role === 'admin' || user.email === 'zivo13@yahoo.com');
 
   return (
     <div className="min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-slate-950">
@@ -20,7 +22,7 @@ const MainLayout = () => {
         <main>
           {currentTab === 'landing' && <LandingPage />}
           {currentTab === 'client' && <ClientDashboard />}
-          {currentTab === 'admin' && <AdminDashboard />}
+          {currentTab === 'admin' && (isAdmin ? <AdminDashboard /> : <ClientDashboard />)}
         </main>
       </div>
       <AuthModal />

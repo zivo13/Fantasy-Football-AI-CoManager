@@ -53,35 +53,6 @@ export const Navbar = () => {
 
           {/* Right Action & Profile */}
           <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
-            {/* Admin Panel Button - Discreetly shown only for Admin Users */}
-            {(user.role === 'admin' || (user.email && (user.email.includes('admin') || user.email.includes('zivo13')))) && (
-              <button
-                onClick={() => setCurrentTab('admin')}
-                className={`px-2.5 sm:px-3 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all whitespace-nowrap ${
-                  currentTab === 'admin' 
-                    ? 'bg-amber-500 text-slate-950 font-extrabold shadow-md' 
-                    : 'text-amber-400 bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20'
-                }`}
-              >
-                <ShieldCheck className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Admin Panel</span>
-                <span className="sm:hidden">Admin</span>
-              </button>
-            )}
-
-            {/* Glowing Credit Balance Button - Only shown when logged in or on desktop */}
-            {user.isLoggedIn && (
-              <button
-                onClick={() => setShowCreditModal(true)}
-                className="bg-amber-500/20 border border-amber-500/50 hover:border-amber-400 text-amber-300 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition-all shadow-md hover:scale-105"
-                title="Click to Buy AI Credits & Tokens"
-              >
-                <span className="text-sm">🪙</span>
-                <span>{userCredits} Credits</span>
-                <span className="bg-amber-500 text-slate-950 text-[9px] font-black px-1.5 py-0.2 rounded uppercase hidden sm:inline">+BUY</span>
-              </button>
-            )}
-
             {/* Language Selector Dropdown */}
             <select
               value={lang}
