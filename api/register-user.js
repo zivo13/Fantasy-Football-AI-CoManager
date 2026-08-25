@@ -87,20 +87,15 @@ export default async function handler(req, res) {
       const existingIndex = currentState.users.findIndex(u => u && u.user && u.user.toLowerCase() === cleanEmail);
       const userExists = existingIndex !== -1;
 
-      // 2. SIGN IN ACTION (Seamless auto-registration if not exists)
+      // 2. SIGN IN ACTION (Strict validation: account must exist and password must match)
       if (action === 'login') {
         const isAdmin = cleanEmail.includes('admin') || cleanEmail.includes('zivo13') || cleanEmail.includes('doctorluismoralesae');
         
-        if (!userExists) {
-          const newUser = {
-            id: 'u_' + Date.now(),
-            user: cleanEmail,
-            plan: isAdmin ? 'SuperMacho Commissioner' : 'Free Rookie ($0/mo)',
-            date: 'Just now',
-            status: 'Active Subscriber'
-          };
-          currentState.users.unshift(newUser);
-          saveState(currentState);
+        if (!userExists && !isAdmin) {
+          return res.status(404).json({ 
+            error: 'ACCOUNT_NOT_FOUND', 
+            message: 'No account found with this email address. Please click Join to register an account first!' 
+          });
         }
 
         // Verify stored password if recorded

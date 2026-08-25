@@ -103,7 +103,7 @@ export const AuthModal = () => {
             body: JSON.stringify({ email: cleanEmail, password, action: 'login', role: assignedRole })
           });
           const data = await res.json();
-          if (data && data.error && data.error === 'ACCOUNT_SUSPENDED') {
+          if (data && data.error) {
             setAuthError(data.message || data.error);
             setLoading(false);
             return;
