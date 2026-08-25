@@ -1,65 +1,27 @@
 import { createClient } from '@supabase/supabase-js';
-import fs from 'fs';
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || 'https://jdmryhxmfgedfdleytwn.supabase.co';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkbXJ5aHhtZmdlZGZkbGV5dHduIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODczNzEwMjUsImV4cCI6MjEwMjk0NzAyNX0.mZ6XilhYh-fl1aHu1rtLewRzqcge0HbZ_dglXqOhy_U';
 
-const TMP_FILE = '/tmp/supermacho_users_v3.json';
+function getSupabase() {
+  return createClient(supabaseUrl, supabaseServiceKey);
+}
 
-import path from 'path';
+// In-memory passwords fallback for non-Supabase auth
+const PASSWORDS = {
+  'zivo13@yahoo.com': '123456',
+  'zivo13@hotmail.com': '123456',
+  'doctorluismoralesae@gmail.com': '123456'
+};
 
-const BASE_USERS = [
-  { id: 'u_100', user: 'zivo13@yahoo.com', plan: '300 Credits Commissioner ($24.99 USD)', date: '2026-08-23', status: 'Active Subscriber' },
-  { id: 'u_101', user: 'zivo13@hotmail.com', plan: '20 Free Credits Rookie ($0.00 USD)', date: '2026-08-23', status: 'Active Subscriber' },
-  { id: 'u_102', user: 'doctorluismoralesae@gmail.com', plan: '100 Credits Pro Champion ($9.99 USD)', date: '2026-08-23', status: 'Active Subscriber' }
+// Initial DB seed data if Supabase profiles table is completely empty
+const SEED_PROFILES = [
+  { email: 'zivo13@yahoo.com', role: 'admin', plan_id: 'commissioner', credits: 300, status: 'Active Subscriber' },
+  { email: 'zivo13@hotmail.com', role: 'client', plan_id: 'free', credits: 20, status: 'Active Subscriber' },
+  { email: 'doctorluismoralesae@gmail.com', role: 'client', plan_id: 'free', credits: 20, status: 'Active Subscriber' }
 ];
 
-// Helper to read persistent disk state across lambda invocations
-function readState() {
-  let deletedMap = {};
-  let suspendedMap = {};
-  let profilesMap = {};
-  let userList = [];
-
-  try {
-    if (fs.existsSync(TMP_FILE)) {
-      const raw = fs.readFileSync(TMP_FILE, 'utf8');
-      const parsed = JSON.parse(raw);
-      deletedMap = parsed.deleted || {};
-      suspendedMap = parsed.suspended || {};
-      profilesMap = parsed.profiles || {};
-      userList = parsed.users || [];
-    }
-  } catch (e) {}
-
-  // Seed BASE_USERS if not explicitly deleted in deletedMap
-  BASE_USERS.forEach(bu => {
-    const cleanE = bu.user.toLowerCase();
-    if (!deletedMap[cleanE] && !userList.some(u => u && u.user && u.user.toLowerCase() === cleanE)) {
-      userList.push(bu);
-    }
-  });
-
-  // Filter out any explicitly deleted users
-  userList = userList.filter(u => u && u.user && !deletedMap[u.user.toLowerCase()]);
-
-  return {
-    users: userList,
-    suspended: suspendedMap,
-    profiles: profilesMap,
-    deleted: deletedMap
-  };
-}
-
-// Helper to write persistent disk state
-function saveState(state) {
-  try {
-    fs.writeFileSync(TMP_FILE, JSON.stringify(state));
-  } catch (e) {}
-}
-
 export default async function handler(req, res) {
-  // CORS Headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -68,31 +30,70 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  const currentState = readState();
+  const supabase = getSupabase();
+
+  // Helper to map DB plan_id to human readable title
+  const getPlanTitle = (planId) => {
+    if (planId === 'commissioner') return '300 Credits Commissioner ($24.99 USD)';
+    if (planId === 'pro') return '100 Credits Pro Champion ($9.99 USD)';
+    if (planId === 'booster') return '50 Credits Quick Booster ($5.99 USD)';
+    return '20 Free Credits Rookie ($0.00 USD)';
+  };
+
+  // Helper to map input plan string to canonical DB plan_id
+  const parsePlanId = (planStr) => {
+    if (!planStr) return 'free';
+    const lower = planStr.toLowerCase();
+    if (lower.includes('300') || lower.includes('commissioner')) return 'commissioner';
+    if (lower.includes('100') || lower.includes('pro')) return 'pro';
+    if (lower.includes('50') || lower.includes('booster')) return 'booster';
+    return 'free';
+  };
+
+  // Ensure DB has initial seed profiles if database table is completely empty
+  const ensureDbSeeded = async () => {
+    try {
+      const { data } = await supabase.from('profiles').select('email');
+      if (!data || data.length === 0) {
+        for (const seed of SEED_PROFILES) {
+          await supabase.from('profiles').upsert(seed, { onConflict: 'email' });
+        }
+      }
+    } catch (e) {}
+  };
 
   if (req.method === 'POST') {
     try {
-      const { email, password, action, role, plan, status, profile } = req.body || {};
+      const { email, password, action, role, plan, status, profile, credits } = req.body || {};
       if (!email) return res.status(400).json({ error: 'Email required' });
 
       const cleanEmail = email.trim().toLowerCase();
+      await ensureDbSeeded();
 
-      // 1. Check Suspension status
-      if (currentState.suspended[cleanEmail] || currentState.deleted[cleanEmail]) {
-        if (action === 'login') {
-          if (currentState.suspended[cleanEmail]) {
+      // Record password in memory
+      if (password) {
+        PASSWORDS[cleanEmail] = password;
+      }
+
+      // 1. Fetch current profile from Supabase Postgres DB
+      const { data: dbProfile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('email', cleanEmail)
+        .maybeSingle();
+
+      const userExists = !!dbProfile;
+
+      // 2. LOGIN ACTION
+      if (action === 'login') {
+        const isAdmin = cleanEmail.includes('admin') || cleanEmail.includes('zivo13');
+
+        if (dbProfile && (dbProfile.status === 'Deleted' || dbProfile.status === 'Suspended')) {
+          if (dbProfile.status === 'Suspended') {
             return res.status(403).json({ error: 'ACCOUNT_SUSPENDED', message: 'ACCOUNT SUSPENDED: Your account has been suspended by the League Commissioner.' });
           }
         }
-      }
 
-      const existingIndex = currentState.users.findIndex(u => u && u.user && u.user.toLowerCase() === cleanEmail);
-      const userExists = existingIndex !== -1;
-
-      // 2. SIGN IN ACTION (Strict validation: account must exist and password must match)
-      if (action === 'login') {
-        const isAdmin = cleanEmail.includes('admin') || cleanEmail.includes('zivo13') || cleanEmail.includes('doctorluismoralesae');
-        
         if (!userExists && !isAdmin) {
           return res.status(404).json({ 
             error: 'ACCOUNT_NOT_FOUND', 
@@ -100,32 +101,30 @@ export default async function handler(req, res) {
           });
         }
 
-        // Verify stored password if recorded
-        if (userExists && currentState.passwords && currentState.passwords[cleanEmail]) {
-          if (password && currentState.passwords[cleanEmail] !== password) {
-            return res.status(401).json({ 
-              error: 'INVALID_PASSWORD', 
-              message: 'Incorrect password. Please enter the correct password.' 
-            });
-          }
+        if (PASSWORDS[cleanEmail] && password && PASSWORDS[cleanEmail] !== password) {
+          return res.status(401).json({ 
+            error: 'INVALID_PASSWORD', 
+            message: 'Incorrect password. Please enter the correct password.' 
+          });
         }
 
-        const userObj = currentState.users.find(u => u && u.user && u.user.toLowerCase() === cleanEmail) || {
-          user: cleanEmail,
-          plan: isAdmin ? 'SuperMacho Commissioner' : 'Free Rookie ($0/mo)',
-          status: 'Active Subscriber'
-        };
+        const planTitle = getPlanTitle(dbProfile?.plan_id || 'free');
 
         return res.status(200).json({ 
           success: true, 
-          user: userObj,
-          profile: currentState.profiles[cleanEmail] || null
+          user: {
+            user: cleanEmail,
+            plan: planTitle,
+            role: dbProfile?.role || (isAdmin ? 'admin' : 'client'),
+            status: dbProfile?.status || 'Active Subscriber'
+          },
+          profile: dbProfile || null
         });
       }
 
-      // 3. SIGN UP ACTION (Strict validation: cannot register duplicate existing account)
+      // 3. SIGNUP ACTION
       if (action === 'signup') {
-        if (userExists) {
+        if (userExists && dbProfile.status !== 'Deleted') {
           return res.status(400).json({ 
             error: 'ACCOUNT_EXISTS', 
             message: 'An account already exists with this email address. Please click Sign In to log in!' 
@@ -133,86 +132,47 @@ export default async function handler(req, res) {
         }
       }
 
-      // Record password if provided
-      if (password) {
-        currentState.passwords = currentState.passwords || {};
-        currentState.passwords[cleanEmail] = password;
-      }
+      // 4. UPSERT PROFILE DIRECTLY TO SUPABASE POSTGRES DB
+      const mappedPlanId = plan ? parsePlanId(plan) : (dbProfile?.plan_id || 'free');
+      const assignedRole = role || dbProfile?.role || (cleanEmail.includes('admin') || cleanEmail.includes('zivo13') ? 'admin' : 'client');
+      const creditsVal = typeof credits === 'number' ? credits : (typeof profile?.credits === 'number' ? profile.credits : (dbProfile?.credits ?? 20));
+      const statusVal = status || (dbProfile?.status && dbProfile.status !== 'Deleted' ? dbProfile.status : 'Active Subscriber');
 
-      // Remove from deleted list if re-registering
-      delete currentState.deleted[cleanEmail];
+      const upsertData = {
+        email: cleanEmail,
+        role: assignedRole,
+        plan_id: mappedPlanId,
+        credits: creditsVal,
+        status: statusVal,
+        updated_at: new Date().toISOString()
+      };
 
-      if (status) {
-        if (status.includes('Suspended') || status.includes('Inactive')) {
-          currentState.suspended[cleanEmail] = true;
-        } else {
-          currentState.suspended[cleanEmail] = false;
-        }
-      }
+      if (profile?.birthday) upsertData.birthday = profile.birthday;
+      if (profile?.favoriteNumber) upsertData.favorite_number = profile.favoriteNumber;
+      if (profile?.favoriteTeam) upsertData.favorite_team = profile.favoriteTeam;
+      if (profile?.prefLang) upsertData.preferred_language = profile.prefLang;
 
-      const creditsVal = typeof req.body.credits === 'number' ? req.body.credits : (profile && typeof profile.credits === 'number' ? profile.credits : undefined);
+      await supabase.from('profiles').upsert(upsertData, { onConflict: 'email' });
 
-      if (profile) {
-        currentState.profiles[cleanEmail] = {
-          ...currentState.profiles[cleanEmail],
-          ...profile,
-          credits: creditsVal !== undefined ? creditsVal : (currentState.profiles[cleanEmail]?.credits ?? 20)
-        };
-      } else if (creditsVal !== undefined) {
-        currentState.profiles[cleanEmail] = {
-          ...(currentState.profiles[cleanEmail] || {}),
-          credits: creditsVal
-        };
-      }
-
-      if (existingIndex !== -1) {
-        if (plan) currentState.users[existingIndex].plan = plan;
-        if (status) currentState.users[existingIndex].status = status;
-        if (profile) currentState.users[existingIndex].profile = currentState.profiles[cleanEmail];
-      } else {
-        const newUser = {
-          id: 'u_' + Date.now(),
-          user: cleanEmail,
-          plan: plan || (role === 'admin' ? 'SuperMacho Commissioner' : 'Free Rookie ($0/mo)'),
-          date: 'Just now',
-          status: status || 'Active Subscriber',
-          profile: currentState.profiles[cleanEmail] || null
-        };
-        currentState.users.unshift(newUser);
-      }
-      
-      saveState(currentState);
-
-      // Save to Supabase profile if configured
-      if (supabaseUrl && !supabaseUrl.includes('placeholder')) {
-        try {
-          const supabase = createClient(supabaseUrl, supabaseServiceKey);
-          const mappedPlanId = plan ? (
-            plan.toLowerCase().includes('300') || plan.toLowerCase().includes('commissioner') ? 'commissioner' :
-            plan.toLowerCase().includes('100') || plan.toLowerCase().includes('pro') ? 'pro' :
-            plan.toLowerCase().includes('50') || plan.toLowerCase().includes('booster') ? 'booster' :
-            'free'
-          ) : 'free';
-
-          await supabase.from('profiles').upsert({
-            email: cleanEmail,
-            role: role || 'client',
-            plan_id: mappedPlanId,
-            status: status || 'active',
-            birthday: profile?.birthday || null,
-            favorite_number: profile?.favoriteNumber || null,
-            favorite_team: profile?.favoriteTeam || null,
-            preferred_language: profile?.prefLang || 'en'
-          }, { onConflict: 'email' });
-        } catch (e) {}
-      }
+      // Return updated users list from Supabase Postgres DB
+      const { data: updatedProfiles } = await supabase.from('profiles').select('*');
+      const allUsers = (updatedProfiles || [])
+        .filter(p => p && p.email && p.status !== 'Deleted')
+        .map(p => ({
+          id: p.id || 'u_' + p.email,
+          user: p.email,
+          plan: getPlanTitle(p.plan_id),
+          date: p.created_at ? new Date(p.created_at).toLocaleDateString() : 'Registered',
+          status: p.status || 'Active Subscriber',
+          profile: p
+        }));
 
       return res.status(200).json({ 
         success: true, 
-        users: currentState.users, 
-        suspended: currentState.suspended,
-        profile: currentState.profiles[cleanEmail] || null
+        users: allUsers,
+        profile: upsertData
       });
+
     } catch (err) {
       return res.status(500).json({ error: err.message });
     }
@@ -223,138 +183,64 @@ export default async function handler(req, res) {
       const { email, clearAllTestUsers } = req.body || {};
 
       if (clearAllTestUsers) {
-        // Clear temporary test users while preserving base accounts
-        currentState.users = [...BASE_USERS];
-        currentState.suspended = {};
-        currentState.deleted = {};
-        saveState(currentState);
-
-        if (supabaseUrl && !supabaseUrl.includes('placeholder')) {
-          try {
-            const supabase = createClient(supabaseUrl, supabaseServiceKey);
-            await supabase.from('profiles').delete().neq('role', 'admin');
-          } catch (e) {}
-        }
-
-        return res.status(200).json({ success: true, users: currentState.users });
+        await supabase.from('profiles').delete().neq('role', 'admin');
+        const { data: remaining } = await supabase.from('profiles').select('*');
+        const allUsers = (remaining || []).map(p => ({
+          id: p.id || 'u_' + p.email,
+          user: p.email,
+          plan: getPlanTitle(p.plan_id),
+          date: 'Registered',
+          status: p.status || 'Active Subscriber'
+        }));
+        return res.status(200).json({ success: true, users: allUsers });
       }
 
       if (email) {
         const cleanEmail = email.trim().toLowerCase();
-        currentState.deleted[cleanEmail] = true;
-        currentState.users = currentState.users.filter(u => u.user.toLowerCase() !== cleanEmail);
-        delete currentState.suspended[cleanEmail];
-        delete currentState.profiles[cleanEmail];
-        saveState(currentState);
 
-        // Delete from Supabase profiles table if configured
-        if (supabaseUrl && !supabaseUrl.includes('placeholder')) {
-          try {
-            const supabase = createClient(supabaseUrl, supabaseServiceKey);
-            await supabase.from('profiles').delete().eq('email', cleanEmail);
-          } catch (e) {}
-        }
+        // Hard delete from Supabase profiles table
+        await supabase.from('profiles').delete().eq('email', cleanEmail);
+        // Soft delete safety update
+        await supabase.from('profiles').update({ status: 'Deleted' }).eq('email', cleanEmail);
       }
-      return res.status(200).json({ success: true, users: currentState.users });
+
+      // Fetch remaining users from Supabase Postgres DB
+      const { data: remainingProfiles } = await supabase.from('profiles').select('*');
+      const remainingUsers = (remainingProfiles || [])
+        .filter(p => p && p.email && p.email.toLowerCase() !== email?.trim().toLowerCase() && p.status !== 'Deleted')
+        .map(p => ({
+          id: p.id || 'u_' + p.email,
+          user: p.email,
+          plan: getPlanTitle(p.plan_id),
+          date: p.created_at ? new Date(p.created_at).toLocaleDateString() : 'Registered',
+          status: p.status || 'Active Subscriber',
+          profile: p
+        }));
+
+      return res.status(200).json({ success: true, users: remainingUsers });
     } catch (err) {
       return res.status(500).json({ error: err.message });
     }
   }
 
   if (req.method === 'GET') {
-    let checkEmail = null;
-    let getProfileEmail = null;
+    await ensureDbSeeded();
 
-    try {
-      const reqUrl = req.url || '';
-      if (reqUrl.includes('check_suspended=')) {
-        const paramStr = reqUrl.split('check_suspended=')[1];
-        if (paramStr) {
-          checkEmail = decodeURIComponent(paramStr.split('&')[0]).trim().toLowerCase();
-        }
-      }
-      if (reqUrl.includes('get_profile=')) {
-        const paramStr = reqUrl.split('get_profile=')[1];
-        if (paramStr) {
-          getProfileEmail = decodeURIComponent(paramStr.split('&')[0]).trim().toLowerCase();
-        }
-      }
-    } catch (e) {}
+    const { data: dbProfiles } = await supabase.from('profiles').select('*');
 
-    if (checkEmail) {
-      const isSuspended = !!currentState.suspended[checkEmail];
-      return res.status(200).json({ email: checkEmail, isSuspended });
-    }
-
-    if (getProfileEmail) {
-      const profile = currentState.profiles[getProfileEmail] || null;
-      return res.status(200).json({ email: getProfileEmail, profile });
-    }
-
-    // Merge Supabase database profiles into users list if configured
-    let allUsers = [...currentState.users];
-
-    if (supabaseUrl && !supabaseUrl.includes('placeholder')) {
-      try {
-        const supabase = createClient(supabaseUrl, supabaseServiceKey);
-        const { data: dbProfiles } = await supabase.from('profiles').select('*');
-        if (dbProfiles && Array.isArray(dbProfiles) && dbProfiles.length > 0) {
-          const userMap = new Map();
-          
-          // Seed currentState users first
-          allUsers.forEach(u => {
-            if (u && u.user) userMap.set(u.user.toLowerCase(), u);
-          });
-
-          // Override / hydrate with Supabase DB profiles (Supabase is single source of truth)
-          dbProfiles.forEach(p => {
-            if (p && p.email) {
-              const cleanE = p.email.toLowerCase();
-              if (currentState.deleted && currentState.deleted[cleanE]) return;
-
-              const existingUser = userMap.get(cleanE);
-              
-              let planName = '20 Free Credits Rookie ($0.00 USD)';
-              if (p.plan_id === 'commissioner') {
-                planName = '300 Credits Commissioner ($24.99 USD)';
-              } else if (p.plan_id === 'pro') {
-                planName = '100 Credits Pro Champion ($9.99 USD)';
-              } else if (p.plan_id === 'booster') {
-                planName = '50 Credits Quick Booster ($5.99 USD)';
-              } else if (p.plan_id === 'free') {
-                planName = '20 Free Credits Rookie ($0.00 USD)';
-              } else if (existingUser && existingUser.plan) {
-                planName = existingUser.plan;
-              }
-
-              userMap.set(cleanE, {
-                id: p.id || 'u_' + cleanE,
-                user: cleanE,
-                plan: planName,
-                date: p.created_at ? new Date(p.created_at).toLocaleDateString() : (existingUser?.date || 'Registered'),
-                status: p.status || existingUser?.status || 'Active Subscriber',
-                profile: {
-                  email: cleanE,
-                  birthday: p.birthday,
-                  favoriteTeam: p.favorite_team,
-                  favoriteNumber: p.favorite_number,
-                  prefLang: p.preferred_language,
-                  profileCompleted: p.profile_completed,
-                  credits: p.credits ?? 20
-                }
-              });
-            }
-          });
-
-          allUsers = Array.from(userMap.values());
-        }
-      } catch (e) {}
-    }
+    const allUsers = (dbProfiles || [])
+      .filter(p => p && p.email && p.status !== 'Deleted')
+      .map(p => ({
+        id: p.id || 'u_' + p.email,
+        user: p.email,
+        plan: getPlanTitle(p.plan_id),
+        date: p.created_at ? new Date(p.created_at).toLocaleDateString() : 'Registered',
+        status: p.status || 'Active Subscriber',
+        profile: p
+      }));
 
     return res.status(200).json({ 
-      users: allUsers, 
-      suspended: currentState.suspended,
-      profiles: currentState.profiles
+      users: allUsers
     });
   }
 
