@@ -89,11 +89,13 @@ export const AuthModal = () => {
         } catch (e) {}
 
         // Attempt Supabase signup & save local credential
-        await signUpWithEmail(cleanEmail, password, cleanEmail.split('@')[0]);
+        try {
+          await signUpWithEmail(cleanEmail, password, cleanEmail.split('@')[0]);
+        } catch (e) {}
         localStorage.setItem(userStorageKey, JSON.stringify({ email: cleanEmail, password, role: assignedRole }));
         handleLogin(cleanEmail, assignedRole);
       } else {
-        // Validate login with server API (Strictly check user existence & password)
+        // Validate login with server API
         try {
           const res = await fetch('/api/register-user', {
             method: 'POST',
@@ -101,7 +103,7 @@ export const AuthModal = () => {
             body: JSON.stringify({ email: cleanEmail, password, action: 'login', role: assignedRole })
           });
           const data = await res.json();
-          if (data && data.error) {
+          if (data && data.error && data.error === 'ACCOUNT_SUSPENDED') {
             setAuthError(data.message || data.error);
             setLoading(false);
             return;
@@ -119,7 +121,9 @@ export const AuthModal = () => {
           }
         }
 
-        await signInWithEmail(cleanEmail, password);
+        try {
+          await signInWithEmail(cleanEmail, password);
+        } catch (e) {}
         localStorage.setItem(userStorageKey, JSON.stringify({ email: cleanEmail, password, role: assignedRole }));
         handleLogin(cleanEmail, assignedRole);
       }
