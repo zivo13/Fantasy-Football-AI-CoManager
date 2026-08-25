@@ -56,21 +56,9 @@ export const AppProvider = ({ children }) => {
     } catch (e) {}
   };
 
-  // Multi-Currency Converter Helper (USD $, MXN $, BRL R$)
+  // Price Formatter Helper (Always USD $)
   const formatPrice = (usdPrice) => {
-    if (lang === 'es') {
-      if (usdPrice === 5.99) return '$109 MXN';
-      if (usdPrice === 9.99) return '$179 MXN';
-      if (usdPrice === 24.99) return '$449 MXN';
-      return `$${Math.round(usdPrice * 18)} MXN`;
-    }
-    if (lang === 'pt') {
-      if (usdPrice === 5.99) return 'R$ 29,90 BRL';
-      if (usdPrice === 9.99) return 'R$ 49,90 BRL';
-      if (usdPrice === 24.99) return 'R$ 124,90 BRL';
-      return `R$ ${(usdPrice * 5).toFixed(2)} BRL`;
-    }
-    return `$${usdPrice.toFixed(2)} USD`;
+    return `$${usdPrice.toFixed(2)}`;
   };
 
   // Credits / Tokens System State

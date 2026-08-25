@@ -59,8 +59,8 @@ export const CreditPurchaseModal = ({ isOpen, onClose, targetFeature, requiredCr
             </div>
           </div>
           <div className="text-right text-[10px] text-slate-400 font-semibold">
-            <div>Prices Auto-Converted:</div>
-            <div className="text-amber-300 font-bold">{currencyLabel}</div>
+            <div>All Billing Strictly In:</div>
+            <div className="text-amber-300 font-bold">US Dollars ($ USD)</div>
           </div>
         </div>
 
