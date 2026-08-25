@@ -296,10 +296,11 @@ export const AdminDashboard = () => {
   };
 
   const openEditPlanModal = (plan) => {
+    if (!plan) return;
     setEditingPlan(plan);
     setPlanForm({
       ...plan,
-      featuresText: plan.features.join('\n')
+      featuresText: Array.isArray(plan.features) ? plan.features.join('\n') : (typeof plan.features === 'string' ? plan.features : '')
     });
     setShowPlanModal(true);
   };
@@ -308,12 +309,14 @@ export const AdminDashboard = () => {
     e.preventDefault();
     const updated = {
       ...planForm,
-      priceMonthly: parseFloat(planForm.priceMonthly),
-      priceSeasonal: parseFloat(planForm.priceSeasonal),
-      features: planForm.featuresText.split('\n').filter(f => f.trim() !== ''),
+      priceMonthly: parseFloat(planForm.priceMonthly) || 0,
+      priceSeasonal: parseFloat(planForm.priceSeasonal) || 0,
+      features: (planForm.featuresText || '').split('\n').filter(f => f.trim() !== ''),
       ctaText: planForm.ctaText || 'Select Plan'
     };
-    handleSavePlan(updated);
+    if (typeof handleSavePlan === 'function') {
+      handleSavePlan(updated);
+    }
     setShowPlanModal(false);
   };
 
@@ -1042,7 +1045,7 @@ export const AdminDashboard = () => {
                   <div className="space-y-2">
                     <div className="text-[10px] font-bold text-slate-400 uppercase">Included Features</div>
                     <ul className="space-y-1.5 text-xs text-slate-300">
-                      {plan.features.map((f, i) => (
+                      {(Array.isArray(plan.features) ? plan.features : []).map((f, i) => (
                         <li key={i} className="flex items-center gap-2">
                           <Check className="w-3.5 h-3.5 text-emerald-400" />
                           <span>{f}</span>

@@ -423,16 +423,16 @@ export const LandingPage = () => {
           {/* Card 1: Free Rookie */}
           <div className="glass-panel p-6 rounded-3xl flex flex-col justify-between space-y-6 border border-slate-800 hover:border-slate-700 transition-all">
             <div className="space-y-4">
-              <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">START HERE</div>
-              <h3 className="font-bebas text-3xl text-white tracking-wider">FREE ROOKIE</h3>
+              <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">{t.packStartHere || 'START HERE'}</div>
+              <h3 className="font-bebas text-3xl text-white tracking-wider">{t.packFreeTitle || 'FREE ROOKIE'}</h3>
               <div className="py-2 border-y border-slate-800">
-                <span className="font-bebas text-4xl text-amber-400">20 Free Credits</span>
-                <div className="text-slate-400 text-[11px] font-semibold">Included on Free Account Creation</div>
+                <span className="font-bebas text-4xl text-amber-400">{t.packFreeCredits || '20 Free Credits'}</span>
+                <div className="text-slate-400 text-[11px] font-semibold">{t.packFreeDesc || 'Included on Free Account Creation'}</div>
               </div>
               <ul className="space-y-2.5 text-xs text-slate-300">
-                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400 flex-shrink-0" /> 20 Start/Sit Lineup Checks</li>
-                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400 flex-shrink-0" /> ESPN / Sleeper Sync</li>
-                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400 flex-shrink-0" /> Ask AI Coach Chat</li>
+                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400 flex-shrink-0" /> {t.packFreeItem1 || '20 Start/Sit Lineup Checks'}</li>
+                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400 flex-shrink-0" /> {t.packFreeItem2 || 'ESPN / Sleeper Sync'}</li>
+                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400 flex-shrink-0" /> {t.packFreeItem3 || 'Ask AI Coach Chat'}</li>
               </ul>
             </div>
             <button
@@ -442,7 +442,7 @@ export const LandingPage = () => {
               }}
               className="w-full btn-outline py-3.5 rounded-2xl text-xs font-extrabold flex items-center justify-center gap-2 uppercase tracking-wider"
             >
-              <span>Get 20 Free Credits</span>
+              <span>{t.packFreeBtn || 'Get 20 Free Credits'}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
@@ -450,23 +450,23 @@ export const LandingPage = () => {
           {/* Card 2: Pay-As-You-Go Booster */}
           <div className="glass-panel p-6 rounded-3xl flex flex-col justify-between space-y-6 border border-amber-500/30 hover:border-amber-500/60 transition-all">
             <div className="space-y-4">
-              <div className="text-[10px] font-extrabold text-amber-400 uppercase tracking-widest">QUICK TOP-UP</div>
-              <h3 className="font-bebas text-3xl text-white tracking-wider">50 CREDITS BOOSTER</h3>
+              <div className="text-[10px] font-extrabold text-amber-400 uppercase tracking-widest">{t.packBoosterTopup || 'QUICK TOP-UP'}</div>
+              <h3 className="font-bebas text-3xl text-white tracking-wider">{t.packBoosterTitle || '50 CREDITS BOOSTER'}</h3>
               <div className="py-2 border-y border-slate-800">
                 <span className="font-bebas text-4xl text-white">{formatPrice(5.99)}</span>
-                <div className="text-amber-400 text-[11px] font-extrabold">50 Extra AI Credits</div>
+                <div className="text-amber-400 text-[11px] font-extrabold">{t.packBoosterExtra || '50 Extra AI Credits'}</div>
               </div>
               <ul className="space-y-2.5 text-xs text-slate-300">
-                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400 flex-shrink-0" /> 50 Start/Sit Lineup Checks</li>
-                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400 flex-shrink-0" /> 25 Waiver FAB Target Snipe Checks</li>
-                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400 flex-shrink-0" /> Never expires</li>
+                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400 flex-shrink-0" /> {t.packBoosterItem1 || '50 Start/Sit Lineup Checks'}</li>
+                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400 flex-shrink-0" /> {t.packBoosterItem2 || '25 Waiver FAB Target Snipe Checks'}</li>
+                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400 flex-shrink-0" /> {t.packBoosterItem3 || 'Never expires'}</li>
               </ul>
             </div>
             <button
               onClick={() => setShowCreditModal(true)}
               className="w-full btn-outline border-amber-500/50 text-amber-300 py-3.5 rounded-2xl text-xs font-extrabold flex items-center justify-center gap-2 uppercase tracking-wider hover:bg-amber-500/10"
             >
-              <span>Buy 50 Credits</span>
+              <span>{t.packBoosterBtn || 'Buy 50 Credits'}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
@@ -474,26 +474,26 @@ export const LandingPage = () => {
           {/* Card 3: Pro Champion Pack (Popular) */}
           <div className="glass-panel-gold p-6 rounded-3xl flex flex-col justify-between space-y-6 border-2 border-amber-500 shadow-xl shadow-amber-500/10 relative -translate-y-1">
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-500 text-slate-950 text-[9px] font-black uppercase px-3 py-0.5 rounded-full tracking-widest shadow-md">
-              MOST POPULAR VALUE
+              {t.packProPopular || 'MOST POPULAR VALUE'}
             </div>
             <div className="space-y-4 pt-1">
-              <div className="text-[10px] font-extrabold text-amber-400 uppercase tracking-widest">POWER USER</div>
-              <h3 className="font-bebas text-3xl text-white tracking-wider">100 CREDITS PRO</h3>
+              <div className="text-[10px] font-extrabold text-amber-400 uppercase tracking-widest">{t.packProPowerUser || 'POWER USER'}</div>
+              <h3 className="font-bebas text-3xl text-white tracking-wider">{t.packProTitle || '100 CREDITS PRO'}</h3>
               <div className="py-2 border-y border-amber-500/40">
                 <span className="font-bebas text-4xl text-amber-300">{formatPrice(9.99)}</span>
-                <div className="text-amber-400 text-[11px] font-extrabold">100 Extra AI Credits</div>
+                <div className="text-amber-400 text-[11px] font-extrabold">{t.packProExtra || '100 Extra AI Credits'}</div>
               </div>
               <ul className="space-y-2.5 text-xs text-slate-200">
-                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-amber-400 flex-shrink-0" /> 100 Start/Sit Lineup Checks</li>
-                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-amber-400 flex-shrink-0" /> 33 Trade Robbery Simulations</li>
-                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-amber-400 flex-shrink-0" /> 20 Live Draft War Room Rounds</li>
+                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-amber-400 flex-shrink-0" /> {t.packProItem1 || '100 Start/Sit Lineup Checks'}</li>
+                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-amber-400 flex-shrink-0" /> {t.packProItem2 || '33 Trade Robbery Simulations'}</li>
+                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-amber-400 flex-shrink-0" /> {t.packProItem3 || '20 Live Draft War Room Rounds'}</li>
               </ul>
             </div>
             <button
               onClick={() => setShowCreditModal(true)}
               className="w-full btn-gold py-3.5 rounded-2xl text-xs font-black flex items-center justify-center gap-2 uppercase tracking-wider shadow-lg"
             >
-              <span>Buy 100 Credits</span>
+              <span>{t.packProBtn || 'Buy 100 Credits'}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
@@ -501,23 +501,23 @@ export const LandingPage = () => {
           {/* Card 4: Commissioner Mega Pack (Best Value) */}
           <div className="glass-panel p-6 rounded-3xl flex flex-col justify-between space-y-6 border border-cyan-500/40 hover:border-cyan-400 transition-all">
             <div className="space-y-4">
-              <div className="text-[10px] font-extrabold text-cyan-400 uppercase tracking-widest">MEGA PACK</div>
-              <h3 className="font-bebas text-3xl text-white tracking-wider">300 CREDITS MEGA</h3>
+              <div className="text-[10px] font-extrabold text-cyan-400 uppercase tracking-widest">{t.packMegaTitleSmall || 'MEGA PACK'}</div>
+              <h3 className="font-bebas text-3xl text-white tracking-wider">{t.packMegaTitle || '300 CREDITS MEGA'}</h3>
               <div className="py-2 border-y border-slate-800">
                 <span className="font-bebas text-4xl text-white">{formatPrice(24.99)}</span>
-                <div className="text-cyan-400 text-[11px] font-extrabold">300 Extra AI Credits (Best Value)</div>
+                <div className="text-cyan-400 text-[11px] font-extrabold">{t.packMegaExtra || '300 Extra AI Credits (Best Value)'}</div>
               </div>
               <ul className="space-y-2.5 text-xs text-slate-300">
-                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-cyan-400 flex-shrink-0" /> Full Season Co-Manager Power</li>
-                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-cyan-400 flex-shrink-0" /> 60 Live Draft War Room Rounds</li>
-                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-cyan-400 flex-shrink-0" /> 100 Trade & Waiver Analyses</li>
+                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-cyan-400 flex-shrink-0" /> {t.packMegaItem1 || 'Full Season Co-Manager Power'}</li>
+                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-cyan-400 flex-shrink-0" /> {t.packMegaItem2 || '60 Live Draft War Room Rounds'}</li>
+                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-cyan-400 flex-shrink-0" /> {t.packMegaItem3 || '100 Trade & Waiver Analyses'}</li>
               </ul>
             </div>
             <button
               onClick={() => setShowCreditModal(true)}
               className="w-full btn-outline border-cyan-500/50 text-cyan-300 py-3.5 rounded-2xl text-xs font-extrabold flex items-center justify-center gap-2 uppercase tracking-wider hover:bg-cyan-500/10"
             >
-              <span>Buy 300 Credits</span>
+              <span>{t.packMegaBtn || 'Buy 300 Credits'}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
