@@ -4,70 +4,78 @@ export const INITIAL_PLANS = [
   {
     id: 'free',
     name: 'Free Rookie',
-    badge: 'FREE FOREVER',
+    badge: '20 FREE CREDITS',
+    creditsAmount: 20,
     priceMonthly: 0,
     priceSeasonal: 0,
     currency: '$',
-    description: 'Get a taste of SuperMacho AI for 1 league.',
+    description: '20 Free AI credits included on account registration.',
     features: [
-      '1 Fantasy League (ESPN or Sleeper)',
-      'Weekly Start/Sit Recommendations',
-      'Top 3 Waiver Wire Pickups',
-      'Basic Roster Health Check',
-      'SuperMacho AI Assistant (5 queries/day)'
+      '20 Free AI Credits upon signup',
+      'Start/Sit Lineup Checks (1 credit)',
+      'Ask AI Coach Chat (1 credit)',
+      'ESPN & Sleeper Sync'
     ],
     popular: false,
-    ctaText: 'Start Free',
-    stripePriceId: 'price_free_rookie',
-    maxLeagues: 1,
-    tradeAnalyzer: false,
-    gameDayAlerts: false
+    ctaText: 'Get 20 Free Credits',
+    stripePriceId: 'price_free_credits'
+  },
+  {
+    id: 'booster',
+    name: '50 Credits Quick Booster',
+    badge: 'PAY-AS-YOU-GO',
+    creditsAmount: 50,
+    priceMonthly: 5.99,
+    priceSeasonal: 5.99,
+    currency: '$',
+    description: 'Pay-as-you-go booster pack for line-ups & waiver targets.',
+    features: [
+      '50 Extra AI Credits',
+      '50 Start/Sit Lineup Checks',
+      '25 Waiver FAB Target Snipe Checks',
+      'Never expires'
+    ],
+    popular: false,
+    ctaText: 'Buy 50 Credits',
+    stripePriceId: 'price_50_credits'
   },
   {
     id: 'pro',
-    name: 'Pro Champion',
-    badge: 'MOST POPULAR',
-    priceMonthly: 4.99,
-    priceSeasonal: 29.99,
+    name: '100 Credits Pro Champion',
+    badge: 'MOST POPULAR VALUE',
+    creditsAmount: 100,
+    priceMonthly: 9.99,
+    priceSeasonal: 9.99,
     currency: '$',
-    description: 'The ultimate tool set to dominate up to 3 competitive leagues.',
+    description: 'Power user credit pack for total Sunday matchup dominance.',
     features: [
-      'Up to 3 Fantasy Leagues',
-      'Real-time Start/Sit Matchup Heatmaps',
-      'Full Waiver Wire Target Priority Rankings',
-      'Interactive Trade Evaluator & Calculator',
-      'Game-day Discord & Email Alerts',
-      'SuperMacho AI Assistant (Unlimited)'
+      '100 Extra AI Credits',
+      '100 Start/Sit Lineup Checks',
+      '33 Trade Robbery Simulations',
+      '20 Live Draft War Room Rounds'
     ],
     popular: true,
-    ctaText: 'Become a Champion',
-    stripePriceId: 'price_pro_champion',
-    maxLeagues: 3,
-    tradeAnalyzer: true,
-    gameDayAlerts: true
+    ctaText: 'Buy 100 Credits',
+    stripePriceId: 'price_100_credits'
   },
   {
     id: 'commissioner',
-    name: 'SuperMacho Commissioner',
-    badge: 'HIGH ROLLER',
-    priceMonthly: 9.99,
-    priceSeasonal: 59.99,
+    name: '300 Credits Commissioner',
+    badge: 'BEST VALUE PACK',
+    creditsAmount: 300,
+    priceMonthly: 24.99,
+    priceSeasonal: 24.99,
     currency: '$',
-    description: 'Unlimited leagues, multi-platform dominance & live draft assistant.',
+    description: 'Mega credit pack for full season-long AI Co-Manager power.',
     features: [
-      'UNLIMITED Fantasy Leagues',
-      'ESPN, Sleeper & Yahoo Integration',
-      'Live War-Room Draft Assistant',
-      'Opponent Roster Weakness Finder',
-      'Win Probability Boost Calculator',
-      'Priority VIP AI Server Engine'
+      '300 Extra AI Credits',
+      '60 Live Draft War Room Rounds',
+      '100 Trade & Waiver Analyses',
+      'Full Season-Long Co-Manager Power'
     ],
     popular: false,
-    ctaText: 'Go Commissioner Mode',
-    stripePriceId: 'price_commissioner',
-    maxLeagues: 999,
-    tradeAnalyzer: true,
-    gameDayAlerts: true
+    ctaText: 'Buy 300 Credits',
+    stripePriceId: 'price_300_credits'
   }
 ];
 

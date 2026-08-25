@@ -1004,19 +1004,19 @@ export const AdminDashboard = () => {
 
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-bebas text-2xl text-white tracking-wider">SUBSCRIPTION PLAN MANAGER</h3>
-              <p className="text-xs text-slate-400">Configure prices, feature limits, badges, and Stripe price bindings.</p>
+              <h3 className="font-bebas text-2xl text-white tracking-wider">CREDIT PACK & PRICING MANAGER</h3>
+              <p className="text-xs text-slate-400">Configure prices, credit amounts, badges, and Stripe price bindings.</p>
             </div>
             <button
               onClick={openNewPlanModal}
               className="btn-cyan px-5 py-2.5 rounded-2xl text-xs font-extrabold flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />
-              <span>Add New Plan Tier</span>
+              <span>Add New Credit Pack</span>
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {plans.map((plan) => (
               <div key={plan.id} className="glass-panel p-6 rounded-3xl space-y-4 relative flex flex-col justify-between">
                 
@@ -1025,17 +1025,18 @@ export const AdminDashboard = () => {
                     <span className="bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-[10px] font-extrabold px-2.5 py-1 rounded-lg">
                       {plan.badge}
                     </span>
-                    <span className="text-xs text-slate-400 font-bold">Max Leagues: {plan.maxLeagues}</span>
+                    <span className="text-xs text-amber-400 font-bold">🪙 {plan.creditsAmount || (plan.id === 'pro' ? 100 : plan.id === 'commissioner' ? 300 : plan.id === 'booster' ? 50 : 20)} Credits</span>
                   </div>
 
                   <div>
-                    <h4 className="font-bebas text-3xl text-white tracking-wider">{plan.name}</h4>
+                    <h4 className="font-bebas text-2xl text-white tracking-wider">{plan.name}</h4>
                     <p className="text-slate-400 text-xs mt-1">{plan.description}</p>
                   </div>
 
                   <div className="py-2 border-y border-slate-800 flex items-baseline gap-2">
-                    <span className="font-bebas text-4xl text-amber-400">${plan.priceMonthly}/mo</span>
-                    <span className="text-slate-400 text-xs font-semibold">(${plan.priceSeasonal}/season)</span>
+                    <span className="font-bebas text-3xl text-amber-400">
+                      {plan.priceMonthly === 0 ? '$0.00' : `$${plan.priceMonthly} USD`}
+                    </span>
                   </div>
 
                   <div className="space-y-2">
@@ -1521,144 +1522,148 @@ export const AdminDashboard = () => {
         </div>
       )}
 
-      {/* PLAN EDIT / CREATE MODAL */}
+      {/* CREDIT PACK EDIT / CREATE MODAL */}
       {showPlanModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
           <div className="relative w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-800 pb-4">
               <h3 className="font-bebas text-2xl text-white tracking-wider">
-                {editingPlan ? 'EDIT SUBSCRIPTION PLAN' : 'CREATE NEW SUBSCRIPTION PLAN'}
+                {editingPlan ? 'EDIT CREDIT PACK TIER' : 'CREATE NEW CREDIT PACK TIER'}
               </h3>
               <button onClick={() => setShowPlanModal(false)} className="text-slate-400 hover:text-white">✕</button>
             </div>
 
             <form onSubmit={handlePlanFormSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Plan Name</label>
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Credit Pack Name</label>
                 <input
                   type="text"
                   required
                   value={planForm.name}
                   onChange={(e) => setPlanForm({...planForm, name: e.target.value})}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white focus:border-amber-500"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Monthly Price ($)</label>
+                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Pack Price ($ USD)</label>
                   <input
                     type="number"
                     step="0.01"
                     required
                     value={planForm.priceMonthly}
-                    onChange={(e) => setPlanForm({...planForm, priceMonthly: e.target.value})}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white"
+                    onChange={(e) => setPlanForm({...planForm, priceMonthly: e.target.value, priceSeasonal: e.target.value})}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-amber-400 font-extrabold focus:border-amber-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Seasonal Price ($)</label>
+                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Badge Title</label>
                   <input
-                    type="number"
-                    step="0.01"
-                    required
-                    value={planForm.priceSeasonal}
-                    onChange={(e) => setPlanForm({...planForm, priceSeasonal: e.target.value})}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white"
+                    type="text"
+                    value={planForm.badge}
+                    onChange={(e) => setPlanForm({...planForm, badge: e.target.value})}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white focus:border-amber-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Badge Title</label>
-                <input
-                  type="text"
-                  value={planForm.badge}
-                  onChange={(e) => setPlanForm({...planForm, badge: e.target.value})}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Features (One per line)</label>
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Included Features (One per line)</label>
                 <textarea
                   rows={4}
                   value={planForm.featuresText}
                   onChange={(e) => setPlanForm({...planForm, featuresText: e.target.value})}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white focus:border-amber-500"
                 />
               </div>
 
-              <button type="submit" className="w-full btn-cyan py-3 rounded-xl font-bold text-xs uppercase">
-                Save Subscription Tier
+              <button type="submit" className="w-full btn-gold py-3 rounded-xl font-extrabold text-xs uppercase shadow-lg">
+                Save Credit Pack Tier
               </button>
             </form>
           </div>
         </div>
       )}
 
-      {/* MANAGE TIER MODAL */}
+      {/* MANAGE CREDIT BALANCE & TIER MODAL */}
       {showTierModal && managingTierUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-          <div className="relative w-full max-w-md bg-slate-900 border border-cyan-500/40 rounded-3xl p-6 shadow-2xl space-y-4">
+          <div className="relative w-full max-w-md bg-slate-900 border border-amber-500/40 rounded-3xl p-6 shadow-2xl space-y-4">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div>
-                <h3 className="font-bebas text-2xl text-white tracking-wider">MANAGE USER SUBSCRIPTION TIER</h3>
+                <h3 className="font-bebas text-2xl text-white tracking-wider">MANAGE USER CREDIT BALANCE & TIER PACK</h3>
                 <p className="text-xs text-amber-400 font-bold">{managingTierUser.user || managingTierUser.email}</p>
               </div>
               <button onClick={() => setShowTierModal(false)} className="text-slate-400 hover:text-white">✕</button>
             </div>
 
             <div className="space-y-3">
-              <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">Select Tier Level</label>
+              <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">Select Credit Pack Tier</label>
               
               <div className="space-y-2">
                 <button
                   type="button"
-                  onClick={() => setSelectedTier('SuperMacho Commissioner ($9.99/mo)')}
+                  onClick={() => setSelectedTier('300 Credits Commissioner ($24.99 USD)')}
                   className={`w-full p-3.5 rounded-xl border text-left flex items-center justify-between transition-all ${
-                    selectedTier.includes('9.99') 
+                    selectedTier.includes('300') || selectedTier.includes('24.99') 
                       ? 'bg-cyan-500/20 border-cyan-500 text-cyan-300 font-bold' 
                       : 'bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-700'
                   }`}
                 >
                   <div>
-                    <div className="font-bold text-xs">SuperMacho Commissioner</div>
-                    <div className="text-[10px] text-slate-400">Unlimited Leagues + Live War Room</div>
+                    <div className="font-bold text-xs">300 Credits Commissioner</div>
+                    <div className="text-[10px] text-slate-400">Mega credit pack for full season power</div>
                   </div>
-                  <span className="font-bebas text-xl text-cyan-400">$9.99/mo</span>
+                  <span className="font-bebas text-xl text-cyan-400">300 Credits ($24.99)</span>
                 </button>
 
                 <button
                   type="button"
-                  onClick={() => setSelectedTier('Pro Champion ($4.99/mo)')}
+                  onClick={() => setSelectedTier('100 Credits Pro Champion ($9.99 USD)')}
                   className={`w-full p-3.5 rounded-xl border text-left flex items-center justify-between transition-all ${
-                    selectedTier.includes('4.99') 
+                    selectedTier.includes('100') || selectedTier.includes('9.99') 
                       ? 'bg-amber-500/20 border-amber-500 text-amber-300 font-bold' 
                       : 'bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-700'
                   }`}
                 >
                   <div>
-                    <div className="font-bold text-xs">Pro Champion</div>
-                    <div className="text-[10px] text-slate-400">3 Leagues + AI Trade Analyzer</div>
+                    <div className="font-bold text-xs">100 Credits Pro Champion</div>
+                    <div className="text-[10px] text-slate-400">Power user Sunday matchup pack</div>
                   </div>
-                  <span className="font-bebas text-xl text-amber-400">$4.99/mo</span>
+                  <span className="font-bebas text-xl text-amber-400">100 Credits ($9.99)</span>
                 </button>
 
                 <button
                   type="button"
-                  onClick={() => setSelectedTier('Free Rookie ($0/mo)')}
+                  onClick={() => setSelectedTier('50 Credits Quick Booster ($5.99 USD)')}
                   className={`w-full p-3.5 rounded-xl border text-left flex items-center justify-between transition-all ${
-                    selectedTier.includes('Free') 
+                    selectedTier.includes('50') || selectedTier.includes('5.99') 
+                      ? 'bg-slate-800 border-amber-500 text-amber-300 font-bold' 
+                      : 'bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-700'
+                  }`}
+                >
+                  <div>
+                    <div className="font-bold text-xs">50 Credits Quick Booster</div>
+                    <div className="text-[10px] text-slate-400">Pay-as-you-go top-up pack</div>
+                  </div>
+                  <span className="font-bebas text-xl text-amber-300">50 Credits ($5.99)</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedTier('20 Free Credits Rookie ($0.00 USD)')}
+                  className={`w-full p-3.5 rounded-xl border text-left flex items-center justify-between transition-all ${
+                    selectedTier.includes('20') || selectedTier.includes('Free') 
                       ? 'bg-slate-800 border-slate-600 text-white font-bold' 
                       : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
                   }`}
                 >
                   <div>
-                    <div className="font-bold text-xs">Free Rookie</div>
-                    <div className="text-[10px] text-slate-400">1 League + Basic Starters</div>
+                    <div className="font-bold text-xs">20 Free Credits Rookie</div>
+                    <div className="text-[10px] text-slate-400">Default account balance upon signup</div>
                   </div>
-                  <span className="font-bebas text-xl text-slate-400">$0/mo</span>
+                  <span className="font-bebas text-xl text-slate-400">20 Credits ($0)</span>
                 </button>
               </div>
             </div>
@@ -1673,10 +1678,17 @@ export const AdminDashboard = () => {
               </button>
               <button
                 type="button"
-                onClick={handleSaveUserTier}
-                className="flex-1 btn-cyan py-3 rounded-xl text-xs font-extrabold uppercase shadow-lg shadow-cyan-500/20"
+                onClick={() => {
+                  if (typeof grantBonusCredits === 'function') {
+                    const cleanEmail = (managingTierUser.user || managingTierUser.email || '').toLowerCase();
+                    const creditsToSet = selectedTier.includes('300') ? 300 : selectedTier.includes('100') ? 100 : selectedTier.includes('50') ? 50 : 20;
+                    grantBonusCredits(cleanEmail, creditsToSet);
+                  }
+                  handleSaveUserTier();
+                }}
+                className="flex-1 btn-gold py-3 rounded-xl text-xs font-extrabold uppercase shadow-lg"
               >
-                Save Tier Upgrade
+                Save Credit Balance
               </button>
             </div>
           </div>
