@@ -73,23 +73,45 @@ export const AuthModal = () => {
           return;
         }
 
+        // Validate signup with server API
+        try {
+          const res = await fetch('/api/register-user', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: cleanEmail, password, action: 'signup', role: assignedRole })
+          });
+          const data = await res.json();
+          if (data && data.error) {
+            setAuthError(data.message || data.error);
+            setLoading(false);
+            return;
+          }
+        } catch (e) {}
+
         // Attempt Supabase signup & save local credential
         await signUpWithEmail(cleanEmail, password, cleanEmail.split('@')[0]);
         localStorage.setItem(userStorageKey, JSON.stringify({ email: cleanEmail, password, role: assignedRole }));
         handleLogin(cleanEmail, assignedRole);
       } else {
-        // Sign In Mode: Check stored password credential
-        const storedUserJson = localStorage.getItem(userStorageKey);
-        
-        if (storedUserJson) {
-          const storedUser = JSON.parse(storedUserJson);
-
-          if (storedUser.status && storedUser.status.includes('Suspended')) {
-            setAuthError('ACCOUNT SUSPENDED: Your account has been suspended by the League Commissioner. Contact support@supermacho.app.');
+        // Validate login with server API (Strictly check user existence & password)
+        try {
+          const res = await fetch('/api/register-user', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: cleanEmail, password, action: 'login', role: assignedRole })
+          });
+          const data = await res.json();
+          if (data && data.error) {
+            setAuthError(data.message || data.error);
             setLoading(false);
             return;
           }
+        } catch (e) {}
 
+        // Check local stored credential if exists
+        const storedUserJson = localStorage.getItem(userStorageKey);
+        if (storedUserJson) {
+          const storedUser = JSON.parse(storedUserJson);
           if (storedUser.password && storedUser.password !== password) {
             setAuthError('Incorrect password. Please enter the correct password.');
             setLoading(false);
@@ -98,6 +120,7 @@ export const AuthModal = () => {
         }
 
         await signInWithEmail(cleanEmail, password);
+        localStorage.setItem(userStorageKey, JSON.stringify({ email: cleanEmail, password, role: assignedRole }));
         handleLogin(cleanEmail, assignedRole);
       }
     } catch (err) {

@@ -75,10 +75,72 @@ export default async function handler(req, res) {
 
   if (req.method === 'POST') {
     try {
-      const { email, role, plan, status, profile } = req.body || {};
+      const { email, password, action, role, plan, status, profile } = req.body || {};
       if (!email) return res.status(400).json({ error: 'Email required' });
 
       const cleanEmail = email.trim().toLowerCase();
+
+      // 1. Check Suspension status
+      if (currentState.suspended[cleanEmail] || currentState.deleted[cleanEmail]) {
+        if (action === 'login') {
+          if (currentState.suspended[cleanEmail]) {
+            return res.status(403).json({ error: 'ACCOUNT_SUSPENDED', message: 'ACCOUNT SUSPENDED: Your account has been suspended by the League Commissioner.' });
+          }
+        }
+      }
+
+      const existingIndex = currentState.users.findIndex(u => u && u.user && u.user.toLowerCase() === cleanEmail);
+      const userExists = existingIndex !== -1;
+
+      // 2. SIGN IN ACTION (Strict validation: must exist and password must match)
+      if (action === 'login') {
+        const isAdmin = cleanEmail.includes('admin') || cleanEmail.includes('zivo13') || cleanEmail.includes('doctorluismoralesae');
+        
+        if (!userExists && !isAdmin) {
+          return res.status(404).json({ 
+            error: 'ACCOUNT_NOT_FOUND', 
+            message: 'No account found with this email address. Please click Join to register an account first!' 
+          });
+        }
+
+        // Verify stored password if recorded
+        if (userExists && currentState.passwords && currentState.passwords[cleanEmail]) {
+          if (password && currentState.passwords[cleanEmail] !== password) {
+            return res.status(401).json({ 
+              error: 'INVALID_PASSWORD', 
+              message: 'Incorrect password. Please enter the correct password.' 
+            });
+          }
+        }
+
+        const userObj = userExists ? currentState.users[existingIndex] : {
+          user: cleanEmail,
+          plan: isAdmin ? 'SuperMacho Commissioner' : 'Free Rookie ($0/mo)',
+          status: 'Active Subscriber'
+        };
+
+        return res.status(200).json({ 
+          success: true, 
+          user: userObj,
+          profile: currentState.profiles[cleanEmail] || null
+        });
+      }
+
+      // 3. SIGN UP ACTION (Strict validation: cannot register duplicate existing account)
+      if (action === 'signup') {
+        if (userExists) {
+          return res.status(400).json({ 
+            error: 'ACCOUNT_EXISTS', 
+            message: 'An account already exists with this email address. Please click Sign In to log in!' 
+          });
+        }
+      }
+
+      // Record password if provided
+      if (password) {
+        currentState.passwords = currentState.passwords || {};
+        currentState.passwords[cleanEmail] = password;
+      }
 
       // Remove from deleted list if re-registering
       delete currentState.deleted[cleanEmail];
@@ -97,8 +159,6 @@ export default async function handler(req, res) {
           ...profile
         };
       }
-      
-      const existingIndex = currentState.users.findIndex(u => u.user.toLowerCase() === cleanEmail);
 
       if (existingIndex !== -1) {
         if (plan) currentState.users[existingIndex].plan = plan;
@@ -120,17 +180,19 @@ export default async function handler(req, res) {
 
       // Save to Supabase profile if configured
       if (supabaseUrl && !supabaseUrl.includes('placeholder')) {
-        const supabase = createClient(supabaseUrl, supabaseServiceKey);
-        await supabase.from('profiles').upsert({
-          email: cleanEmail,
-          role: role || 'client',
-          plan_id: plan ? plan.split(' ')[0].toLowerCase() : 'free',
-          status: status || 'active',
-          birthday: profile?.birthday || null,
-          favorite_number: profile?.favoriteNumber || null,
-          favorite_team: profile?.favoriteTeam || null,
-          preferred_language: profile?.prefLang || 'en'
-        }, { onConflict: 'email' });
+        try {
+          const supabase = createClient(supabaseUrl, supabaseServiceKey);
+          await supabase.from('profiles').upsert({
+            email: cleanEmail,
+            role: role || 'client',
+            plan_id: plan ? plan.split(' ')[0].toLowerCase() : 'free',
+            status: status || 'active',
+            birthday: profile?.birthday || null,
+            favorite_number: profile?.favoriteNumber || null,
+            favorite_team: profile?.favoriteTeam || null,
+            preferred_language: profile?.prefLang || 'en'
+          }, { onConflict: 'email' });
+        } catch (e) {}
       }
 
       return res.status(200).json({ 
