@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
-import { Trophy, Zap, ShieldCheck, Sparkles, Check, ArrowRight, DollarSign, Activity, Flame, Bot, Calculator, Clock, Users, Award, ShieldAlert, HelpCircle } from 'lucide-react';
+import { Trophy, Zap, ShieldCheck, Sparkles, Check, ArrowRight, DollarSign, Activity, Flame, Bot, Calculator, Clock, Users, User, Award, ShieldAlert, HelpCircle } from 'lucide-react';
 
 export const LandingPage = () => {
   const { plans = [], setCurrentTab, setShowAuthModal, setAuthMode, handleLogin, t = ((k)=>k), formatPrice = ((p) => (p === undefined || p === null) ? '$0.00' : typeof p === 'number' ? `$${p.toFixed(2)}` : `$${p}`), setShowCreditModal = (() => {}) } = useApp();
@@ -88,8 +88,8 @@ export const LandingPage = () => {
             <span>WEEK 1 FANTASY KICKOFF IN: <strong className="text-white">03 DAYS 14 HRS 22 MINS</strong></span>
           </div>
 
-          {/* Centered Mascot Emblem Feature - BIGGER MR CAGE */}
-          <div className="relative mx-auto w-64 h-64 sm:w-80 sm:h-80 lg:w-[380px] lg:h-[380px] group cursor-pointer" onClick={() => setCurrentTab('client')}>
+          {/* Centered Mascot Emblem Feature */}
+          <div className="relative mx-auto w-64 h-64 sm:w-80 sm:h-80 lg:w-[380px] lg:h-[380px] group">
             <div className="absolute inset-0 rounded-[40px] bg-gradient-to-tr from-amber-500 via-amber-400 to-cyan-500 blur-2xl opacity-80 group-hover:opacity-100 transition-opacity animate-pulse-glow"></div>
             <div className="relative w-full h-full rounded-[36px] overflow-hidden border-4 border-amber-500 shadow-2xl shadow-amber-500/30 bg-slate-950 p-1.5">
               <img src="/supermacho_mascot.png" alt="SuperMacho Gridiron Hero" className="w-full h-full object-cover rounded-[28px] transform group-hover:scale-105 transition-transform" />
@@ -97,6 +97,24 @@ export const LandingPage = () => {
             <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-bebas text-lg tracking-wider px-6 py-1 rounded-full shadow-2xl font-extrabold border-2 border-slate-950 uppercase">
               GRIDIRON HERO
             </div>
+          </div>
+
+          {/* Mobile-Only Auth Buttons: Relocated UNDER the SuperMacho Logo and ABOVE the Title Text */}
+          <div className="sm:hidden flex items-center justify-center gap-3 pt-6 pb-2">
+            <button
+              onClick={() => { setAuthMode('login'); setShowAuthModal(true); }}
+              className="btn-gold px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-wider shadow-xl shadow-amber-500/20 flex items-center gap-2"
+            >
+              <User className="w-4 h-4" />
+              <span>{t.signIn || 'Sign In'}</span>
+            </button>
+            <button
+              onClick={() => { setAuthMode('signup'); setShowAuthModal(true); }}
+              className="px-6 py-3 rounded-2xl text-xs font-extrabold text-amber-300 border-2 border-amber-500/50 bg-amber-500/10 uppercase tracking-wider flex items-center gap-2"
+            >
+              <Sparkles className="w-4 h-4" />
+              <span>{t.joinBtn || 'Join Free'}</span>
+            </button>
           </div>
 
           {/* Main Sales Funnel Slogan */}

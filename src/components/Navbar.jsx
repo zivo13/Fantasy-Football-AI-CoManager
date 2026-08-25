@@ -29,16 +29,13 @@ export const Navbar = () => {
         <div className="flex items-center justify-between h-16 sm:h-20 gap-2 sm:gap-4">
           
           {/* Brand Logo & Mascot Badge */}
-          <div 
-            onClick={() => setCurrentTab(user.isLoggedIn ? 'client' : 'landing')}
-            className="flex items-center gap-2 sm:gap-3 cursor-pointer group flex-shrink-0"
-          >
-            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-2xl overflow-hidden border-2 border-amber-500 shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform bg-slate-900 p-0.5">
+          <div className="flex items-center gap-2 sm:gap-3 group flex-shrink-0">
+            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-2xl overflow-hidden border-2 border-amber-500 shadow-lg shadow-amber-500/20 bg-slate-900 p-0.5">
               <img src="/supermacho_mascot.png" alt="SuperMacho Mascot" className="w-full h-full object-cover rounded-xl" />
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="font-bebas text-2xl sm:text-3xl text-white tracking-wider group-hover:text-amber-400 transition-colors uppercase">
+                <span className="font-bebas text-2xl sm:text-3xl text-white tracking-wider uppercase">
                   SUPERMACHO
                 </span>
                 <span className="bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-extrabold text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded uppercase">
@@ -110,16 +107,17 @@ export const Navbar = () => {
                 </button>
               </div>
             ) : (
-              <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+              /* Desktop-Only Auth Buttons in Top Header */
+              <div className="hidden sm:flex items-center gap-2 flex-shrink-0">
                 <button
                   onClick={() => { setAuthMode('login'); setShowAuthModal(true); }}
-                  className="btn-gold px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-black uppercase shadow-lg tracking-wider"
+                  className="btn-gold px-4 py-2 rounded-xl text-xs sm:text-sm font-black uppercase shadow-lg tracking-wider"
                 >
                   {t.signIn || 'Sign In'}
                 </button>
                 <button
                   onClick={() => { setAuthMode('signup'); setShowAuthModal(true); }}
-                  className="px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-extrabold text-amber-300 border border-amber-500/50 bg-amber-500/10 hover:bg-amber-500/20 transition-all uppercase"
+                  className="px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold text-amber-300 border border-amber-500/50 bg-amber-500/10 hover:bg-amber-500/20 transition-all uppercase"
                 >
                   {t.joinBtn || 'Join'}
                 </button>
