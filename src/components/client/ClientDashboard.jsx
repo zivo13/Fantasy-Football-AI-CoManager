@@ -6,25 +6,25 @@ import { DraftWarRoom } from './DraftWarRoom';
 
 export const ClientDashboard = () => {
   const { 
-    leagues, 
+    leagues = [], 
     activeLeagueId, 
     setActiveLeagueId, 
     handleAddLeague, 
     demoRoster, 
     demoWaivers, 
     demoTrade,
-    aiChatMessages,
+    aiChatMessages = [],
     handleSendAiMessage,
-    user,
+    user = {},
     setUser,
     setCurrentTab,
-    t,
+    t = ((k)=>k),
     supportTickets = [],
     handleCreateSupportTicket,
     handleReplySupportTicket,
-    deductCredits,
-    userCredits,
-    setShowCreditModal
+    deductCredits = (() => true),
+    userCredits = 20,
+    setShowCreditModal = (() => {})
   } = useApp();
 
   const [activeTab, setActiveTab] = useState('lineup'); // 'lineup' | 'waivers' | 'trade' | 'chat' | 'draft' | 'support'

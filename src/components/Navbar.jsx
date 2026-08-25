@@ -6,7 +6,7 @@ import { UserProfileModal } from './UserProfileModal';
 import { PrivacyPolicyModal } from './PrivacyPolicyModal';
 
 export const Navbar = () => {
-  const { currentTab, setCurrentTab, user, setShowAuthModal, setAuthMode, handleLogout, lang, setLang, t, userCredits, setShowCreditModal } = useApp();
+  const { currentTab, setCurrentTab, user = {}, setShowAuthModal, setAuthMode, handleLogout, lang, setLang, t = ((k)=>k), userCredits = 20, setShowCreditModal = (() => {}) } = useApp();
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);

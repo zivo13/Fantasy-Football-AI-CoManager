@@ -4,14 +4,14 @@ import { Shield, DollarSign, Users, TrendingUp, Plus, Edit2, Trash2, Check, X, S
 
 export const AdminDashboard = () => {
   const { 
-    plans, 
+    plans = [], 
     handleSavePlan, 
     handleDeletePlan, 
-    adminMetrics, 
-    user, 
+    adminMetrics = { mrr: 0 }, 
+    user = {}, 
     registeredUsersList = [], 
     setRegisteredUsersList,
-    activeTranslations, 
+    activeTranslations = {}, 
     updateCustomTranslations, 
     resetCustomTranslations,
     supportTickets = [],
@@ -21,9 +21,9 @@ export const AdminDashboard = () => {
     handleReplySupportTicket,
     handleDeleteUser,
     handleClearAllTestUsers,
-    grantBonusCredits,
+    grantBonusCredits = (() => {}),
     featureCreditCosts = {},
-    updateFeatureCreditCosts
+    updateFeatureCreditCosts = (() => {})
   } = useApp();
 
   const [activeAdminTab, setActiveAdminTab] = useState('client_audit'); // 'client_audit' | 'support_tickets' | 'plans' | 'users' | 'revenue' | 'system' | 'rapidapi' | 'translations'
