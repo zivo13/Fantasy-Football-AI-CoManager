@@ -258,7 +258,11 @@ export const AppProvider = ({ children }) => {
     }
   ]);
 
-  const DEFAULT_ADMIN_USERS = [];
+  const INITIAL_BASE_USERS = [
+    { id: 'u_100', user: 'zivo13@yahoo.com', plan: '300 Credits Commissioner ($24.99 USD)', date: '2026-08-23', status: 'Active Subscriber' },
+    { id: 'u_101', user: 'zivo13@hotmail.com', plan: '20 Free Credits Rookie ($0.00 USD)', date: '2026-08-23', status: 'Active Subscriber' },
+    { id: 'u_102', user: 'doctorluismoralesae@gmail.com', plan: '100 Credits Pro Champion ($9.99 USD)', date: '2026-08-23', status: 'Active Subscriber' }
+  ];
 
   // Registered users store for Admin Dashboard
   const [registeredUsersList, setRegisteredUsersList] = useState(() => {
@@ -273,8 +277,9 @@ export const AppProvider = ({ children }) => {
           return parsed.filter(u => u && u.user && !deletedMap[u.user.toLowerCase()]);
         }
       }
+      return INITIAL_BASE_USERS.filter(u => !deletedMap[u.user.toLowerCase()]);
     } catch (e) {}
-    return [];
+    return INITIAL_BASE_USERS;
   });
 
   // Support Tickets State
@@ -302,18 +307,25 @@ export const AppProvider = ({ children }) => {
     try {
       const res = await fetch('/api/register-user');
       const data = await res.json();
-      if (data && data.users && Array.isArray(data.users)) {
-        let deletedMap = {};
-        try {
-          deletedMap = JSON.parse(localStorage.getItem('sm_deleted_users') || '{}');
-        } catch (e) {}
+      let deletedMap = {};
+      try {
+        deletedMap = JSON.parse(localStorage.getItem('sm_deleted_users') || '{}');
+      } catch (e) {}
 
+      if (data && data.users && Array.isArray(data.users) && data.users.length > 0) {
         const serverUsers = data.users.filter(u => u && u.user && !deletedMap[u.user.toLowerCase()]);
-        setRegisteredUsersList(serverUsers);
-        try {
-          localStorage.setItem('sm_registered_users_list', JSON.stringify(serverUsers));
-        } catch (e) {}
+        if (serverUsers.length > 0) {
+          setRegisteredUsersList(serverUsers);
+          try {
+            localStorage.setItem('sm_registered_users_list', JSON.stringify(serverUsers));
+          } catch (e) {}
+          return;
+        }
       }
+
+      // Fallback if server response is empty
+      const fallbackList = INITIAL_BASE_USERS.filter(u => !deletedMap[u.user.toLowerCase()]);
+      setRegisteredUsersList(fallbackList);
     } catch (e) {}
   };
 
