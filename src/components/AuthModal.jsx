@@ -179,12 +179,12 @@ export const AuthModal = () => {
             <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
             <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
           </svg>
-          <span>Continue with Google</span>
+          <span>{t.authGoogle || 'Continue with Google'}</span>
         </button>
 
         <div className="flex items-center gap-3 my-2.5">
           <div className="flex-1 h-px bg-slate-800"></div>
-          <span className="text-[10px] text-slate-500 font-bold uppercase">or email</span>
+          <span className="text-[10px] text-slate-500 font-bold uppercase">{t.authOrEmail || 'or email'}</span>
           <div className="flex-1 h-px bg-slate-800"></div>
         </div>
 
@@ -198,7 +198,7 @@ export const AuthModal = () => {
         <form onSubmit={handleSubmit} className="space-y-3">
           <div>
             <label className="block text-[11px] sm:text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">
-              Email Address
+              {t.authEmailLabel || 'Email Address'}
             </label>
             <div className="relative">
               <Mail className="absolute left-3.5 top-3.5 w-4 h-4 text-slate-500" />
@@ -215,7 +215,7 @@ export const AuthModal = () => {
 
           <div>
             <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
-              Password
+              {t.authPassLabel || 'Password'}
             </label>
             <div className="relative">
               <Lock className="absolute left-3.5 top-3.5 w-4 h-4 text-slate-500" />
@@ -234,7 +234,7 @@ export const AuthModal = () => {
             type="submit"
             className="w-full btn-gold py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 mt-2"
           >
-            <span>{authMode === 'login' ? 'Sign In & Win' : 'Create SuperMacho Account'}</span>
+            <span>{authMode === 'login' ? (t.authBtnLogin || 'Sign In & Win') : (t.authBtnSignup || 'Create SuperMacho Account')}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </form>
@@ -246,16 +246,16 @@ export const AuthModal = () => {
             className="w-full py-2.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-bold flex items-center justify-center gap-2 transition-colors"
           >
             <User className="w-4 h-4 text-amber-400" />
-            <span>Try Quick Interactive Demo Dashboard</span>
+            <span>{t.authDemo || 'Try Quick Interactive Demo Dashboard'}</span>
           </button>
         </div>
 
         {/* Toggle Mode */}
         <div className="text-center mt-4 text-xs text-slate-400">
           {authMode === 'login' ? (
-            <span>Don't have an account? <button onClick={() => setAuthMode('signup')} className="text-amber-400 font-bold hover:underline">Sign up now</button></span>
+            <span>{t.authNoAccount || "Don't have an account?"} <button onClick={() => setAuthMode('signup')} className="text-amber-400 font-bold hover:underline">{t.authSignupNow || 'Sign up now'}</button></span>
           ) : (
-            <span>Already have an account? <button onClick={() => setAuthMode('login')} className="text-amber-400 font-bold hover:underline">Sign in</button></span>
+            <span>{t.authHasAccount || 'Already have an account?'} <button onClick={() => setAuthMode('login')} className="text-amber-400 font-bold hover:underline">{t.authSignIn || 'Sign in'}</button></span>
           )}
         </div>
 
