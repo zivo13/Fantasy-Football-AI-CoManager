@@ -194,7 +194,7 @@ const DRAFT_TUTORIAL_DATA = {
       faq: "❓ 4. Dúvidas y Glosario"
     },
     overview: {
-      title: "¿Qué es la Draft Day Strategy War Room?",
+      title: "¿Qué es la Sala de Estrategia del Draft?",
       desc: "La War Room es tu Co-Piloto de Inteligencia Artificial que analiza tu liga en tiempo real durante tu draft oficial (ESPN o Sleeper). La IA calcula caídas de nivel (Tier Drops), identifica robos de valor (Value Steals), mide el piso/techo de cada jugador y compara tu plantilla contra tus rivales.",
       f1Title: "1. Radar de Caídas de Nivel (Tier Drop Radar)",
       f1Desc: "Te alerta cuando solo quedan 1 o 2 jugadores estrella en una posición antes de que los puntos proyectados caigan drásticamente.",
@@ -334,7 +334,7 @@ const DRAFT_TUTORIAL_DATA = {
       faq: "❓ 4. Dúvidas e Glossário"
     },
     overview: {
-      title: "O que é a Draft Day Strategy War Room?",
+      title: "O que é a Sala de Estratégia do Draft?",
       desc: "A War Room é seu Co-Piloto de IA que analisa seu draft oficial (ESPN ou Sleeper) em tempo real. A IA calcula quedas de nível (Tier Drops), identifica achados de valor (Value Steals), mede piso/teto dos jogadores e compara seu time com os rivais.",
       f1Title: "1. Radar de Alerta de Queda de Nível",
       f1Desc: "Alerta quando restam apenas 1 ou 2 jogadores estrela em uma posição antes que a pontuação caia drasticamente.",
