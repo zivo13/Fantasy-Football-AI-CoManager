@@ -124,7 +124,9 @@ export const TRANSLATIONS = {
     heroRbTitle: "6. HERO RB STRATEGY",
     heroRbDesc: "Drafting 1 elite anchor RB in Round 1 or 2, then stacking high-volume WRs before drafting high-upside backup RBs in middle rounds.",
     konamiCodeTitle: "7. KONAMI CODE QB",
-    konamiCodeDesc: "A dual-threat rushing quarterback (like Lamar Jackson or Jayden Daniels) whose rushing yards/TDs create a massive weekly fantasy floor."
+    konamiCodeDesc: "A dual-threat rushing quarterback (like Lamar Jackson or Jayden Daniels) whose rushing yards/TDs create a massive weekly fantasy floor.",
+    avgWinRate: "Average User Win Rate:",
+    prizesWon: "Prizes Won:"
   },
   es: {
     motto: "SÉ EL SUPERMACHO DE TU LIGA • SÉ EL LÍDER DE LA MANADA Y GANA EL DINERO",
@@ -221,7 +223,9 @@ export const TRANSLATIONS = {
     benchSit: "IR A LA BANCA",
     gutCheckValidated: "CORAZONADA CONFIRMADA",
     projPts: "Pts Proyectados:",
-    matchupFloorCeiling: "Varianza Piso/Techo:"
+    matchupFloorCeiling: "Varianza Piso/Techo:",
+    avgWinRate: "Porcentaje de Victorias:",
+    prizesWon: "Premios Ganados:"
   },
   pt: {
     motto: "SEJA O SUPERMACHO DA SUA LIGA • SEJA O LÍDER DA ALCATEIA E GANHE O DINHEIRO",
@@ -318,6 +322,8 @@ export const TRANSLATIONS = {
     benchSit: "IR PARA O BANCO",
     gutCheckValidated: "INTUIÇÃO CONFIRMADA",
     projPts: "Pts Projetados:",
-    matchupFloorCeiling: "Variação Piso/Teto:"
+    matchupFloorCeiling: "Variação Piso/Teto:",
+    avgWinRate: "Taxa de Vitória Média:",
+    prizesWon: "Prêmios Ganhos:"
   }
 };
