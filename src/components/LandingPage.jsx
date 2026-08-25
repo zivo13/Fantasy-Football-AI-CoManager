@@ -138,11 +138,11 @@ export const LandingPage = () => {
           <div className="pt-6 border-t border-slate-800/80 max-w-2xl mx-auto flex items-center justify-center gap-6 text-xs text-slate-400 font-bold">
             <div className="flex items-center gap-2">
               <Award className="w-4 h-4 text-emerald-400" />
-              <span>Average User Win Rate: <strong className="text-white">78.4%</strong></span>
+              <span>{t.avgWinRate} <strong className="text-white">78.4%</strong></span>
             </div>
             <div className="flex items-center gap-2">
               <DollarSign className="w-4 h-4 text-amber-400" />
-              <span>Prizes Won: <strong className="text-white">$142,500+</strong></span>
+              <span>{t.prizesWon} <strong className="text-white">$142,500+</strong></span>
             </div>
           </div>
 

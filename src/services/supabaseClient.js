@@ -1,12 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Environment Variables from Vercel / local .env
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://placeholder.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'placeholder_key';
+// Environment Variables from Vercel / local .env / fallback
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://jdmryhxmfgedfdleytwn.supabase.co';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkbXJ5aHhtZmdlZGZkbGV5dHduIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODczNzEwMjUsImV4cCI6MjEwMjk0NzAyNX0.mZ6XilhYh-fl1aHu1rtLewRzqcge0HbZ_dglXqOhy_U';
 
-const isConfigured = supabaseUrl && !supabaseUrl.includes('placeholder') && supabaseAnonKey && !supabaseAnonKey.includes('placeholder');
+const isConfigured = true;
 
-export const supabase = isConfigured ? createClient(supabaseUrl, supabaseAnonKey) : null;
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Auth Helpers with Safe Fallback against ERR_NAME_NOT_RESOLVED
 export const signUpWithEmail = async (email, password, fullName) => {
