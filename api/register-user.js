@@ -103,7 +103,7 @@ export default async function handler(req, res) {
 
   if (req.method === 'POST') {
     try {
-      const { email, password, action, role, plan, status, profile, credits } = req.body || {};
+      const { email, password, action, role, plan, status, profile, credits, leagues } = req.body || {};
       if (!email) return res.status(400).json({ error: 'Email required' });
 
       const cleanEmail = email.trim().toLowerCase();
@@ -135,13 +135,15 @@ export default async function handler(req, res) {
           user: cleanEmail,
           plan: isAdmin ? '300 Credits Commissioner ($24.99 USD)' : '20 Free Credits Rookie ($0.00 USD)',
           role: isAdmin ? 'admin' : 'client',
-          status: 'Active Subscriber'
+          status: 'Active Subscriber',
+          leagues: currentState.profiles[cleanEmail]?.leagues || []
         };
 
         return res.status(200).json({
           success: true,
           user: matchedUser,
-          profile: currentState.profiles[cleanEmail] || null
+          profile: currentState.profiles[cleanEmail] || null,
+          leagues: matchedUser.leagues || currentState.profiles[cleanEmail]?.leagues || []
         });
       }
 
@@ -151,13 +153,16 @@ export default async function handler(req, res) {
         }
       }
 
+      const currentLeagues = leagues || (userExists ? currentState.users[existingIndex].leagues : (currentState.profiles[cleanEmail]?.leagues || []));
+
       // Update / Upsert user profile
       const updatedUser = {
         id: userExists ? currentState.users[existingIndex].id : ('u_' + Date.now()),
         user: cleanEmail,
         plan: plan || (userExists ? currentState.users[existingIndex].plan : (role === 'admin' ? '300 Credits Commissioner ($24.99 USD)' : '20 Free Credits Rookie ($0.00 USD)')),
         date: userExists ? currentState.users[existingIndex].date : 'Registered',
-        status: status || (userExists ? currentState.users[existingIndex].status : 'Active Subscriber')
+        status: status || (userExists ? currentState.users[existingIndex].status : 'Active Subscriber'),
+        leagues: currentLeagues
       };
 
       if (existingIndex !== -1) {
@@ -166,9 +171,11 @@ export default async function handler(req, res) {
         currentState.users.push(updatedUser);
       }
 
-      if (profile) {
-        currentState.profiles[cleanEmail] = { ...(currentState.profiles[cleanEmail] || {}), ...profile };
-      }
+      currentState.profiles[cleanEmail] = {
+        ...(currentState.profiles[cleanEmail] || {}),
+        ...(profile || {}),
+        leagues: currentLeagues
+      };
 
       saveState(currentState);
 
@@ -185,7 +192,8 @@ export default async function handler(req, res) {
       return res.status(200).json({
         success: true,
         users: currentState.users,
-        user: updatedUser
+        user: updatedUser,
+        leagues: currentLeagues
       });
     } catch (err) {
       return res.status(500).json({ error: err.message });

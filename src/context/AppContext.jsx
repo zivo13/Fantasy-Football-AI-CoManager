@@ -442,36 +442,32 @@ export const AppProvider = ({ children }) => {
       isLoggedIn: true
     });
 
-    // Fetch persistent profile from server (survives browser data clearing)
-    try {
-      fetch(`/api/register-user?get_profile=${encodeURIComponent(cleanEmail)}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data && data.profile) {
-            setUser(prev => ({ ...prev, profile: data.profile }));
-            if (data.profile.prefLang) {
-              setLang(data.profile.prefLang);
-            }
-            try {
-              localStorage.setItem(`sm_profile_${cleanEmail}`, JSON.stringify(data.profile));
-            } catch (e) {}
-          }
-        })
-        .catch(() => {});
-    } catch (e) {}
-
-    // Send global signup event to Vercel API endpoint & Supabase
+    // Fetch persistent profile & leagues from server database (cross-computer sync)
     try {
       fetch('/api/register-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           email: cleanEmail, 
-          role, 
-          plan: userPlan,
-          profile: userProfile 
+          action: 'login'
         })
-      });
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.leagues && Array.isArray(data.leagues) && data.leagues.length > 0) {
+            setLeagues(data.leagues);
+            try {
+              localStorage.setItem('sm_user_leagues', JSON.stringify(data.leagues));
+            } catch (e) {}
+          }
+          if (data && data.profile) {
+            setUser(prev => ({ ...prev, profile: data.profile }));
+            if (data.profile.prefLang) {
+              setLang(data.profile.prefLang);
+            }
+          }
+        })
+        .catch(() => {});
     } catch (e) {}
 
     setRegisteredUsersList(prev => {
@@ -639,14 +635,15 @@ export const AppProvider = ({ children }) => {
   const handleSaveLeague = (newLeagueData) => {
     if (!newLeagueData) return;
     let targetId = newLeagueData.id;
+    let updatedList = [];
+
     setLeagues(prev => {
-      let updated;
       const targetLeagueId = newLeagueData.leagueId;
       const existsIndex = prev.findIndex(l => (targetId && l.id === targetId) || (targetLeagueId && l.leagueId === targetLeagueId));
 
       if (existsIndex !== -1) {
         targetId = prev[existsIndex].id;
-        updated = prev.map((l, idx) => idx === existsIndex ? { ...l, ...newLeagueData, id: targetId, status: 'Connected & Synced' } : l);
+        updatedList = prev.map((l, idx) => idx === existsIndex ? { ...l, ...newLeagueData, id: targetId, status: 'Connected & Synced' } : l);
       } else {
         targetId = targetId || ('l_' + Date.now());
         const leagueObj = {
@@ -654,15 +651,28 @@ export const AppProvider = ({ children }) => {
           id: targetId,
           status: 'Connected & Synced'
         };
-        updated = [...prev, leagueObj];
+        updatedList = [...prev, leagueObj];
       }
 
       try {
-        localStorage.setItem('sm_user_leagues', JSON.stringify(updated));
+        localStorage.setItem('sm_user_leagues', JSON.stringify(updatedList));
       } catch (e) {}
 
-      return updated;
+      return updatedList;
     });
+
+    if (user && user.email) {
+      try {
+        fetch('/api/register-user', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: user.email,
+            leagues: updatedList
+          })
+        });
+      } catch (e) {}
+    }
 
     if (targetId) {
       setActiveLeagueId(targetId);
