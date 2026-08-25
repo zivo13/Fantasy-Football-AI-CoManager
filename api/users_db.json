@@ -1,1 +1,16 @@
-[]
+[
+  {
+    "id": "u_100",
+    "user": "zivo13@yahoo.com",
+    "plan": "300 Credits Commissioner ($24.99 USD)",
+    "date": "2026-08-23",
+    "status": "Active Subscriber"
+  },
+  {
+    "id": "u_102",
+    "user": "doctorluismoralesae@gmail.com",
+    "plan": "20 Free Credits Rookie ($0.00 USD)",
+    "date": "2026-08-23",
+    "status": "Active Subscriber"
+  }
+]
