@@ -117,6 +117,7 @@ export const ClientDashboard = () => {
   const [leagueSaveSuccessMsg, setLeagueSaveSuccessMsg] = useState('');
 
   const currentLeague = leagues.find(l => l.id === activeLeagueId) || leagues[0];
+  const isLeagueConnected = !!(currentLeague && (currentLeague.leagueId || (currentLeague.status && currentLeague.status.includes('Connected'))));
 
   // Pre-fill modal form fields when opening modal or switching active league
   React.useEffect(() => {
@@ -183,26 +184,53 @@ export const ClientDashboard = () => {
         </div>
       )}
 
-      {/* STEP 1 ONBOARDING BANNER FOR NEW USERS */}
-      <div className="bg-gradient-to-r from-amber-500/20 via-amber-400/20 to-amber-500/20 border-2 border-amber-500/50 p-5 rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl shadow-amber-500/10">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center font-bebas text-xl font-bold flex-shrink-0">
-            01
+      {/* STEP 1 ONBOARDING BANNER FOR LEAGUE CONNECTION */}
+      {isLeagueConnected ? (
+        <div className="bg-gradient-to-r from-emerald-500/20 via-emerald-400/20 to-emerald-500/20 border-2 border-emerald-500/50 p-5 rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl shadow-emerald-500/10 animate-fade-in">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-emerald-500 text-slate-950 flex items-center justify-center font-bebas text-xl font-bold flex-shrink-0">
+              <Check className="w-6 h-6 stroke-[3]" />
+            </div>
+            <div>
+              <div className="font-bebas text-xl text-white tracking-wider flex items-center gap-2">
+                <span>FANTASY LEAGUE CONNECTED & LIVE</span>
+                <span className="bg-emerald-500 text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-full uppercase">SYNC ACTIVE</span>
+              </div>
+              <p className="text-xs text-slate-300">
+                Active League: <strong className="text-emerald-400">{currentLeague?.name}</strong> ({currentLeague?.platform} - {currentLeague?.scoring}). Roster synced & optimized by SuperMacho AI!
+              </p>
+            </div>
           </div>
-          <div>
-            <div className="font-bebas text-xl text-white tracking-wider">{t.clientStep1Title || 'STEP 1: CONNECT YOUR FANTASY LEAGUE'}</div>
-            <p className="text-xs text-slate-300">{t.clientStep1Desc || 'Click the button to enter your ESPN or Sleeper League ID so SuperMacho AI can optimize your roster!'}</p>
-          </div>
-        </div>
 
-        <button
-          onClick={() => setShowConfigModal(true)}
-          className="btn-gold px-6 py-3 rounded-2xl text-xs font-extrabold flex items-center gap-2 whitespace-nowrap shadow-lg uppercase"
-        >
-          <Plus className="w-4 h-4" />
-          <span>{t.connectLeagueBtn || 'Connect My League Now'}</span>
-        </button>
-      </div>
+          <button
+            onClick={() => setShowConfigModal(true)}
+            className="px-5 py-2.5 rounded-2xl text-xs font-extrabold bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-emerald-500/40 flex items-center gap-2 whitespace-nowrap shadow-lg uppercase transition-all"
+          >
+            <Settings className="w-4 h-4 text-emerald-400" />
+            <span>Configure League Settings</span>
+          </button>
+        </div>
+      ) : (
+        <div className="bg-gradient-to-r from-amber-500/20 via-amber-400/20 to-amber-500/20 border-2 border-amber-500/50 p-5 rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl shadow-amber-500/10">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center font-bebas text-xl font-bold flex-shrink-0">
+              01
+            </div>
+            <div>
+              <div className="font-bebas text-xl text-white tracking-wider">{t.clientStep1Title || 'STEP 1: CONNECT YOUR FANTASY LEAGUE'}</div>
+              <p className="text-xs text-slate-300">{t.clientStep1Desc || 'Click the button to enter your ESPN or Sleeper League ID so SuperMacho AI can optimize your roster!'}</p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => setShowConfigModal(true)}
+            className="btn-gold px-6 py-3 rounded-2xl text-xs font-extrabold flex items-center gap-2 whitespace-nowrap shadow-lg uppercase"
+          >
+            <Plus className="w-4 h-4" />
+            <span>{t.connectLeagueBtn || 'Connect My League Now'}</span>
+          </button>
+        </div>
+      )}
       <div className="glass-panel-gold p-6 sm:p-8 rounded-3xl relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border-2 border-amber-500/40">
         <div className="space-y-2 z-10">
           <div className="flex items-center gap-2">
