@@ -1102,10 +1102,10 @@ export const AdminDashboard = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60 text-slate-300">
-                {registeredUsersList
+                {(Array.isArray(registeredUsersList) ? registeredUsersList : [])
                   .filter(regUser => {
                     const clean = (regUser.user || regUser.email || '').toLowerCase();
-                    return regUser.role !== 'admin' && !clean.includes('admin') && clean !== 'zivo13@yahoo.com';
+                    return regUser && clean && !clean.startsWith('admin@');
                   })
                   .map((regUser) => (
                   <tr key={regUser.id} className="bg-amber-500/10 hover:bg-amber-500/20 transition-colors border-l-4 border-amber-500">

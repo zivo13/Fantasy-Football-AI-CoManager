@@ -8,7 +8,11 @@ const TMP_FILE = '/tmp/supermacho_users_v3.json';
 
 import path from 'path';
 
-const BASE_USERS = [];
+const BASE_USERS = [
+  { id: 'u_100', user: 'zivo13@yahoo.com', plan: '300 Credits Commissioner ($24.99 USD)', date: '2026-08-23', status: 'Active Subscriber' },
+  { id: 'u_101', user: 'zivo13@hotmail.com', plan: '20 Free Credits Rookie ($0.00 USD)', date: '2026-08-23', status: 'Active Subscriber' },
+  { id: 'u_102', user: 'doctorluismoralesae@gmail.com', plan: '100 Credits Pro Champion ($9.99 USD)', date: '2026-08-23', status: 'Active Subscriber' }
+];
 
 // Helper to read persistent disk state across lambda invocations
 function readState() {
@@ -16,7 +20,6 @@ function readState() {
   let suspendedMap = {};
   let profilesMap = {};
   let userList = [];
-  let fileExists = false;
 
   try {
     if (fs.existsSync(TMP_FILE)) {
@@ -26,13 +29,16 @@ function readState() {
       suspendedMap = parsed.suspended || {};
       profilesMap = parsed.profiles || {};
       userList = parsed.users || [];
-      fileExists = true;
     }
   } catch (e) {}
 
-  if (!fileExists) {
-    userList = [...BASE_USERS];
-  }
+  // Seed BASE_USERS if not explicitly deleted in deletedMap
+  BASE_USERS.forEach(bu => {
+    const cleanE = bu.user.toLowerCase();
+    if (!deletedMap[cleanE] && !userList.some(u => u && u.user && u.user.toLowerCase() === cleanE)) {
+      userList.push(bu);
+    }
+  });
 
   // Filter out any explicitly deleted users
   userList = userList.filter(u => u && u.user && !deletedMap[u.user.toLowerCase()]);
