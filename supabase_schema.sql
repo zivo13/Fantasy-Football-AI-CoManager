@@ -43,13 +43,9 @@ CREATE TABLE IF NOT EXISTS public.leagues (
 ALTER TABLE public.leagues ENABLE ROW LEVEL SECURITY;
 
 -- RLS POLICIES FOR PROFILES
-DROP POLICY IF EXISTS "Users can view own profile" ON public.profiles;
-CREATE POLICY "Users can view own profile" ON public.profiles
-  FOR SELECT USING (auth.uid() = id);
-
-DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
-CREATE POLICY "Users can update own profile" ON public.profiles
-  FOR UPDATE USING (auth.uid() = id);
+DROP POLICY IF EXISTS "Public and backend API full access" ON public.profiles;
+CREATE POLICY "Public and backend API full access" ON public.profiles
+  FOR ALL USING (true) WITH CHECK (true);
 
 -- RLS POLICIES FOR LEAGUES
 DROP POLICY IF EXISTS "Users can view own leagues" ON public.leagues;

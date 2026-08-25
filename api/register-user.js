@@ -304,19 +304,26 @@ export default async function handler(req, res) {
             if (u && u.user) userMap.set(u.user.toLowerCase(), u);
           });
 
-          // Override / hydrate with Supabase DB profiles
+          // Override / hydrate with Supabase DB profiles (Supabase is single source of truth)
           dbProfiles.forEach(p => {
             if (p && p.email) {
               const cleanE = p.email.toLowerCase();
               if (currentState.deleted && currentState.deleted[cleanE]) return;
 
               const existingUser = userMap.get(cleanE);
-              const planName = existingUser?.plan || (
-                p.plan_id === 'commissioner' ? '300 Credits Commissioner ($24.99 USD)' :
-                p.plan_id === 'pro' ? '100 Credits Pro Champion ($9.99 USD)' :
-                p.plan_id === 'booster' ? '50 Credits Quick Booster ($5.99 USD)' :
-                '20 Free Credits Rookie ($0.00 USD)'
-              );
+              
+              let planName = '20 Free Credits Rookie ($0.00 USD)';
+              if (p.plan_id === 'commissioner') {
+                planName = '300 Credits Commissioner ($24.99 USD)';
+              } else if (p.plan_id === 'pro') {
+                planName = '100 Credits Pro Champion ($9.99 USD)';
+              } else if (p.plan_id === 'booster') {
+                planName = '50 Credits Quick Booster ($5.99 USD)';
+              } else if (p.plan_id === 'free') {
+                planName = '20 Free Credits Rookie ($0.00 USD)';
+              } else if (existingUser && existingUser.plan) {
+                planName = existingUser.plan;
+              }
 
               userMap.set(cleanE, {
                 id: p.id || 'u_' + cleanE,
@@ -330,7 +337,8 @@ export default async function handler(req, res) {
                   favoriteTeam: p.favorite_team,
                   favoriteNumber: p.favorite_number,
                   prefLang: p.preferred_language,
-                  profileCompleted: p.profile_completed
+                  profileCompleted: p.profile_completed,
+                  credits: p.credits ?? 20
                 }
               });
             }

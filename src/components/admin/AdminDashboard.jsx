@@ -244,12 +244,11 @@ export const AdminDashboard = () => {
     if (!managingTierUser) return;
     const targetEmail = (managingTierUser.user || managingTierUser.email).toLowerCase();
 
-    // Update React state dynamically without page reload
+    // Optimistically update React state
     if (typeof setRegisteredUsersList === 'function') {
-      setRegisteredUsersList(prev => prev.map(u => u.user.toLowerCase() === targetEmail ? { ...u, plan: selectedTier } : u));
+      setRegisteredUsersList(prev => prev.map(u => (u.user || u.email || '').toLowerCase() === targetEmail ? { ...u, plan: selectedTier } : u));
     }
 
-    // Update local storage credential tier
     try {
       const userKey = `sm_user_${targetEmail}`;
       const savedUserJson = localStorage.getItem(userKey);
@@ -271,7 +270,11 @@ export const AdminDashboard = () => {
       });
     } catch (e) {}
 
-    setSaveSuccessMsg(`Successfully upgraded ${targetEmail} to ${selectedTier}!`);
+    if (typeof refreshAdminData === 'function') {
+      await refreshAdminData();
+    }
+
+    setSaveSuccessMsg(`Successfully updated ${targetEmail} tier to ${selectedTier}!`);
     setTimeout(() => setSaveSuccessMsg(''), 4000);
     setShowTierModal(false);
   };
@@ -1186,38 +1189,21 @@ export const AdminDashboard = () => {
 
                           const clean = regUser.user.toLowerCase();
 
-                          // 1. Record in persistent deleted users map
-                          try {
-                            const delMap = JSON.parse(localStorage.getItem('sm_deleted_users') || '{}');
-                            delMap[clean] = true;
-                            localStorage.setItem('sm_deleted_users', JSON.stringify(delMap));
-                          } catch (e) {}
-
-                          // 2. Update React state immediately
-                          if (typeof setRegisteredUsersList === 'function') {
-                            setRegisteredUsersList(prev => {
-                              const updated = prev.filter(u => u.user.toLowerCase() !== clean);
-                              try {
-                                localStorage.setItem('sm_registered_users_list', JSON.stringify(updated));
-                              } catch (e) {}
-                              return updated;
-                            });
+                          if (typeof handleDeleteUser === 'function') {
+                            await handleDeleteUser(clean);
+                          } else {
+                            try {
+                              await fetch('/api/register-user', {
+                                method: 'DELETE',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ email: clean })
+                              });
+                            } catch (e) {}
                           }
 
-                          // 3. Remove local credentials
-                          try {
-                            localStorage.removeItem(`sm_user_${clean}`);
-                            localStorage.removeItem(`sm_profile_${clean}`);
-                          } catch (e) {}
-
-                          // 4. Send DELETE request to Vercel API endpoint
-                          try {
-                            await fetch('/api/register-user', {
-                              method: 'DELETE',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({ email: clean })
-                            });
-                          } catch (e) {}
+                          if (typeof refreshAdminData === 'function') {
+                            await refreshAdminData();
+                          }
                         }}
                         className="p-1.5 bg-slate-900 hover:bg-red-500/20 text-slate-400 hover:text-red-400 rounded-lg border border-slate-800 transition-colors"
                         title="Delete User"
