@@ -910,7 +910,7 @@ export const AdminDashboard = () => {
                     min="1"
                     max="100"
                     required
-                    value={costForm.lineupCheck}
+                    value={costForm?.lineupCheck ?? 1}
                     onChange={(e) => setCostForm({ ...costForm, lineupCheck: parseInt(e.target.value, 10) || 1 })}
                     className="w-24 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-amber-400 font-extrabold text-sm focus:border-amber-500 text-center"
                   />
@@ -931,7 +931,7 @@ export const AdminDashboard = () => {
                     min="1"
                     max="100"
                     required
-                    value={costForm.waiverSnipe}
+                    value={costForm?.waiverSnipe ?? 2}
                     onChange={(e) => setCostForm({ ...costForm, waiverSnipe: parseInt(e.target.value, 10) || 1 })}
                     className="w-24 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-amber-400 font-extrabold text-sm focus:border-amber-500 text-center"
                   />
@@ -952,7 +952,7 @@ export const AdminDashboard = () => {
                     min="1"
                     max="100"
                     required
-                    value={costForm.tradeEvaluator}
+                    value={costForm?.tradeEvaluator ?? 3}
                     onChange={(e) => setCostForm({ ...costForm, tradeEvaluator: parseInt(e.target.value, 10) || 1 })}
                     className="w-24 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-cyan-400 font-extrabold text-sm focus:border-cyan-500 text-center"
                   />
@@ -973,7 +973,7 @@ export const AdminDashboard = () => {
                     min="1"
                     max="100"
                     required
-                    value={costForm.draftWarRoom}
+                    value={costForm?.draftWarRoom ?? 5}
                     onChange={(e) => setCostForm({ ...costForm, draftWarRoom: parseInt(e.target.value, 10) || 1 })}
                     className="w-24 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-amber-400 font-extrabold text-sm focus:border-amber-500 text-center"
                   />
@@ -994,7 +994,7 @@ export const AdminDashboard = () => {
                     min="1"
                     max="100"
                     required
-                    value={costForm.aiCoachChat}
+                    value={costForm?.aiCoachChat ?? 1}
                     onChange={(e) => setCostForm({ ...costForm, aiCoachChat: parseInt(e.target.value, 10) || 1 })}
                     className="w-24 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-cyan-400 font-extrabold text-sm focus:border-cyan-500 text-center"
                   />
@@ -1020,32 +1020,32 @@ export const AdminDashboard = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {plans.map((plan) => (
-              <div key={plan.id} className="glass-panel p-6 rounded-3xl space-y-4 relative flex flex-col justify-between">
+            {(Array.isArray(plans) ? plans : []).filter(Boolean).map((plan) => (
+              <div key={plan?.id || Math.random()} className="glass-panel p-6 rounded-3xl space-y-4 relative flex flex-col justify-between">
                 
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-[10px] font-extrabold px-2.5 py-1 rounded-lg">
-                      {plan.badge}
+                      {plan?.badge || 'CREDIT PACK'}
                     </span>
-                    <span className="text-xs text-amber-400 font-bold">🪙 {plan.creditsAmount || (plan.id === 'pro' ? 100 : plan.id === 'commissioner' ? 300 : plan.id === 'booster' ? 50 : 20)} Credits</span>
+                    <span className="text-xs text-amber-400 font-bold">🪙 {plan?.creditsAmount || (plan?.id === 'pro' ? 100 : plan?.id === 'commissioner' ? 300 : plan?.id === 'booster' ? 50 : 20)} Credits</span>
                   </div>
 
                   <div>
-                    <h4 className="font-bebas text-2xl text-white tracking-wider">{plan.name}</h4>
-                    <p className="text-slate-400 text-xs mt-1">{plan.description}</p>
+                    <h4 className="font-bebas text-2xl text-white tracking-wider">{plan?.name || 'Credit Pack'}</h4>
+                    <p className="text-slate-400 text-xs mt-1">{plan?.description}</p>
                   </div>
 
                   <div className="py-2 border-y border-slate-800 flex items-baseline gap-2">
                     <span className="font-bebas text-3xl text-amber-400">
-                      {plan.priceMonthly === 0 ? '$0.00' : `$${plan.priceMonthly} USD`}
+                      {plan?.priceMonthly === 0 ? '$0.00' : `$${plan?.priceMonthly ?? 0} USD`}
                     </span>
                   </div>
 
                   <div className="space-y-2">
                     <div className="text-[10px] font-bold text-slate-400 uppercase">Included Features</div>
                     <ul className="space-y-1.5 text-xs text-slate-300">
-                      {(Array.isArray(plan.features) ? plan.features : []).map((f, i) => (
+                      {(Array.isArray(plan?.features) ? plan.features : []).map((f, i) => (
                         <li key={i} className="flex items-center gap-2">
                           <Check className="w-3.5 h-3.5 text-emerald-400" />
                           <span>{f}</span>
@@ -1065,7 +1065,11 @@ export const AdminDashboard = () => {
                   </button>
 
                   <button
-                    onClick={() => handleDeletePlan(plan.id)}
+                    onClick={() => {
+                      if (plan?.id && typeof handleDeletePlan === 'function') {
+                        handleDeletePlan(plan.id);
+                      }
+                    }}
                     className="p-2.5 bg-slate-900 hover:bg-red-500/20 text-slate-400 hover:text-red-400 rounded-xl border border-slate-800 transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -1542,7 +1546,7 @@ export const AdminDashboard = () => {
                 <input
                   type="text"
                   required
-                  value={planForm.name}
+                  value={planForm?.name || ''}
                   onChange={(e) => setPlanForm({...planForm, name: e.target.value})}
                   className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white focus:border-amber-500"
                 />
@@ -1555,7 +1559,7 @@ export const AdminDashboard = () => {
                     type="number"
                     step="0.01"
                     required
-                    value={planForm.priceMonthly}
+                    value={planForm?.priceMonthly || ''}
                     onChange={(e) => setPlanForm({...planForm, priceMonthly: e.target.value, priceSeasonal: e.target.value})}
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-amber-400 font-extrabold focus:border-amber-500"
                   />
@@ -1564,7 +1568,7 @@ export const AdminDashboard = () => {
                   <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Badge Title</label>
                   <input
                     type="text"
-                    value={planForm.badge}
+                    value={planForm?.badge || ''}
                     onChange={(e) => setPlanForm({...planForm, badge: e.target.value})}
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white focus:border-amber-500"
                   />
@@ -1575,7 +1579,7 @@ export const AdminDashboard = () => {
                 <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Included Features (One per line)</label>
                 <textarea
                   rows={4}
-                  value={planForm.featuresText}
+                  value={planForm?.featuresText || ''}
                   onChange={(e) => setPlanForm({...planForm, featuresText: e.target.value})}
                   className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white focus:border-amber-500"
                 />
