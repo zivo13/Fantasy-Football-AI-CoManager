@@ -8,11 +8,7 @@ const TMP_FILE = '/tmp/supermacho_users_v3.json';
 
 import path from 'path';
 
-const BASE_USERS = [
-  { id: 'u_100', user: 'zivo13@yahoo.com', plan: 'SuperMacho Commissioner ($9.99/mo)', date: '2026-08-23', status: 'Active Subscriber' },
-  { id: 'u_101', user: 'zivo13@hotmail.com', plan: 'Free Rookie ($0/mo)', date: '2026-08-23', status: 'Active Subscriber' },
-  { id: 'u_102', user: 'doctorluismoralesae@gmail.com', plan: 'Free Rookie ($0/mo)', date: '2026-08-23', status: 'Active Subscriber' }
-];
+const BASE_USERS = [];
 
 // Helper to read persistent disk state across lambda invocations
 function readState() {
@@ -31,17 +27,6 @@ function readState() {
       userList = parsed.users || [];
     }
   } catch (e) {}
-
-  if (!userList || userList.length === 0) {
-    userList = [...BASE_USERS];
-  } else {
-    // Ensure base users are present if not explicitly deleted
-    BASE_USERS.forEach(b => {
-      if (!userList.some(u => u && u.user && u.user.toLowerCase() === b.user.toLowerCase())) {
-        userList.push(b);
-      }
-    });
-  }
 
   // Filter out any explicitly deleted users
   userList = userList.filter(u => u && u.user && !deletedMap[u.user.toLowerCase()]);
