@@ -21,7 +21,10 @@ export const ClientDashboard = () => {
     t,
     supportTickets = [],
     handleCreateSupportTicket,
-    handleReplySupportTicket
+    handleReplySupportTicket,
+    deductCredits,
+    userCredits,
+    setShowCreditModal
   } = useApp();
 
   const [activeTab, setActiveTab] = useState('lineup'); // 'lineup' | 'waivers' | 'trade' | 'chat' | 'draft' | 'support'

@@ -20,7 +20,8 @@ export const AdminDashboard = () => {
     handleUpdateTicketStatus,
     handleReplySupportTicket,
     handleDeleteUser,
-    handleClearAllTestUsers
+    handleClearAllTestUsers,
+    grantBonusCredits
   } = useApp();
 
   const [activeAdminTab, setActiveAdminTab] = useState('client_audit'); // 'client_audit' | 'support_tickets' | 'plans' | 'users' | 'revenue' | 'system' | 'rapidapi' | 'translations'
@@ -562,6 +563,19 @@ export const AdminDashboard = () => {
                           </td>
                           <td className="px-4 py-3 text-right">
                             <div className="flex items-center justify-end gap-2">
+                              <button
+                                onClick={() => {
+                                  if (typeof grantBonusCredits === 'function') {
+                                    grantBonusCredits(clean, 50);
+                                    alert(`🎁 Granted +50 Bonus Credits to ${clean}!`);
+                                  }
+                                }}
+                                className="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 font-bold text-[11px] flex items-center gap-1"
+                                title="Grant 50 free bonus credits to this client"
+                              >
+                                <span>🎁 Gift +50 Credits</span>
+                              </button>
+
                               <button
                                 onClick={() => openManageTierModal(u)}
                                 className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-400 border border-cyan-500/30 font-bold text-[11px]"

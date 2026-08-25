@@ -113,6 +113,7 @@ ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS favorite_team TEXT;
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS favorite_number TEXT;
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS birthday TEXT;
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS preferred_language TEXT DEFAULT 'en';
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS credits INT DEFAULT 20;
 
 -- RLS POLICIES FOR SUPPORT TICKETS
 DROP POLICY IF EXISTS "Users can view own support tickets" ON public.support_tickets;

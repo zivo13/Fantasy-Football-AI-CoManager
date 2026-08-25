@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { Trophy, Shield, Zap, User, LogOut, Lock, LayoutDashboard, Sparkles, DollarSign, KeyRound, ShieldCheck } from 'lucide-react';
+import { Trophy, Shield, Zap, User, LogOut, KeyRound, LayoutDashboard, Sparkles, DollarSign, ShieldCheck } from 'lucide-react';
 import { ChangePasswordModal } from './ChangePasswordModal';
 import { UserProfileModal } from './UserProfileModal';
 import { PrivacyPolicyModal } from './PrivacyPolicyModal';
 
 export const Navbar = () => {
-  const { currentTab, setCurrentTab, user, setShowAuthModal, setAuthMode, handleLogout, lang, setLang, t } = useApp();
+  const { currentTab, setCurrentTab, user, setShowAuthModal, setAuthMode, handleLogout, lang, setLang, t, userCredits, setShowCreditModal } = useApp();
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
@@ -99,6 +99,17 @@ export const Navbar = () => {
 
           {/* Right Action & Profile */}
           <div className="flex items-center gap-2 sm:gap-3">
+            {/* Glowing Credit Balance Button */}
+            <button
+              onClick={() => setShowCreditModal(true)}
+              className="bg-amber-500/20 border border-amber-500/50 hover:border-amber-400 text-amber-300 px-3 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition-all shadow-md hover:scale-105"
+              title="Click to Buy AI Credits & Tokens"
+            >
+              <span className="text-sm">🪙</span>
+              <span>{userCredits} Credits</span>
+              <span className="bg-amber-500 text-slate-950 text-[9px] font-black px-1.5 py-0.2 rounded uppercase hidden sm:inline">+BUY</span>
+            </button>
+
             {/* Language Selector Dropdown */}
             <select
               value={lang}

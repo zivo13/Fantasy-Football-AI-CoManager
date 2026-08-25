@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { INITIAL_PLANS, DEMO_ROSTER, DEMO_WAIVERS, DEMO_TRADE_SCENARIO, ADMIN_METRICS } from '../services/mockData';
 import { TRANSLATIONS } from '../services/translations';
+import { CreditPurchaseModal } from '../components/CreditPurchaseModal';
 
 const AppContext = createContext();
 
@@ -52,6 +53,102 @@ export const AppProvider = ({ children }) => {
     setCustomTranslations(null);
     try {
       localStorage.removeItem('sm_custom_translations');
+    } catch (e) {}
+  };
+
+  // Multi-Currency Converter Helper (USD $, MXN $, BRL R$)
+  const formatPrice = (usdPrice) => {
+    if (lang === 'es') {
+      if (usdPrice === 5.99) return '$109 MXN';
+      if (usdPrice === 9.99) return '$179 MXN';
+      if (usdPrice === 24.99) return '$449 MXN';
+      return `$${Math.round(usdPrice * 18)} MXN`;
+    }
+    if (lang === 'pt') {
+      if (usdPrice === 5.99) return 'R$ 29,90 BRL';
+      if (usdPrice === 9.99) return 'R$ 49,90 BRL';
+      if (usdPrice === 24.99) return 'R$ 124,90 BRL';
+      return `R$ ${(usdPrice * 5).toFixed(2)} BRL`;
+    }
+    return `$${usdPrice.toFixed(2)} USD`;
+  };
+
+  // Credits / Tokens System State
+  const [userCredits, setUserCredits] = useState(() => {
+    try {
+      const stored = localStorage.getItem('sm_user_credits');
+      if (stored !== null) return parseInt(stored, 10);
+    } catch (e) {}
+    return 20; // 20 Free Credits default
+  });
+
+  const [showCreditModal, setShowCreditModal] = useState(false);
+  const [creditModalReq, setCreditModalReq] = useState({ requiredCredits: 0, targetFeature: '' });
+
+  const deductCredits = (amount, featureName = 'this feature') => {
+    if (userCredits >= amount) {
+      const newBal = userCredits - amount;
+      setUserCredits(newBal);
+      try {
+        localStorage.setItem('sm_user_credits', newBal.toString());
+      } catch (e) {}
+      if (user && user.email) {
+        try {
+          fetch('/api/register-user', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: user.email, credits: newBal })
+          });
+        } catch (e) {}
+      }
+      return true;
+    } else {
+      setCreditModalReq({ requiredCredits: amount, targetFeature: featureName });
+      setShowCreditModal(true);
+      return false;
+    }
+  };
+
+  const buyCredits = (amount, packName = 'Credit Pack') => {
+    const newBal = userCredits + amount;
+    setUserCredits(newBal);
+    try {
+      localStorage.setItem('sm_user_credits', newBal.toString());
+    } catch (e) {}
+    if (user && user.email) {
+      try {
+        fetch('/api/register-user', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: user.email, credits: newBal })
+        });
+      } catch (e) {}
+    }
+  };
+
+  const grantBonusCredits = (targetEmail, amount) => {
+    if (!targetEmail) return;
+    const clean = targetEmail.trim().toLowerCase();
+    
+    if (user && user.email && user.email.toLowerCase() === clean) {
+      setUserCredits(prev => prev + amount);
+    }
+
+    setRegisteredUsersList(prev => prev.map(u => {
+      if (u && u.user && u.user.toLowerCase() === clean) {
+        const currentCreds = (u.profile && typeof u.profile.credits === 'number') ? u.profile.credits : 20;
+        const newProf = { ...(u.profile || {}), credits: currentCreds + amount };
+        return { ...u, profile: newProf };
+      }
+      return u;
+    }));
+
+    try {
+      fetch('/api/register-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: clean, credits: 50 })
+      });
     } catch (e) {}
   };
 
@@ -560,9 +657,23 @@ export const AppProvider = ({ children }) => {
       handleReplySupportTicket,
       handleUpdateTicketStatus,
       handleDeleteUser,
-      handleClearAllTestUsers
+      handleClearAllTestUsers,
+      userCredits,
+      setUserCredits,
+      deductCredits,
+      buyCredits,
+      grantBonusCredits,
+      formatPrice,
+      showCreditModal,
+      setShowCreditModal
     }}>
       {children}
+      <CreditPurchaseModal
+        isOpen={showCreditModal}
+        onClose={() => setShowCreditModal(false)}
+        requiredCredits={creditModalReq.requiredCredits}
+        targetFeature={creditModalReq.targetFeature}
+      />
     </AppContext.Provider>
   );
 };

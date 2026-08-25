@@ -138,10 +138,18 @@ export default async function handler(req, res) {
         }
       }
 
+      const creditsVal = typeof req.body.credits === 'number' ? req.body.credits : (profile && typeof profile.credits === 'number' ? profile.credits : undefined);
+
       if (profile) {
         currentState.profiles[cleanEmail] = {
           ...currentState.profiles[cleanEmail],
-          ...profile
+          ...profile,
+          credits: creditsVal !== undefined ? creditsVal : (currentState.profiles[cleanEmail]?.credits ?? 20)
+        };
+      } else if (creditsVal !== undefined) {
+        currentState.profiles[cleanEmail] = {
+          ...(currentState.profiles[cleanEmail] || {}),
+          credits: creditsVal
         };
       }
 
