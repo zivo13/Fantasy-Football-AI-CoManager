@@ -341,7 +341,7 @@ export const ClientDashboard = () => {
                   </span>
                   <span className="text-[10px] font-extrabold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded-md flex items-center gap-1">
                     <Flame className="w-3 h-3 text-amber-400" />
-                    <span>GUT CHECK VALIDATED ({player.matchScore})</span>
+                    <span>{t.gutCheckValidated || 'GUT CHECK VALIDATED'} ({player.matchScore})</span>
                   </span>
                 </div>
 
