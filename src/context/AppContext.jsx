@@ -67,7 +67,10 @@ export const AppProvider = ({ children }) => {
 
   // Price Formatter Helper (Always USD $)
   const formatPrice = (usdPrice) => {
-    return `$${usdPrice.toFixed(2)}`;
+    if (usdPrice === undefined || usdPrice === null) return '$0.00';
+    const num = typeof usdPrice === 'number' ? usdPrice : parseFloat(usdPrice);
+    if (isNaN(num)) return '$0.00';
+    return `$${num.toFixed(2)}`;
   };
 
   // Configurable Feature Action Credit Costs State

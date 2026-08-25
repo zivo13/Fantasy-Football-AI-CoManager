@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext';
 import { Trophy, Zap, ShieldCheck, Sparkles, Check, ArrowRight, DollarSign, Activity, Flame, Bot, Calculator, Clock, Users, Award, ShieldAlert, HelpCircle } from 'lucide-react';
 
 export const LandingPage = () => {
-  const { plans, setCurrentTab, setShowAuthModal, setAuthMode, handleLogin, t, formatPrice = ((p) => `$${p}`), setShowCreditModal = (() => {}) } = useApp();
+  const { plans = [], setCurrentTab, setShowAuthModal, setAuthMode, handleLogin, t = ((k)=>k), formatPrice = ((p) => (p === undefined || p === null) ? '$0.00' : typeof p === 'number' ? `$${p.toFixed(2)}` : `$${p}`), setShowCreditModal = (() => {}) } = useApp();
   const [billingCycle, setBillingCycle] = useState('monthly'); // 'monthly' | 'seasonal'
   const [selectedPlanMsg, setSelectedPlanMsg] = useState(null);
   const [liveNflData, setLiveNflData] = useState(null);
