@@ -8,7 +8,11 @@ const TMP_FILE = '/tmp/supermacho_users_v3.json';
 
 import path from 'path';
 
-const BASE_USERS = [];
+const BASE_USERS = [
+  { id: 'u_100', user: 'zivo13@yahoo.com', plan: 'SuperMacho Commissioner ($9.99/mo)', date: '2026-08-23', status: 'Active Subscriber' },
+  { id: 'u_101', user: 'zivo13@hotmail.com', plan: 'Free Rookie (20 Credits)', date: '2026-08-23', status: 'Active Subscriber' },
+  { id: 'u_102', user: 'doctorluismoralesae@gmail.com', plan: 'Pro Champion (100 Credits)', date: '2026-08-23', status: 'Active Subscriber' }
+];
 
 // Helper to read persistent disk state across lambda invocations
 function readState() {
@@ -27,6 +31,17 @@ function readState() {
       userList = parsed.users || [];
     }
   } catch (e) {}
+
+  if (!userList || userList.length === 0) {
+    userList = [...BASE_USERS];
+  } else {
+    // Ensure base users exist if not deleted
+    BASE_USERS.forEach(bu => {
+      if (!deletedMap[bu.user.toLowerCase()] && !userList.some(u => u && u.user && u.user.toLowerCase() === bu.user.toLowerCase())) {
+        userList.push(bu);
+      }
+    });
+  }
 
   // Filter out any explicitly deleted users
   userList = userList.filter(u => u && u.user && !deletedMap[u.user.toLowerCase()]);
@@ -209,9 +224,8 @@ export default async function handler(req, res) {
       const { email, clearAllTestUsers } = req.body || {};
 
       if (clearAllTestUsers) {
-        // Clear all users except primary admin
-        currentState.users = currentState.users.filter(u => u.user && u.user.toLowerCase().includes('admin'));
-        currentState.profiles = {};
+        // Clear temporary test users while preserving base accounts
+        currentState.users = [...BASE_USERS];
         currentState.suspended = {};
         currentState.deleted = {};
         saveState(currentState);

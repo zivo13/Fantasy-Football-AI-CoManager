@@ -407,13 +407,13 @@ export const LandingPage = () => {
       <section id="pricing" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         <div className="text-center max-w-3xl mx-auto space-y-4">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/20 text-amber-300 font-extrabold text-xs uppercase tracking-widest border border-amber-500/40">
-            <span>🪙 PAY-AS-YOU-GO CREDITS & TOKENS</span>
+            <span>{t.creditBadge}</span>
           </div>
           <h2 className="font-bebas text-5xl text-white tracking-wider">
-            PURE CREDIT PACKS & MULTI-CURRENCY MONETIZATION
+            {t.creditTitle}
           </h2>
           <p className="text-slate-400 text-base">
-            No long-term commitments! Buy credits as you need them for Draft Day, Sunday Lineup checks, and Waiver snipes.
+            {t.creditDesc}
           </p>
         </div>
 
