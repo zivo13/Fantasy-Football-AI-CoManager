@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext';
 import { Sparkles, Check, X, Shield, Zap, Target, Flame, Scale, DollarSign } from 'lucide-react';
 
 export const CreditPurchaseModal = ({ isOpen, onClose, targetFeature, requiredCredits }) => {
-  const { userCredits, buyCredits, formatPrice, lang } = useApp();
+  const { userCredits, buyCredits, formatPrice, lang, featureCreditCosts = {} } = useApp();
   const [purchaseSuccessMsg, setPurchaseSuccessMsg] = useState('');
 
   if (!isOpen) return null;
@@ -132,10 +132,10 @@ export const CreditPurchaseModal = ({ isOpen, onClose, targetFeature, requiredCr
         <div className="bg-slate-950/80 p-4 rounded-2xl border border-slate-800 space-y-2 text-xs">
           <div className="text-[10px] uppercase font-extrabold text-amber-400 tracking-wider">CREDIT ACTION MENU</div>
           <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-300">
-            <div className="flex items-center gap-1.5"><Zap className="w-3.5 h-3.5 text-amber-400" /> Start/Sit Card: <strong>1 Credit</strong></div>
-            <div className="flex items-center gap-1.5"><Flame className="w-3.5 h-3.5 text-amber-400" /> Waiver Snipe: <strong>2 Credits</strong></div>
-            <div className="flex items-center gap-1.5"><Scale className="w-3.5 h-3.5 text-cyan-400" /> Trade Evaluator: <strong>3 Credits</strong></div>
-            <div className="flex items-center gap-1.5"><Target className="w-3.5 h-3.5 text-amber-400" /> Draft War Room: <strong>5 Credits</strong></div>
+            <div className="flex items-center gap-1.5"><Zap className="w-3.5 h-3.5 text-amber-400" /> Start/Sit Card: <strong>{featureCreditCosts.lineupCheck ?? 1} Credit</strong></div>
+            <div className="flex items-center gap-1.5"><Flame className="w-3.5 h-3.5 text-amber-400" /> Waiver Snipe: <strong>{featureCreditCosts.waiverSnipe ?? 2} Credits</strong></div>
+            <div className="flex items-center gap-1.5"><Scale className="w-3.5 h-3.5 text-cyan-400" /> Trade Evaluator: <strong>{featureCreditCosts.tradeEvaluator ?? 3} Credits</strong></div>
+            <div className="flex items-center gap-1.5"><Target className="w-3.5 h-3.5 text-amber-400" /> Draft War Room: <strong>{featureCreditCosts.draftWarRoom ?? 5} Credits</strong></div>
           </div>
         </div>
 

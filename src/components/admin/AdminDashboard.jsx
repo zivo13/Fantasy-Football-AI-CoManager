@@ -21,12 +21,41 @@ export const AdminDashboard = () => {
     handleReplySupportTicket,
     handleDeleteUser,
     handleClearAllTestUsers,
-    grantBonusCredits
+    grantBonusCredits,
+    featureCreditCosts = {},
+    updateFeatureCreditCosts
   } = useApp();
 
   const [activeAdminTab, setActiveAdminTab] = useState('client_audit'); // 'client_audit' | 'support_tickets' | 'plans' | 'users' | 'revenue' | 'system' | 'rapidapi' | 'translations'
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshSuccessMsg, setRefreshSuccessMsg] = useState('');
+
+  // Feature Action Credit Costs Editor State
+  const [costForm, setCostForm] = useState(() => ({
+    lineupCheck: 1,
+    waiverSnipe: 2,
+    tradeEvaluator: 3,
+    draftWarRoom: 5,
+    aiCoachChat: 1,
+    ...featureCreditCosts
+  }));
+
+  useEffect(() => {
+    if (featureCreditCosts) {
+      setCostForm(prev => ({ ...prev, ...featureCreditCosts }));
+    }
+  }, [featureCreditCosts]);
+
+  const [costSaveMsg, setCostSaveMsg] = useState('');
+
+  const handleSaveFeatureCosts = (e) => {
+    e?.preventDefault();
+    if (typeof updateFeatureCreditCosts === 'function') {
+      updateFeatureCreditCosts(costForm);
+      setCostSaveMsg('✅ Feature Action Credit Costs saved & live across SuperMacho!');
+      setTimeout(() => setCostSaveMsg(''), 4000);
+    }
+  };
 
   // Interactive Checklist State (Saved to localStorage)
   const DEFAULT_CHECKLIST = {
@@ -826,9 +855,153 @@ export const AdminDashboard = () => {
         </div>
       )}
 
-      {/* TAB 1: PLAN CONFIGURATOR */}
+      {/* TAB 1: PLAN CONFIGURATOR & FEATURE CREDIT ACTION COSTS */}
       {activeAdminTab === 'plans' && (
-        <div className="space-y-6">
+        <div className="space-y-8">
+          {/* Feature Action Credit Costs Configurator */}
+          <div className="glass-panel p-6 sm:p-8 rounded-3xl space-y-6 border border-amber-500/40 bg-gradient-to-br from-amber-500/10 to-transparent">
+            <div className="flex items-center justify-between flex-wrap gap-4 border-b border-slate-800 pb-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="bg-amber-500 text-slate-950 font-extrabold text-[10px] px-2.5 py-0.5 rounded-full uppercase">
+                    FEATURE COST CONFIGURATOR
+                  </span>
+                  <span className="text-xs text-slate-400 font-bold">• REAL-TIME CREDIT DEDUCTION ENGINE</span>
+                </div>
+                <h3 className="font-bebas text-3xl text-white tracking-wider mt-1">
+                  ⚡ AI FEATURE CREDIT ACTION COSTS CONFIGURATOR
+                </h3>
+                <p className="text-xs text-slate-300">
+                  Set how many AI credits each feature deducts when executed by a client. Updates instantly across the application!
+                </p>
+              </div>
+
+              <button
+                onClick={handleSaveFeatureCosts}
+                className="btn-gold px-5 py-2.5 rounded-2xl text-xs font-extrabold flex items-center gap-2 shadow-lg"
+              >
+                <Save className="w-4 h-4" />
+                <span>Save & Apply Action Credit Costs</span>
+              </button>
+            </div>
+
+            {costSaveMsg && (
+              <div className="bg-emerald-500/20 border border-emerald-500/50 p-4 rounded-2xl text-emerald-300 font-bold text-xs flex items-center gap-2">
+                <Check className="w-4 h-4 text-emerald-400" />
+                <span>{costSaveMsg}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleSaveFeatureCosts} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              
+              {/* 1. Start/Sit Lineup Optimal Card Check */}
+              <div className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-2">
+                <div className="flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-amber-400" />
+                  <label className="text-xs font-bold text-white uppercase tracking-wider">Start/Sit Lineup Optimal Check</label>
+                </div>
+                <p className="text-[11px] text-slate-400">Picks optimal starters, gut check ratings & Floor/Ceiling variance.</p>
+                <div className="flex items-center gap-2 pt-2">
+                  <input
+                    type="number"
+                    min="1"
+                    max="100"
+                    required
+                    value={costForm.lineupCheck}
+                    onChange={(e) => setCostForm({ ...costForm, lineupCheck: parseInt(e.target.value, 10) || 1 })}
+                    className="w-24 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-amber-400 font-extrabold text-sm focus:border-amber-500 text-center"
+                  />
+                  <span className="text-xs font-bold text-slate-300">Credit(s) per Action</span>
+                </div>
+              </div>
+
+              {/* 2. Secret Waiver Target Snipe */}
+              <div className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-2">
+                <div className="flex items-center gap-2">
+                  <Flame className="w-4 h-4 text-amber-400" />
+                  <label className="text-xs font-bold text-white uppercase tracking-wider">Secret Waiver Target Snipe</label>
+                </div>
+                <p className="text-[11px] text-slate-400">Calculates exact FAB bid dollar amounts & sleeper pickups.</p>
+                <div className="flex items-center gap-2 pt-2">
+                  <input
+                    type="number"
+                    min="1"
+                    max="100"
+                    required
+                    value={costForm.waiverSnipe}
+                    onChange={(e) => setCostForm({ ...costForm, waiverSnipe: parseInt(e.target.value, 10) || 1 })}
+                    className="w-24 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-amber-400 font-extrabold text-sm focus:border-amber-500 text-center"
+                  />
+                  <span className="text-xs font-bold text-slate-300">Credit(s) per Action</span>
+                </div>
+              </div>
+
+              {/* 3. Trade Robbery Evaluator */}
+              <div className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-2">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="w-4 h-4 text-cyan-400" />
+                  <label className="text-xs font-bold text-white uppercase tracking-wider">Trade Robbery Evaluator</label>
+                </div>
+                <p className="text-[11px] text-slate-400">Simulates trade proposal impact on roster win probability.</p>
+                <div className="flex items-center gap-2 pt-2">
+                  <input
+                    type="number"
+                    min="1"
+                    max="100"
+                    required
+                    value={costForm.tradeEvaluator}
+                    onChange={(e) => setCostForm({ ...costForm, tradeEvaluator: parseInt(e.target.value, 10) || 1 })}
+                    className="w-24 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-cyan-400 font-extrabold text-sm focus:border-cyan-500 text-center"
+                  />
+                  <span className="text-xs font-bold text-slate-300">Credit(s) per Action</span>
+                </div>
+              </div>
+
+              {/* 4. Draft Day Strategy War Room */}
+              <div className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-2">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-amber-400" />
+                  <label className="text-xs font-bold text-white uppercase tracking-wider">Draft Day Strategy War Room</label>
+                </div>
+                <p className="text-[11px] text-slate-400">Live draft board assistant, pick locks & counter-strategy.</p>
+                <div className="flex items-center gap-2 pt-2">
+                  <input
+                    type="number"
+                    min="1"
+                    max="100"
+                    required
+                    value={costForm.draftWarRoom}
+                    onChange={(e) => setCostForm({ ...costForm, draftWarRoom: parseInt(e.target.value, 10) || 1 })}
+                    className="w-24 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-amber-400 font-extrabold text-sm focus:border-amber-500 text-center"
+                  />
+                  <span className="text-xs font-bold text-slate-300">Credit(s) per Session</span>
+                </div>
+              </div>
+
+              {/* 5. Ask SuperMacho AI Coach (Chat) */}
+              <div className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-2">
+                <div className="flex items-center gap-2">
+                  <MessageSquare className="w-4 h-4 text-cyan-400" />
+                  <label className="text-xs font-bold text-white uppercase tracking-wider">Ask SuperMacho AI Coach (Chat)</label>
+                </div>
+                <p className="text-[11px] text-slate-400">Interactive live custom question assistant chat.</p>
+                <div className="flex items-center gap-2 pt-2">
+                  <input
+                    type="number"
+                    min="1"
+                    max="100"
+                    required
+                    value={costForm.aiCoachChat}
+                    onChange={(e) => setCostForm({ ...costForm, aiCoachChat: parseInt(e.target.value, 10) || 1 })}
+                    className="w-24 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-cyan-400 font-extrabold text-sm focus:border-cyan-500 text-center"
+                  />
+                  <span className="text-xs font-bold text-slate-300">Credit(s) per Question</span>
+                </div>
+              </div>
+
+            </form>
+          </div>
+
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-bebas text-2xl text-white tracking-wider">SUBSCRIPTION PLAN MANAGER</h3>

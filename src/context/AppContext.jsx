@@ -61,6 +61,30 @@ export const AppProvider = ({ children }) => {
     return `$${usdPrice.toFixed(2)}`;
   };
 
+  // Configurable Feature Action Credit Costs State
+  const DEFAULT_FEATURE_COSTS = {
+    lineupCheck: 1,
+    waiverSnipe: 2,
+    tradeEvaluator: 3,
+    draftWarRoom: 5,
+    aiCoachChat: 1
+  };
+
+  const [featureCreditCosts, setFeatureCreditCosts] = useState(() => {
+    try {
+      const saved = localStorage.getItem('sm_feature_credit_costs');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return DEFAULT_FEATURE_COSTS;
+  });
+
+  const updateFeatureCreditCosts = (newCostsObj) => {
+    setFeatureCreditCosts(newCostsObj);
+    try {
+      localStorage.setItem('sm_feature_credit_costs', JSON.stringify(newCostsObj));
+    } catch (e) {}
+  };
+
   // Credits / Tokens System State
   const [userCredits, setUserCredits] = useState(() => {
     try {
@@ -653,7 +677,9 @@ export const AppProvider = ({ children }) => {
       grantBonusCredits,
       formatPrice,
       showCreditModal,
-      setShowCreditModal
+      setShowCreditModal,
+      featureCreditCosts,
+      updateFeatureCreditCosts
     }}>
       {children}
       <CreditPurchaseModal
