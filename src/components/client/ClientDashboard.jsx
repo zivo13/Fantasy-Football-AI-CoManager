@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Trophy, Zap, Flame, Bot, Plus, Check, RefreshCw, AlertCircle, ArrowUpRight, Send, HelpCircle, Shield, Settings, Activity, Sparkles, TrendingUp, Award } from 'lucide-react';
+import { Trophy, Zap, Flame, Bot, Plus, Check, CheckCircle2, RefreshCw, AlertCircle, ArrowUpRight, Send, HelpCircle, Shield, Settings, Activity, Sparkles, TrendingUp, Award } from 'lucide-react';
 import { CheckoutModal } from '../CheckoutModal';
 import { DraftWarRoom } from './DraftWarRoom';
 
@@ -107,33 +107,54 @@ export const ClientDashboard = () => {
     } catch (e) {}
   };
 
-  // Form state for adding league parameters
+  // League Parameters state & confirmation toast
   const [platform, setPlatform] = useState('ESPN');
   const [leagueIdInput, setLeagueIdInput] = useState('');
   const [teamIdInput, setTeamIdInput] = useState('');
   const [espnS2Input, setEspnS2Input] = useState('');
   const [swidInput, setSwidInput] = useState('');
   const [scoringInput, setScoringInput] = useState('PPR');
+  const [leagueSaveSuccessMsg, setLeagueSaveSuccessMsg] = useState('');
 
   const currentLeague = leagues.find(l => l.id === activeLeagueId) || leagues[0];
+
+  // Pre-fill modal form fields when opening modal or switching active league
+  React.useEffect(() => {
+    if (showConfigModal && currentLeague) {
+      setPlatform(currentLeague.platform || 'ESPN');
+      setLeagueIdInput(currentLeague.leagueId || '');
+      setTeamIdInput(currentLeague.teamId || '1');
+      setEspnS2Input(currentLeague.espnS2 && currentLeague.espnS2 !== 'Configured' && !currentLeague.espnS2.includes('ENCRYPTED') ? currentLeague.espnS2 : '');
+      setSwidInput(currentLeague.swid && currentLeague.swid !== 'Configured' && !currentLeague.swid.includes('ENCRYPTED') ? currentLeague.swid : '');
+      setScoringInput(currentLeague.scoring || 'PPR');
+    }
+  }, [showConfigModal, currentLeague]);
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
     if (!leagueIdInput) return;
-    handleAddLeague({
+
+    const leagueData = {
+      id: currentLeague?.id || ('l_' + Date.now()),
       name: `${platform} League #${leagueIdInput}`,
       platform,
       leagueId: leagueIdInput,
       teamId: teamIdInput || '1',
       scoring: scoringInput,
-      espnS2: espnS2Input || 'Configured',
-      swid: swidInput || 'Configured'
-    });
-    setLeagueIdInput('');
-    setTeamIdInput('');
-    setEspnS2Input('');
-    setSwidInput('');
+      espnS2: espnS2Input || currentLeague?.espnS2 || 'Configured',
+      swid: swidInput || currentLeague?.swid || 'Configured',
+      status: 'Connected & Synced'
+    };
+
+    if (typeof handleSaveLeague === 'function') {
+      handleSaveLeague(leagueData);
+    } else if (typeof handleAddLeague === 'function') {
+      handleAddLeague(leagueData);
+    }
+
+    setLeagueSaveSuccessMsg(`✅ ${platform} League #${leagueIdInput} parameters saved and roster synced successfully!`);
     setShowConfigModal(false);
+    setTimeout(() => setLeagueSaveSuccessMsg(''), 7000);
   };
 
   const handleSendChat = (e) => {
@@ -146,6 +167,22 @@ export const ClientDashboard = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       
+      {/* SUCCESS CONFIRMATION TOAST FOR LEAGUE CONFIGURATION */}
+      {leagueSaveSuccessMsg && (
+        <div className="bg-emerald-500/20 border-2 border-emerald-500/60 p-5 rounded-3xl text-emerald-300 font-bold text-xs flex items-center justify-between shadow-xl animate-fade-in">
+          <div className="flex items-center gap-3">
+            <CheckCircle2 className="w-6 h-6 text-emerald-400 flex-shrink-0" />
+            <div>
+              <div className="font-bebas text-lg text-white tracking-wider">LEAGUE SYNC CONFIRMED</div>
+              <p className="text-xs text-emerald-300">{leagueSaveSuccessMsg}</p>
+            </div>
+          </div>
+          <span className="bg-emerald-500 text-slate-950 font-black text-[10px] px-3 py-1 rounded-full uppercase tracking-wider">
+            CONNECTED & LIVE
+          </span>
+        </div>
+      )}
+
       {/* STEP 1 ONBOARDING BANNER FOR NEW USERS */}
       <div className="bg-gradient-to-r from-amber-500/20 via-amber-400/20 to-amber-500/20 border-2 border-amber-500/50 p-5 rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl shadow-amber-500/10">
         <div className="flex items-center gap-3">

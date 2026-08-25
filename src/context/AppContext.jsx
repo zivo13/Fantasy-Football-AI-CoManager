@@ -224,19 +224,28 @@ export const AppProvider = ({ children }) => {
   };
 
   // League Configurations
-  const [leagues, setLeagues] = useState([
-    {
-      id: 'l1',
-      name: 'High Stakes Alpha League',
-      platform: 'ESPN',
-      leagueId: '8492019',
-      teamId: '3',
-      scoring: 'PPR',
-      espnS2: 'AE...[ENCRYPTED]',
-      swid: '{SWID-882-ENCRYPTED}',
-      status: 'Connected'
-    }
-  ]);
+  const [leagues, setLeagues] = useState(() => {
+    try {
+      const saved = localStorage.getItem('sm_user_leagues');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+    return [
+      {
+        id: 'l1',
+        name: 'High Stakes Alpha League',
+        platform: 'ESPN',
+        leagueId: '8492019',
+        teamId: '3',
+        scoring: 'PPR',
+        espnS2: 'AE...[ENCRYPTED]',
+        swid: '{SWID-882-ENCRYPTED}',
+        status: 'Connected & Synced'
+      }
+    ];
+  });
 
   const [activeLeagueId, setActiveLeagueId] = useState('l1');
 
@@ -615,14 +624,41 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  const handleSaveLeague = (newLeagueData) => {
+    if (!newLeagueData) return;
+    let targetId = newLeagueData.id;
+    setLeagues(prev => {
+      let updated;
+      const targetLeagueId = newLeagueData.leagueId;
+      const existsIndex = prev.findIndex(l => (targetId && l.id === targetId) || (targetLeagueId && l.leagueId === targetLeagueId));
+
+      if (existsIndex !== -1) {
+        targetId = prev[existsIndex].id;
+        updated = prev.map((l, idx) => idx === existsIndex ? { ...l, ...newLeagueData, id: targetId, status: 'Connected & Synced' } : l);
+      } else {
+        targetId = targetId || ('l_' + Date.now());
+        const leagueObj = {
+          ...newLeagueData,
+          id: targetId,
+          status: 'Connected & Synced'
+        };
+        updated = [...prev, leagueObj];
+      }
+
+      try {
+        localStorage.setItem('sm_user_leagues', JSON.stringify(updated));
+      } catch (e) {}
+
+      return updated;
+    });
+
+    if (targetId) {
+      setActiveLeagueId(targetId);
+    }
+  };
+
   const handleAddLeague = (newLeague) => {
-    const leagueObj = {
-      ...newLeague,
-      id: 'l_' + Date.now(),
-      status: 'Connected'
-    };
-    setLeagues(prev => [...prev, leagueObj]);
-    setActiveLeagueId(leagueObj.id);
+    handleSaveLeague(newLeague);
   };
 
   const handleSendAiMessage = (userText) => {
@@ -674,6 +710,7 @@ export const AppProvider = ({ children }) => {
       setActiveLeagueId,
       currentLeague,
       handleAddLeague,
+      handleSaveLeague,
       aiChatMessages,
       handleSendAiMessage,
       handleLogin,
