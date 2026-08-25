@@ -132,7 +132,7 @@ export const TRANSLATIONS = {
     movementTitle: "SÉ EL SUPERMACHO DE TU LIGA 👑",
     heroTitlePart1: "VALIDA TU INSTINTO CON IA.",
     heroTitlePart2: "¡SÉ EL SUPERMACHO DE TU LIGA! 🏈💰",
-    heroDesc: "SuperMacho no es solo una app, es un movimiento. Conviértete en el Líder de la Manada indiscutible, domina tu grupo de amigos, arma un equipo campeón, valida tu corazonada y llévate el dinero y el trofeo.",
+    heroDesc: "SuperMacho no es solo una app, es un movimiento. Conviértete en el Líder indiscutible de la Manada, domina tu grupo de amigos, arma un equipo campeón, valida tu corazonada y llévate el dinero y el trofeo.",
     gutBadge: "SÉ EL LÍDER DE LA MANADA",
     gutCheckText: "CORAZONADA: 98% ENFRENTAMIENTO CONFIRMADO 🔥",
     ctaFree: "SÉ EL SUPERMACHO AHORA",
