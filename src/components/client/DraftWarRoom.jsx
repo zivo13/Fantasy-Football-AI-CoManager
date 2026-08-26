@@ -1155,8 +1155,6 @@ const DraftWarRoomInner = () => {
   );
 };
 
-export const DraftWarRoom = (props) => (
-  <DraftWarRoomBoundary>
-    <DraftWarRoomInner {...props} />
-  </DraftWarRoomBoundary>
-);
+export const DraftWarRoom = (props) => {
+  return <DraftWarRoomInner {...props} />;
+};
