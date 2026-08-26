@@ -190,8 +190,17 @@ export default async function handler(req, res) {
       const existingIndex = currentState.users.findIndex(u => u && u.user && u.user.toLowerCase() === cleanEmail);
       const userExists = existingIndex !== -1;
 
-      // Determine persistent user leagues
-      const userCloudLeagues = (cloudDB && Array.isArray(cloudDB[cleanEmail])) ? cloudDB[cleanEmail] : null;
+      // Determine persistent user cloud data
+      let userCloudData = cloudDB[cleanEmail];
+      let userCloudLeagues = null;
+      let userCloudDraftQueue = null;
+
+      if (Array.isArray(userCloudData)) {
+        userCloudLeagues = userCloudData;
+      } else if (userCloudData && typeof userCloudData === 'object') {
+        userCloudLeagues = userCloudData.leagues || null;
+        userCloudDraftQueue = userCloudData.draftQueue || null;
+      }
 
       if (action === 'login') {
         const isAdmin = cleanEmail.includes('admin') || cleanEmail.includes('zivo13');
@@ -207,16 +216,19 @@ export default async function handler(req, res) {
           plan: isAdmin ? '300 Credits Commissioner ($24.99 USD)' : '20 Free Credits Rookie ($0.00 USD)',
           role: isAdmin ? 'admin' : 'client',
           status: 'Active Subscriber',
-          leagues: userCloudLeagues || currentState.profiles[cleanEmail]?.leagues || []
+          leagues: userCloudLeagues || currentState.profiles[cleanEmail]?.leagues || [],
+          draftQueue: userCloudDraftQueue || []
         };
 
         const activeLeagues = userCloudLeagues || matchedUser.leagues || currentState.profiles[cleanEmail]?.leagues || [];
+        const activeDraftQueue = userCloudDraftQueue || matchedUser.draftQueue || [];
 
         return res.status(200).json({
           success: true,
-          user: { ...matchedUser, leagues: activeLeagues },
+          user: { ...matchedUser, leagues: activeLeagues, draftQueue: activeDraftQueue },
           profile: currentState.profiles[cleanEmail] || null,
-          leagues: activeLeagues
+          leagues: activeLeagues,
+          draftQueue: activeDraftQueue
         });
       }
 
@@ -226,14 +238,25 @@ export default async function handler(req, res) {
         }
       }
 
-      // If new leagues provided, save directly to persistent cloud REST database
-      let currentLeagues = leagues;
-      if (currentLeagues && Array.isArray(currentLeagues) && currentLeagues.length > 0) {
-        cloudDB[cleanEmail] = currentLeagues;
-        await saveCloudDB(cloudDB);
-      } else {
-        currentLeagues = userCloudLeagues || (userExists ? currentState.users[existingIndex].leagues : (currentState.profiles[cleanEmail]?.leagues || []));
+      // If new leagues or draftQueue provided, save directly to persistent cloud REST database
+      let isUpdated = false;
+      let currentCloudObj = (userCloudData && typeof userCloudData === 'object' && !Array.isArray(userCloudData)) ? userCloudData : { leagues: userCloudLeagues || [] };
+
+      if (Array.isArray(leagues)) {
+        currentCloudObj.leagues = leagues;
+        isUpdated = true;
       }
+      if (Array.isArray(draftQueue)) {
+        currentCloudObj.draftQueue = draftQueue;
+        isUpdated = true;
+      }
+
+      if (isUpdated) {
+        cloudDB[cleanEmail] = currentCloudObj;
+        await saveCloudDB(cloudDB);
+      }
+
+      const currentLeagues = currentCloudObj.leagues || userCloudLeagues || (userExists ? currentState.users[existingIndex].leagues : (currentState.profiles[cleanEmail]?.leagues || []));
 
       // Update / Upsert user profile
       const updatedUser = {

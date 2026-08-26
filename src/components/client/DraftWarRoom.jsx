@@ -668,7 +668,35 @@ const DraftWarRoomInner = () => {
   });
   const [queueNotice, setQueueNotice] = useState(null);
 
+  const user = appState.user || {};
+
   const safeLockedTargets = Array.isArray(lockedTargets) ? lockedTargets : [];
+
+  // Sync lockedTargets from persistent cloud database user profile on mount
+  useEffect(() => {
+    if (user && Array.isArray(user.draftQueue) && user.draftQueue.length > 0) {
+      setLockedTargets(user.draftQueue);
+      try {
+        localStorage.setItem('sm_locked_draft_targets', JSON.stringify(user.draftQueue));
+      } catch (e) {}
+    }
+  }, [user?.email, user?.draftQueue]);
+
+  const saveQueueToCloud = (updatedQueue) => {
+    try {
+      localStorage.setItem('sm_locked_draft_targets', JSON.stringify(updatedQueue));
+    } catch (e) {}
+
+    if (user && user.email) {
+      try {
+        fetch('/api/register-user', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: user.email, draftQueue: updatedQueue })
+        });
+      } catch (e) {}
+    }
+  };
 
   const toggleTargetLock = (player) => {
     if (!player || !player.id) return;
@@ -683,9 +711,7 @@ const DraftWarRoomInner = () => {
         updated = [...currentArr, player];
         setQueueNotice(`🎯 ${player.name} locked into your Priority Draft Queue!`);
       }
-      try {
-        localStorage.setItem('sm_locked_draft_targets', JSON.stringify(updated));
-      } catch (e) {}
+      saveQueueToCloud(updated);
       setTimeout(() => setQueueNotice(null), 4000);
       return updated;
     });
@@ -696,9 +722,7 @@ const DraftWarRoomInner = () => {
     setLockedTargets(prev => {
       const currentArr = Array.isArray(prev) ? prev : [];
       const updated = currentArr.filter(p => p && p.id !== playerId);
-      try {
-        localStorage.setItem('sm_locked_draft_targets', JSON.stringify(updated));
-      } catch (e) {}
+      saveQueueToCloud(updated);
       return updated;
     });
   };
