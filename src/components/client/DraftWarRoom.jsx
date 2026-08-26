@@ -625,10 +625,44 @@ const DraftWarRoomInner = () => {
   };
   
   const [activeQuestion, setActiveQuestion] = useState('target_pos');
-  const [filterPos, setFilterPos] = useState('ALL');
-  const [liveDraftPool, setLiveDraftPool] = useState(null);
-  const [showGlossary, setShowGlossary] = useState(false);
-  const [showTutorialModal, setShowTutorialModal] = useState(false);
+  const [lockedTargets, setLockedTargets] = useState(() => {
+    try {
+      const saved = localStorage.getItem('sm_locked_draft_targets');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return [];
+  });
+  const [queueNotice, setQueueNotice] = useState(null);
+
+  const toggleTargetLock = (player) => {
+    if (!player) return;
+    setLockedTargets(prev => {
+      const exists = prev.some(p => p.id === player.id);
+      let updated;
+      if (exists) {
+        updated = prev.filter(p => p.id !== player.id);
+        setQueueNotice(`❌ ${player.name} removed from your priority draft queue.`);
+      } else {
+        updated = [...prev, player];
+        setQueueNotice(`🎯 ${player.name} locked into your Priority Draft Queue!`);
+      }
+      try {
+        localStorage.setItem('sm_locked_draft_targets', JSON.stringify(updated));
+      } catch (e) {}
+      setTimeout(() => setQueueNotice(null), 4000);
+      return updated;
+    });
+  };
+
+  const removeTargetLock = (playerId) => {
+    setLockedTargets(prev => {
+      const updated = prev.filter(p => p.id !== playerId);
+      try {
+        localStorage.setItem('sm_locked_draft_targets', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+  };
 
   useEffect(() => {
     try {
@@ -655,6 +689,14 @@ const DraftWarRoomInner = () => {
 
   return (
     <div className="space-y-6 animate-fade-in">
+      
+      {/* Toast Notification Banner */}
+      {queueNotice && (
+        <div className="fixed top-24 right-5 z-50 bg-gradient-to-r from-emerald-500 to-emerald-600 text-slate-950 px-6 py-3.5 rounded-2xl shadow-2xl font-extrabold flex items-center gap-3 animate-bounce">
+          <Sparkles className="w-5 h-5 text-slate-950" />
+          <span>{queueNotice}</span>
+        </div>
+      )}
       
       {/* HEADER & DRAFT STATUS BAR */}
       <div className="glass-panel-gold p-6 sm:p-8 rounded-3xl border-2 border-amber-500/40 relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
@@ -860,6 +902,53 @@ const DraftWarRoomInner = () => {
         )}
       </div>
 
+      {/* LOCKED DRAFT TARGET QUEUE PANEL */}
+      {lockedTargets.length > 0 && (
+        <div className="glass-panel p-6 rounded-3xl space-y-4 border-2 border-emerald-500/40 bg-emerald-950/20 shadow-xl shadow-emerald-500/10 animate-fade-in">
+          <div className="flex items-center justify-between border-b border-emerald-500/30 pb-3">
+            <div className="flex items-center gap-2">
+              <Target className="w-5 h-5 text-emerald-400 animate-pulse" />
+              <h3 className="font-bebas text-2xl text-white tracking-wider uppercase">
+                {lang === 'es' ? '🎯 TU COLA DE DRAFT PRIORITARIA (JUGADORES FIJADOS)' : lang === 'pt' ? '🎯 SUA FILA DE DRAFT PRIORITÁRIA (JOGADORES FIXADOS)' : '🎯 YOUR LOCKED PRIORITY DRAFT QUEUE'}
+              </h3>
+            </div>
+            <span className="bg-emerald-500 text-slate-950 text-xs font-black px-3 py-1 rounded-full uppercase">
+              {lockedTargets.length} {lockedTargets.length === 1 ? 'Target Locked' : 'Targets Locked'}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {lockedTargets.map(player => (
+              <div key={player.id} className="bg-slate-950 p-4 rounded-2xl border border-emerald-500/40 flex items-center justify-between gap-3 shadow-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center font-bebas text-lg font-bold">
+                    {player.pos}
+                  </div>
+                  <div>
+                    <div className="font-extrabold text-sm text-white flex items-center gap-1.5">
+                      <span>{player.name}</span>
+                      <span className="text-[11px] text-slate-400">({player.team})</span>
+                    </div>
+                    <div className="text-[11px] text-slate-400 font-semibold flex items-center gap-2">
+                      <span>ADP: <strong className="text-slate-200">{player.adp}</strong></span>
+                      <span>Proj: <strong className="text-emerald-400">{player.projPts} Pts</strong></span>
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => removeTargetLock(player.id)}
+                  className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-red-400 transition-colors border border-slate-800"
+                  title="Remove from Draft Queue"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* BEST AVAILABLE PLAYERS BOARD */}
       <div className="glass-panel p-6 rounded-3xl space-y-4 border border-slate-800">
         <div className="flex items-center justify-between flex-wrap gap-4 border-b border-slate-800 pb-4">
@@ -922,11 +1011,24 @@ const DraftWarRoomInner = () => {
                   {player.valueSteal}
                 </span>
                 <button 
-                  onClick={() => alert(`Draft Target Lock: ${player.name} added to your live draft queue!`)}
-                  className="btn-gold px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-1 shadow-md uppercase whitespace-nowrap"
+                  onClick={() => toggleTargetLock(player)}
+                  className={`px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-1 shadow-md uppercase whitespace-nowrap transition-all ${
+                    lockedTargets.some(p => p.id === player.id)
+                      ? 'bg-emerald-500 text-slate-950 shadow-emerald-500/20 font-black'
+                      : 'btn-gold'
+                  }`}
                 >
-                  <span>{labels.draftTarget}</span>
-                  <ChevronRight className="w-4 h-4" />
+                  {lockedTargets.some(p => p.id === player.id) ? (
+                    <>
+                      <CheckCircle2 className="w-4 h-4 text-slate-950" />
+                      <span>{lang === 'es' ? '🔒 EN TU COLA' : lang === 'pt' ? '🔒 NA SUA FILA' : '🔒 LOCKED IN QUEUE'}</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>{labels.draftTarget}</span>
+                      <ChevronRight className="w-4 h-4" />
+                    </>
+                  )}
                 </button>
               </div>
             </div>
