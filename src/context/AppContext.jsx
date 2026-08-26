@@ -635,31 +635,29 @@ export const AppProvider = ({ children }) => {
   const handleSaveLeague = (newLeagueData) => {
     if (!newLeagueData) return;
     let targetId = newLeagueData.id;
+    const currentLeagues = Array.isArray(leagues) ? leagues : [];
+    const targetLeagueId = newLeagueData.leagueId;
+    const existsIndex = currentLeagues.findIndex(l => (targetId && l.id === targetId) || (targetLeagueId && l.leagueId === targetLeagueId));
+
     let updatedList = [];
+    if (existsIndex !== -1) {
+      targetId = currentLeagues[existsIndex].id;
+      updatedList = currentLeagues.map((l, idx) => idx === existsIndex ? { ...l, ...newLeagueData, id: targetId, status: 'Connected & Synced' } : l);
+    } else {
+      targetId = targetId || ('l_' + Date.now());
+      const leagueObj = {
+        ...newLeagueData,
+        id: targetId,
+        status: 'Connected & Synced'
+      };
+      updatedList = [...currentLeagues, leagueObj];
+    }
 
-    setLeagues(prev => {
-      const targetLeagueId = newLeagueData.leagueId;
-      const existsIndex = prev.findIndex(l => (targetId && l.id === targetId) || (targetLeagueId && l.leagueId === targetLeagueId));
+    setLeagues(updatedList);
 
-      if (existsIndex !== -1) {
-        targetId = prev[existsIndex].id;
-        updatedList = prev.map((l, idx) => idx === existsIndex ? { ...l, ...newLeagueData, id: targetId, status: 'Connected & Synced' } : l);
-      } else {
-        targetId = targetId || ('l_' + Date.now());
-        const leagueObj = {
-          ...newLeagueData,
-          id: targetId,
-          status: 'Connected & Synced'
-        };
-        updatedList = [...prev, leagueObj];
-      }
-
-      try {
-        localStorage.setItem('sm_user_leagues', JSON.stringify(updatedList));
-      } catch (e) {}
-
-      return updatedList;
-    });
+    try {
+      localStorage.setItem('sm_user_leagues', JSON.stringify(updatedList));
+    } catch (e) {}
 
     if (user && user.email) {
       try {
