@@ -4,13 +4,39 @@
     "user": "zivo13@yahoo.com",
     "plan": "300 Credits Commissioner ($24.99 USD)",
     "date": "2026-08-23",
-    "status": "Active Subscriber"
+    "status": "Active Subscriber",
+    "leagues": [
+      {
+        "id": "l_zivo13_main",
+        "name": "ESPN League #8492019",
+        "platform": "ESPN",
+        "leagueId": "8492019",
+        "teamId": "3",
+        "scoring": "PPR",
+        "espnS2": "AE_CONFIGURED_PRO_S2",
+        "swid": "{SWID_CONFIGURED_PRO}",
+        "status": "Connected & Synced"
+      }
+    ]
   },
   {
     "id": "u_102",
     "user": "doctorluismoralesae@gmail.com",
     "plan": "20 Free Credits Rookie ($0.00 USD)",
     "date": "2026-08-23",
-    "status": "Active Subscriber"
+    "status": "Active Subscriber",
+    "leagues": [
+      {
+        "id": "l_doc_main",
+        "name": "ESPN League #8492019",
+        "platform": "ESPN",
+        "leagueId": "8492019",
+        "teamId": "1",
+        "scoring": "PPR",
+        "espnS2": "AE_CONFIGURED_ROOKIE_S2",
+        "swid": "{SWID_CONFIGURED_ROOKIE}",
+        "status": "Connected & Synced"
+      }
+    ]
   }
 ]
