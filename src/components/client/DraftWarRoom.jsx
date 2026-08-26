@@ -39,16 +39,16 @@ const defaultAvailablePlayers = [
 const AI_ADVICE_MAP_MULTI = {
   en: {
     target_pos: {
-      title: "🎯 TARGET RECOMMENDATION: RB2 (RUNNING BACK)",
-      alert: "⚠️ TIER DROP WARNING: Only 2 S-Tier RBs remain before a massive 35-point projection cliff!",
-      analysis: "You already anchored WR1 with CeeDee Lamb in Round 1. Your team urgent priority is securing RB2 before Round 3 ends. Target Breece Hall or Bijan Robinson now to balance your floor.",
-      action: "Pick RB next in Round 2"
+      title: "🎯 TARGET RECOMMENDATION: OPTIMAL POSITIONAL BALANCE",
+      alert: "⚠️ TIER DROP WARNING: Top S-Tier RBs and Alpha WRs are being drafted rapidly!",
+      analysis: "Based on your current roster composition, securing high-volume RB depth before Round 3 ends is your highest priority. Target top-tier available backs (like Bijan Robinson, Saquon Barkley, or Breece Hall) to establish an elite weekly floor.",
+      action: "Target High-Volume RB / WR Value"
     },
     best_rb: {
       title: "🏃 BEST AVAILABLE PLAYERS & TIER DROP RADAR",
-      alert: "🔥 TOP TARGET: Bijan Robinson (ATL - 298.2 Proj Pts, 84% Snap Share)",
+      alert: "🔥 TOP TARGETS: Top S-Tier RBs with Guaranteed Touch Volume",
       analysis: "1. Bijan Robinson (RB - ATL) — 88% Redzone Touch Share, S-Tier Floor\n2. Saquon Barkley (RB - PHI) — 84% Touch Share, Top 3 Pick\n3. Breece Hall (RB - NYJ) — +2 Picks Value Steal",
-      action: "Draft Bijan Robinson"
+      action: "Draft Top Available RB"
     },
     team_compare: {
       title: "📊 LEAGUE TEAM COMPARISON & RANKINGS",
@@ -64,23 +64,23 @@ const AI_ADVICE_MAP_MULTI = {
     },
     roster_needs: {
       title: "⚠️ URGENT ROSTER NEEDS ANALYSIS",
-      alert: "🚨 BIGGEST GAP: RB2 (CRITICAL NEED) & TE1 (SECONDARY NEED)",
-      analysis: "Filled Starters: QB1 (Lamar Jackson), WR1 (CeeDee Lamb), WR2 (Brandon Aiyuk).\nMissing Gaps: RB2 position is currently EMPTY. If you skip RB now, your projected RB2 starting points drop by -4.8 Pts/week.",
-      action: "Address RB2 Immediately"
+      alert: "🚨 STARTER GAPS: RB2 & FLEX DEPTH",
+      analysis: "Current Status: Your starting roster has anchored strong target share. Securing a high-volume RB2 in upcoming picks prevents a projected weekly point drop of -4.8 Pts/week.",
+      action: "Address RB2 / FLEX Immediately"
     }
   },
   es: {
     target_pos: {
-      title: "🎯 RECOMENDACIÓN DE TARGET: BUSCAR RB2 (CORREDOR)",
-      alert: "⚠️ ADVERTENCIA DE CAÍDA DE NIVEL: ¡Solo quedan 2 RBs de Nivel S antes de una caída de 35 puntos!",
-      analysis: "Ya aseguraste a tu WR1 con CeeDee Lamb en la Ronda 1. La prioridad urgente de tu equipo es asegurar tu RB2 antes de terminar la Ronda 3. Busca a Breece Hall o Bijan Robinson ahora.",
-      action: "Seleccionar RB en Ronda 2"
+      title: "🎯 RECOMENDACIÓN DE TARGET: BALANCE POSICIONAL ÓPTIMO",
+      alert: "⚠️ ADVERTENCIA DE CAÍDA DE NIVEL: ¡Los Corredores y Receptores Nivel S están saliendo rápidamente!",
+      analysis: "Basado en la composición de tu plantilla, asegurar profundidad de Corredor (RB) de alto volumen antes de finalizar la Ronda 3 es tu mayor prioridad. Busca corredores élite (como Bijan Robinson, Saquon Barkley o Breece Hall) para garantizar un piso semanal dominante.",
+      action: "Buscar Valor en RB / WR"
     },
     best_rb: {
       title: "🏃 MEJORES JUGADORES DISPONIBLES Y RADAR DE NIVELES",
-      alert: "🔥 OBJETIVO PRINCIPAL: Bijan Robinson (ATL - 298.2 Pts Proyectados)",
+      alert: "🔥 OBJETIVOS PRINCIPALES: Corredores de Nivel S con Volumen Garantizado",
       analysis: "1. Bijan Robinson (RB - ATL) — 88% de Volumen en Zona Roja, Piso Nivel S\n2. Saquon Barkley (RB - PHI) — 84% de Toques, Pick Top 3\n3. Breece Hall (RB - NYJ) — +2 Picks de Robo de Valor",
-      action: "Draftear a Bijan Robinson"
+      action: "Draftear Mejor RB Disponible"
     },
     team_compare: {
       title: "📊 COMPARACIÓN Y CLASIFICACIÓN DE EQUIPOS DE LA LIGA",
@@ -96,27 +96,27 @@ const AI_ADVICE_MAP_MULTI = {
     },
     roster_needs: {
       title: "⚠️ ANÁLISIS DE NECESIDADES URGENTES DE PLANTILLA",
-      alert: "🚨 MAYOR HUECO: RB2 (NECESIDAD CRÍTICA) Y TE1 (SEGUNDA NECESIDAD)",
-      analysis: "Titulares Cubiertos: QB1 (Lamar Jackson), WR1 (CeeDee Lamb), WR2 (Brandon Aiyuk).\nHuecos Faltantes: La posición de RB2 está VACÍA. Si no seleccionas RB ahora, tus puntos caerán -4.8 Pts/semana.",
-      action: "Cubrir RB2 Inmediatamente"
+      alert: "🚨 HUECOS DE TITULARES: POSICIÓN DE RB2 Y FLEX",
+      analysis: "Estado Actual: Tu alineación titular tiene cubierto el volumen de pases. Asegurar un RB2 de alto volumen en tus siguientes turnos evitará una caída proyectada de -4.8 Pts/semana.",
+      action: "Cubrir RB2 / FLEX Imediatamente"
     }
   },
   pt: {
     target_pos: {
-      title: "🎯 RECOMENDAÇÃO DE TARGET: FOCAR EM RB2 (RUNNING BACK)",
-      alert: "⚠️ ALERTA DE QUEDA DE NÍVEL: Restam apenas 2 RBs Nível S antes de uma queda de 35 pontos!",
-      analysis: "Você já garantiu seu WR1 com CeeDee Lamb na Rodada 1. A prioridade urgente do seu time é garantir um RB2 antes da Rodada 3 terminar. Escolha Breece Hall ou Bijan Robinson agora.",
-      action: "Escolher RB na Rodada 2"
+      title: "🎯 RECOMENDAÇÃO DE ALVO: EQUILÍBRIO POSICIONAL ÓTIMO",
+      alert: "⚠️ ALERTA DE QUEDA DE NÍVEL: RBs e WRs Nível S estão saindo rapidamente!",
+      analysis: "Com base no elenco atual, garantir um RB2 de alto volume antes do fim da Rodada 3 é sua prioridade máxima. Busque Bijan Robinson, Saquon Barkley ou Breece Hall para garantir um piso semanal dominante.",
+      action: "Buscar Valor em RB / WR"
     },
     best_rb: {
       title: "🏃 MELHORES JOGADORES DISPONÍVEIS E RADAR DE NÍVEIS",
-      alert: "🔥 PRINCIPAL ALVO: Bijan Robinson (ATL - 298.2 Pontos Projetados)",
-      analysis: "1. Bijan Robinson (RB - ATL) — 88% de Volume na Redzone, Piso Nível S\n2. Saquon Barkley (RB - PHI) — 84% de Toques, Escolha Top 3\n3. Breece Hall (RB - NYJ) — +2 Escolhas de Valor",
-      action: "Selecionar Bijan Robinson"
+      alert: "🔥 PRINCIPAIS ALVOS: Running Backs Nível S com Volume Garantido",
+      analysis: "1. Bijan Robinson (RB - ATL) — 88% de Volume na Zona Vermelha, Piso Nível S\n2. Saquon Barkley (RB - PHI) — 84% de Toques, Pick Top 3\n3. Breece Hall (RB - NYJ) — +2 Picks de Roubo de Valor",
+      action: "Escolher Melhor RB Disponível"
     },
     team_compare: {
-      title: "📊 COMPARAÇÃO E CLASSIFICAÇÃO DOS TIMES DA LIGA",
-      alert: "🏆 SEU TIME ESTÁ NA POSIÇÃO #2 DE 12 TIMES (NOTA 84.2/100)",
+      title: "📊 COMPARAÇÃO E CLASSIFICAÇÃO DE TIMES DA LIGA",
+      alert: "🏆 SEU TIME ESTÁ EM #2 DE 12 TIMES NA LIGA (NOTA 84.2/100)",
       analysis: "Seu time lidera a liga em Piso Semanal Projetado (114.2 Pts). Você tem uma vantagem de +24.8 Pts sobre o rival 'Gridiron Kings'. Garantir um RB2 de elite colocará você em #1 geral.",
       action: "Manter Estratégia de Piso Alto"
     },
@@ -128,9 +128,9 @@ const AI_ADVICE_MAP_MULTI = {
     },
     roster_needs: {
       title: "⚠️ ANÁLISE DE NECESSIDADES URGENTES DO TIME",
-      alert: "🚨 MAIOR LACUNA: RB2 (CRÍTICA) E TE1 (SECUNDÁRIA)",
-      analysis: "Titulares Preenchidos: QB1 (Lamar Jackson), WR1 (CeeDee Lamb), WR2 (Brandon Aiyuk).\nLacunas: A posição de RB2 está VAZIA. Se você pular RB agora, suas projeções caem -4.8 Pts/semana.",
-      action: "Cobrir RB2 Imediatamente"
+      alert: "🚨 MAIOR LACUNA: RB2 (CRÍTICA) E FLEX (SECUNDÁRIA)",
+      analysis: "Status Atual: Sua escalação titular tem boa cobertura de passes. Garantir um RB2 de alto volume nas próximas escolhas evita uma queda de -4.8 Pts/semana.",
+      action: "Cobrir RB2 / FLEX Imediatamente"
     }
   }
 };
