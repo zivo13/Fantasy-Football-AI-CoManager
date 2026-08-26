@@ -625,6 +625,10 @@ const DraftWarRoomInner = () => {
   };
   
   const [activeQuestion, setActiveQuestion] = useState('target_pos');
+  const [filterPos, setFilterPos] = useState('ALL');
+  const [liveDraftPool, setLiveDraftPool] = useState(null);
+  const [showGlossary, setShowGlossary] = useState(false);
+  const [showTutorialModal, setShowTutorialModal] = useState(false);
   const [lockedTargets, setLockedTargets] = useState(() => {
     try {
       const saved = localStorage.getItem('sm_locked_draft_targets');
