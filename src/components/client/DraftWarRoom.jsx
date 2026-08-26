@@ -628,22 +628,28 @@ const DraftWarRoomInner = () => {
   const [lockedTargets, setLockedTargets] = useState(() => {
     try {
       const saved = localStorage.getItem('sm_locked_draft_targets');
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      }
     } catch (e) {}
     return [];
   });
   const [queueNotice, setQueueNotice] = useState(null);
 
+  const safeLockedTargets = Array.isArray(lockedTargets) ? lockedTargets : [];
+
   const toggleTargetLock = (player) => {
-    if (!player) return;
+    if (!player || !player.id) return;
     setLockedTargets(prev => {
-      const exists = prev.some(p => p.id === player.id);
+      const currentArr = Array.isArray(prev) ? prev : [];
+      const exists = currentArr.some(p => p && p.id === player.id);
       let updated;
       if (exists) {
-        updated = prev.filter(p => p.id !== player.id);
+        updated = currentArr.filter(p => p && p.id !== player.id);
         setQueueNotice(`❌ ${player.name} removed from your priority draft queue.`);
       } else {
-        updated = [...prev, player];
+        updated = [...currentArr, player];
         setQueueNotice(`🎯 ${player.name} locked into your Priority Draft Queue!`);
       }
       try {
@@ -655,8 +661,10 @@ const DraftWarRoomInner = () => {
   };
 
   const removeTargetLock = (playerId) => {
+    if (!playerId) return;
     setLockedTargets(prev => {
-      const updated = prev.filter(p => p.id !== playerId);
+      const currentArr = Array.isArray(prev) ? prev : [];
+      const updated = currentArr.filter(p => p && p.id !== playerId);
       try {
         localStorage.setItem('sm_locked_draft_targets', JSON.stringify(updated));
       } catch (e) {}
@@ -682,7 +690,8 @@ const DraftWarRoomInner = () => {
 
   const labels = (LABELS_MULTI && (LABELS_MULTI[lang] || LABELS_MULTI.en)) || defaultLabels;
 
-  const availablePlayers = (Array.isArray(liveDraftPool) && liveDraftPool.length > 0) ? liveDraftPool : defaultAvailablePlayers;
+  const rawAvailable = (Array.isArray(liveDraftPool) && liveDraftPool.length > 0) ? liveDraftPool : defaultAvailablePlayers;
+  const availablePlayers = Array.isArray(rawAvailable) ? rawAvailable : defaultAvailablePlayers;
   const filteredPlayers = (filterPos === 'ALL' 
     ? availablePlayers 
     : availablePlayers.filter(p => p && p.pos === filterPos)) || [];
@@ -903,7 +912,7 @@ const DraftWarRoomInner = () => {
       </div>
 
       {/* LOCKED DRAFT TARGET QUEUE PANEL */}
-      {lockedTargets.length > 0 && (
+      {safeLockedTargets.length > 0 && (
         <div className="glass-panel p-6 rounded-3xl space-y-4 border-2 border-emerald-500/40 bg-emerald-950/20 shadow-xl shadow-emerald-500/10 animate-fade-in">
           <div className="flex items-center justify-between border-b border-emerald-500/30 pb-3">
             <div className="flex items-center gap-2">
@@ -913,12 +922,12 @@ const DraftWarRoomInner = () => {
               </h3>
             </div>
             <span className="bg-emerald-500 text-slate-950 text-xs font-black px-3 py-1 rounded-full uppercase">
-              {lockedTargets.length} {lockedTargets.length === 1 ? 'Target Locked' : 'Targets Locked'}
+              {safeLockedTargets.length} {safeLockedTargets.length === 1 ? 'Target Locked' : 'Targets Locked'}
             </span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {lockedTargets.map(player => (
+            {safeLockedTargets.map(player => (
               <div key={player.id} className="bg-slate-950 p-4 rounded-2xl border border-emerald-500/40 flex items-center justify-between gap-3 shadow-lg">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center font-bebas text-lg font-bold">
