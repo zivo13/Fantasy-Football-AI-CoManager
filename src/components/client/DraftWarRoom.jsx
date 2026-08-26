@@ -909,7 +909,7 @@ const DraftWarRoomInner = () => {
             <div className="flex items-center gap-2">
               <Target className="w-5 h-5 text-emerald-400 animate-pulse" />
               <h3 className="font-bebas text-2xl text-white tracking-wider uppercase">
-                {lang === 'es' ? '🎯 TU COLA DE DRAFT PRIORITARIA (JUGADORES FIJADOS)' : lang === 'pt' ? '🎯 SUA FILA DE DRAFT PRIORITÁRIA (JOGADORES FIXADOS)' : '🎯 YOUR LOCKED PRIORITY DRAFT QUEUE'}
+                {lang === 'es' ? '🎯 TU LISTA DE DRAFT PRIORITARIA (JUGADORES FIJADOS)' : lang === 'pt' ? '🎯 SUA FILA DE DRAFT PRIORITÁRIA (JOGADORES FIXADOS)' : '🎯 YOUR LOCKED PRIORITY DRAFT QUEUE'}
               </h3>
             </div>
             <span className="bg-emerald-500 text-slate-950 text-xs font-black px-3 py-1 rounded-full uppercase">
@@ -1021,7 +1021,7 @@ const DraftWarRoomInner = () => {
                   {lockedTargets.some(p => p.id === player.id) ? (
                     <>
                       <CheckCircle2 className="w-4 h-4 text-slate-950" />
-                      <span>{lang === 'es' ? '🔒 EN TU COLA' : lang === 'pt' ? '🔒 NA SUA FILA' : '🔒 LOCKED IN QUEUE'}</span>
+                      <span>{lang === 'es' ? '🔒 EN TU LISTA' : lang === 'pt' ? '🔒 NA SUA FILA' : '🔒 LOCKED IN QUEUE'}</span>
                     </>
                   ) : (
                     <>
