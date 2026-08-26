@@ -128,6 +128,33 @@ function saveState(state) {
   } catch (e) {}
 }
 
+const DB_OBJECT_ID = 'ff8081819ff5b11001a03b7e5128214a';
+const DB_URL = `https://api.restful-api.dev/objects/${DB_OBJECT_ID}`;
+
+async function getCloudDB() {
+  try {
+    const res = await fetch(DB_URL);
+    if (res.ok) {
+      const json = await res.json();
+      return (json && json.data) ? json.data : {};
+    }
+  } catch (e) {}
+  return {};
+}
+
+async function saveCloudDB(cloudData) {
+  try {
+    await fetch(DB_URL, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: 'supermacho_leagues_v1',
+        data: cloudData
+      })
+    });
+  } catch (e) {}
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
@@ -147,6 +174,9 @@ export default async function handler(req, res) {
       const cleanEmail = email.trim().toLowerCase();
       if (password) PASSWORDS[cleanEmail] = password;
 
+      // Fetch raw database storage from cloud REST DB
+      const cloudDB = await getCloudDB();
+
       if (currentState.deleted[cleanEmail]) {
         if (action === 'login') {
           return res.status(404).json({ error: 'ACCOUNT_NOT_FOUND', message: 'No account found with this email address.' });
@@ -159,6 +189,9 @@ export default async function handler(req, res) {
 
       const existingIndex = currentState.users.findIndex(u => u && u.user && u.user.toLowerCase() === cleanEmail);
       const userExists = existingIndex !== -1;
+
+      // Determine persistent user leagues
+      const userCloudLeagues = (cloudDB && Array.isArray(cloudDB[cleanEmail])) ? cloudDB[cleanEmail] : null;
 
       if (action === 'login') {
         const isAdmin = cleanEmail.includes('admin') || cleanEmail.includes('zivo13');
@@ -174,14 +207,16 @@ export default async function handler(req, res) {
           plan: isAdmin ? '300 Credits Commissioner ($24.99 USD)' : '20 Free Credits Rookie ($0.00 USD)',
           role: isAdmin ? 'admin' : 'client',
           status: 'Active Subscriber',
-          leagues: currentState.profiles[cleanEmail]?.leagues || []
+          leagues: userCloudLeagues || currentState.profiles[cleanEmail]?.leagues || []
         };
+
+        const activeLeagues = userCloudLeagues || matchedUser.leagues || currentState.profiles[cleanEmail]?.leagues || [];
 
         return res.status(200).json({
           success: true,
-          user: matchedUser,
+          user: { ...matchedUser, leagues: activeLeagues },
           profile: currentState.profiles[cleanEmail] || null,
-          leagues: matchedUser.leagues || currentState.profiles[cleanEmail]?.leagues || []
+          leagues: activeLeagues
         });
       }
 
@@ -191,7 +226,14 @@ export default async function handler(req, res) {
         }
       }
 
-      const currentLeagues = leagues || (userExists ? currentState.users[existingIndex].leagues : (currentState.profiles[cleanEmail]?.leagues || []));
+      // If new leagues provided, save directly to persistent cloud REST database
+      let currentLeagues = leagues;
+      if (currentLeagues && Array.isArray(currentLeagues) && currentLeagues.length > 0) {
+        cloudDB[cleanEmail] = currentLeagues;
+        await saveCloudDB(cloudDB);
+      } else {
+        currentLeagues = userCloudLeagues || (userExists ? currentState.users[existingIndex].leagues : (currentState.profiles[cleanEmail]?.leagues || []));
+      }
 
       // Update / Upsert user profile
       const updatedUser = {
