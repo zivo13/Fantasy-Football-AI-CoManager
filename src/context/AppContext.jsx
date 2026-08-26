@@ -460,9 +460,20 @@ export const AppProvider = ({ children }) => {
               localStorage.setItem('sm_user_leagues', JSON.stringify(data.leagues));
             } catch (e) {}
           }
-          if (data && data.profile) {
-            setUser(prev => ({ ...prev, profile: data.profile }));
-            if (data.profile.prefLang) {
+          const fetchedQueue = (data && Array.isArray(data.draftQueue)) ? data.draftQueue : (data && data.user && Array.isArray(data.user.draftQueue)) ? data.user.draftQueue : null;
+          if (fetchedQueue && Array.isArray(fetchedQueue)) {
+            try {
+              localStorage.setItem('sm_locked_draft_targets', JSON.stringify(fetchedQueue));
+            } catch (e) {}
+          }
+          if (data && (data.profile || data.user)) {
+            setUser(prev => ({
+              ...prev,
+              ...(data.user || {}),
+              profile: data.profile || prev.profile,
+              draftQueue: fetchedQueue || prev.draftQueue || []
+            }));
+            if (data.profile && data.profile.prefLang) {
               setLang(data.profile.prefLang);
             }
           }

@@ -682,10 +682,16 @@ const DraftWarRoomInner = () => {
     }
   }, [user?.email, user?.draftQueue]);
 
+  const { setUser } = appState;
+
   const saveQueueToCloud = (updatedQueue) => {
     try {
       localStorage.setItem('sm_locked_draft_targets', JSON.stringify(updatedQueue));
     } catch (e) {}
+
+    if (typeof setUser === 'function') {
+      setUser(prev => ({ ...prev, draftQueue: updatedQueue }));
+    }
 
     if (user && user.email) {
       try {
