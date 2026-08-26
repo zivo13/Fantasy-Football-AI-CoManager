@@ -171,6 +171,33 @@ const LABELS_MULTI = {
   }
 };
 
+const AI_COACH_BUTTONS = {
+  en: {
+    title: "ASK SUPERMACHO AI DRAFT COACH:",
+    target_pos: { label: "🎯 Target Position", desc: "Positional recommendation & tier drops" },
+    best_rb: { label: "🏃 Best RBs Available", desc: "Top available running backs & volume" },
+    team_compare: { label: "📊 Team Compare", desc: "League roster grade & rankings" },
+    upside: { label: "⚡ Upside Ceiling", desc: "Explosive ceiling vs floor stability" },
+    roster_needs: { label: "⚠️ Roster Needs", desc: "Critical starter gaps & depth analysis" }
+  },
+  es: {
+    title: "PREGUNTA AL ENTRENADOR DE IA SUPERMACHO:",
+    target_pos: { label: "🎯 Target por Posición", desc: "Recomendación posicional y caída de niveles" },
+    best_rb: { label: "🏃 Mejores RBs Disponibles", desc: "Corredores estrella y volumen de toques" },
+    team_compare: { label: "📊 Comparación de Equipos", desc: "Calificación y posición en la liga" },
+    upside: { label: "⚡ Comparación de Techo", desc: "Techo explosivo vs estabilidad de piso" },
+    roster_needs: { label: "⚠️ Necesidades de Plantilla", desc: "Huecos de titulares y necesidades" }
+  },
+  pt: {
+    title: "PERGUNTE AO TÉCNICO DE IA SUPERMACHO:",
+    target_pos: { label: "🎯 Alvo por Posição", desc: "Recomendação posicional e quedas de nível" },
+    best_rb: { label: "🏃 Melhores RBs Disponíveis", desc: "Running backs principais e volume" },
+    team_compare: { label: "📊 Comparar Times", desc: "Nota do time e classificação da liga" },
+    upside: { label: "⚡ Comparar Teto", desc: "Teto explosivo vs estabilidade do piso" },
+    roster_needs: { label: "⚠️ Necessidades do Elenco", desc: "Lacunas de titulares e análise" }
+  }
+};
+
 const defaultLabels = {
   badge: "LIVE DRAFT EXPERT ASSISTANT",
   desc: "Real-time roster access, tier-drop alerts, best available players, and league comparison engine.",
@@ -753,91 +780,96 @@ const DraftWarRoomInner = () => {
       </div>
 
       {/* 5 ONE-CLICK AI COACH STRATEGIC QUESTIONS */}
-      <div className="space-y-3">
-        <div className="text-xs font-extrabold text-amber-400 uppercase tracking-widest flex items-center gap-2">
-          <Sparkles className="w-4 h-4" />
-          <span>ASK SUPERMACHO AI DRAFT COACH:</span>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-          
-          <button
-            onClick={() => setActiveQuestion('target_pos')}
-            className={`p-3.5 rounded-2xl border text-left transition-all space-y-1 ${
-              activeQuestion === 'target_pos'
-                ? 'bg-amber-500 text-slate-950 border-amber-400 font-extrabold shadow-lg shadow-amber-500/20'
-                : 'bg-slate-900 text-slate-300 border-slate-800 hover:border-amber-500/50'
-            }`}
-          >
-            <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase">
-              <Target className="w-4 h-4 flex-shrink-0" />
-              <span>{t('targetPosBtn')}</span>
+      {(() => {
+        const coachTexts = AI_COACH_BUTTONS[lang] || AI_COACH_BUTTONS.es || AI_COACH_BUTTONS.en;
+        return (
+          <div className="space-y-3">
+            <div className="text-xs font-extrabold text-amber-400 uppercase tracking-widest flex items-center gap-2">
+              <Sparkles className="w-4 h-4" />
+              <span>{coachTexts.title}</span>
             </div>
-            <p className="text-[10px] opacity-80 font-medium">{t('targetPosDesc')}</p>
-          </button>
 
-          <button
-            onClick={() => setActiveQuestion('best_rb')}
-            className={`p-3.5 rounded-2xl border text-left transition-all space-y-1 ${
-              activeQuestion === 'best_rb'
-                ? 'bg-amber-500 text-slate-950 border-amber-400 font-extrabold shadow-lg shadow-amber-500/20'
-                : 'bg-slate-900 text-slate-300 border-slate-800 hover:border-amber-500/50'
-            }`}
-          >
-            <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase">
-              <Flame className="w-4 h-4 flex-shrink-0" />
-              <span>{t('bestRbBtn')}</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+              
+              <button
+                onClick={() => setActiveQuestion('target_pos')}
+                className={`p-3.5 rounded-2xl border text-left transition-all space-y-1 ${
+                  activeQuestion === 'target_pos'
+                    ? 'bg-amber-500 text-slate-950 border-amber-400 font-extrabold shadow-lg shadow-amber-500/20'
+                    : 'bg-slate-900 text-slate-300 border-slate-800 hover:border-amber-500/50'
+                }`}
+              >
+                <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase">
+                  <Target className="w-4 h-4 flex-shrink-0" />
+                  <span>{coachTexts.target_pos.label}</span>
+                </div>
+                <p className="text-[10px] opacity-80 font-medium">{coachTexts.target_pos.desc}</p>
+              </button>
+
+              <button
+                onClick={() => setActiveQuestion('best_rb')}
+                className={`p-3.5 rounded-2xl border text-left transition-all space-y-1 ${
+                  activeQuestion === 'best_rb'
+                    ? 'bg-amber-500 text-slate-950 border-amber-400 font-extrabold shadow-lg shadow-amber-500/20'
+                    : 'bg-slate-900 text-slate-300 border-slate-800 hover:border-amber-500/50'
+                }`}
+              >
+                <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase">
+                  <Flame className="w-4 h-4 flex-shrink-0" />
+                  <span>{coachTexts.best_rb.label}</span>
+                </div>
+                <p className="text-[10px] opacity-80 font-medium">{coachTexts.best_rb.desc}</p>
+              </button>
+
+              <button
+                onClick={() => setActiveQuestion('team_compare')}
+                className={`p-3.5 rounded-2xl border text-left transition-all space-y-1 ${
+                  activeQuestion === 'team_compare'
+                    ? 'bg-amber-500 text-slate-950 border-amber-400 font-extrabold shadow-lg shadow-amber-500/20'
+                    : 'bg-slate-900 text-slate-300 border-slate-800 hover:border-amber-500/50'
+                }`}
+              >
+                <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase">
+                  <TrendingUp className="w-4 h-4 flex-shrink-0" />
+                  <span>{coachTexts.team_compare.label}</span>
+                </div>
+                <p className="text-[10px] opacity-80 font-medium">{coachTexts.team_compare.desc}</p>
+              </button>
+
+              <button
+                onClick={() => setActiveQuestion('upside')}
+                className={`p-3.5 rounded-2xl border text-left transition-all space-y-1 ${
+                  activeQuestion === 'upside'
+                    ? 'bg-amber-500 text-slate-950 border-amber-400 font-extrabold shadow-lg shadow-amber-500/20'
+                    : 'bg-slate-900 text-slate-300 border-slate-800 hover:border-amber-500/50'
+                }`}
+              >
+                <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase">
+                  <Scale className="w-4 h-4 flex-shrink-0" />
+                  <span>{coachTexts.upside.label}</span>
+                </div>
+                <p className="text-[10px] opacity-80 font-medium">{coachTexts.upside.desc}</p>
+              </button>
+
+              <button
+                onClick={() => setActiveQuestion('roster_needs')}
+                className={`p-3.5 rounded-2xl border text-left transition-all space-y-1 ${
+                  activeQuestion === 'roster_needs'
+                    ? 'bg-amber-500 text-slate-950 border-amber-400 font-extrabold shadow-lg shadow-amber-500/20'
+                    : 'bg-slate-900 text-slate-300 border-slate-800 hover:border-amber-500/50'
+                }`}
+              >
+                <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase">
+                  <ShieldAlert className="w-4 h-4 flex-shrink-0" />
+                  <span>{coachTexts.roster_needs.label}</span>
+                </div>
+                <p className="text-[10px] opacity-80 font-medium">{coachTexts.roster_needs.desc}</p>
+              </button>
+
             </div>
-            <p className="text-[10px] opacity-80 font-medium">{t('bestRbDesc')}</p>
-          </button>
-
-          <button
-            onClick={() => setActiveQuestion('team_compare')}
-            className={`p-3.5 rounded-2xl border text-left transition-all space-y-1 ${
-              activeQuestion === 'team_compare'
-                ? 'bg-amber-500 text-slate-950 border-amber-400 font-extrabold shadow-lg shadow-amber-500/20'
-                : 'bg-slate-900 text-slate-300 border-slate-800 hover:border-amber-500/50'
-            }`}
-          >
-            <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase">
-              <TrendingUp className="w-4 h-4 flex-shrink-0" />
-              <span>{t('teamCompareBtn')}</span>
-            </div>
-            <p className="text-[10px] opacity-80 font-medium">{t('teamCompareDesc')}</p>
-          </button>
-
-          <button
-            onClick={() => setActiveQuestion('upside')}
-            className={`p-3.5 rounded-2xl border text-left transition-all space-y-1 ${
-              activeQuestion === 'upside'
-                ? 'bg-amber-500 text-slate-950 border-amber-400 font-extrabold shadow-lg shadow-amber-500/20'
-                : 'bg-slate-900 text-slate-300 border-slate-800 hover:border-amber-500/50'
-            }`}
-          >
-            <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase">
-              <Scale className="w-4 h-4 flex-shrink-0" />
-              <span>{t('upsideBtn')}</span>
-            </div>
-            <p className="text-[10px] opacity-80 font-medium">{t('upsideDesc')}</p>
-          </button>
-
-          <button
-            onClick={() => setActiveQuestion('roster_needs')}
-            className={`p-3.5 rounded-2xl border text-left transition-all space-y-1 ${
-              activeQuestion === 'roster_needs'
-                ? 'bg-amber-500 text-slate-950 border-amber-400 font-extrabold shadow-lg shadow-amber-500/20'
-                : 'bg-slate-900 text-slate-300 border-slate-800 hover:border-amber-500/50'
-            }`}
-          >
-            <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase">
-              <ShieldAlert className="w-4 h-4 flex-shrink-0" />
-              <span>{t('rosterNeedsBtn')}</span>
-            </div>
-            <p className="text-[10px] opacity-80 font-medium">{t('rosterNeedsDesc')}</p>
-          </button>
-
-        </div>
-      </div>
+          </div>
+        );
+      })()}
 
       {/* DYNAMIC AI COACH RESPONSE CARD */}
       <div className="bg-slate-950 p-6 rounded-3xl border-2 border-amber-500/40 space-y-4 shadow-2xl shadow-amber-500/10 animate-fade-in">
